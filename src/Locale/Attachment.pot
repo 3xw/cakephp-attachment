@@ -1,0 +1,294 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2018-12-21 10:37+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: Crud/Action/DeleteAction.php:43
+msgid "unable to delete this Attachment. This attachment looks beeing used by an other record. Please detatch the attachment to related record an then try to delete it again."
+msgstr ""
+
+#: Model/Filter/Restriction/SessionRestrictionTrait.php:50
+msgid "Error Processing Request, reload the page or try login again!"
+msgstr ""
+
+#: Template/Element/Component/browse.ctp:7
+msgid "Browse files"
+msgstr ""
+
+#: Template/Element/Component/browse.ctp:17
+#: Template/Element/Component/edit.ctp:14
+#: Template/Element/Component/embed.ctp:14
+#: Template/Element/Component/index.ctp:11
+#: Template/Element/Component/upload.ctp:14
+msgid "Watch out"
+msgstr ""
+
+#: Template/Element/Component/browse.ctp:55;56;83;84
+msgid "Add"
+msgstr ""
+
+#: Template/Element/Component/browse.ctp:58;86
+#: Template/Element/Component/files.ctp:31
+msgid "Remove"
+msgstr ""
+
+#: Template/Element/Component/browse.ctp:100
+#: Template/Element/Component/edit.ctp:148
+#: Template/Element/Component/embed.ctp:116
+#: Template/Element/Component/inline-options.ctp:106
+#: Template/Element/Component/trumbowyg-options.ctp:80
+#: Template/Element/Component/upload.ctp:133
+#: Template/Element/Component/view.ctp:35
+msgid "Close"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:7;145
+msgid "Edit"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:24
+#: Template/Element/Component/embed.ctp:19
+#: Template/Element/Component/upload.ctp:24
+msgid "Tags"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:42
+#: Template/Element/Component/embed.ctp:98
+msgid "Name"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:48
+#: Template/Element/Component/embed.ctp:104
+msgid "Embed code"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:56
+msgid "File"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:59
+msgid "Change file"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:65
+msgid "Change"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:67
+msgid "New file to upload"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:91;103;118
+#: Template/Element/Component/embed.ctp:46;58;73
+#: Template/Element/Component/inline-options.ctp:45;46
+#: Template/Element/Component/upload.ctp:51;63;78
+msgid "Title"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:95;107;122
+#: Template/Element/Component/embed.ctp:50;62;77
+#: Template/Element/Component/upload.ctp:55;67;82
+msgid "Description"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:129
+#: Template/Element/Component/embed.ctp:85
+#: Template/Element/Component/upload.ctp:89
+msgid "Author"
+msgstr ""
+
+#: Template/Element/Component/edit.ctp:133
+#: Template/Element/Component/embed.ctp:89
+#: Template/Element/Component/upload.ctp:93
+msgid "Copyright"
+msgstr ""
+
+#: Template/Element/Component/embed.ctp:7
+#: Template/Element/Component/index.ctp:52
+#: Template/Element/Component/input.ctp:31
+msgid "Add an embed code"
+msgstr ""
+
+#: Template/Element/Component/embed.ctp:113
+#: Template/Element/Component/index.ctp:48
+#: Template/Element/Component/input.ctp:23
+#: Template/Element/Component/upload.ctp:130
+msgid "Upload"
+msgstr ""
+
+#: Template/Element/Component/filters.ctp:8;12
+msgid "Filter"
+msgstr ""
+
+#: Template/Element/Component/filters.ctp:15
+msgid "Order"
+msgstr ""
+
+#: Template/Element/Component/filters.ctp:25
+msgid "file name or title"
+msgstr ""
+
+#: Template/Element/Component/filters.ctp:31
+msgid "Search"
+msgstr ""
+
+#: Template/Element/Component/index.ctp:17
+msgid "Ok"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:7
+#: Template/Element/Component/trumbowyg-options.ctp:7
+msgid "Choose options"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:29
+msgid "Link"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:30
+msgid "Image"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:39
+msgid "Target"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:41
+msgid "New window"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:42
+msgid "Default"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:57
+#: Template/Element/Component/trumbowyg-options.ctp:29
+msgid "Align"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:59
+msgid "Normal"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:60
+msgid "Left"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:61
+msgid "Center"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:62
+msgid "Right"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:67
+#: Template/Element/Component/trumbowyg-options.ctp:43
+msgid "Extra styles"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:68
+#: Template/Element/Component/trumbowyg-options.ctp:44
+msgid "classes"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:75
+#: Template/Element/Component/trumbowyg-options.ctp:53
+msgid "Width"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:80
+#: Template/Element/Component/trumbowyg-options.ctp:59
+msgid "Crop"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:83
+#: Template/Element/Component/trumbowyg-options.ctp:62
+msgid "Yes / no"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:87
+#: Template/Element/Component/trumbowyg-options.ctp:67
+msgid "Ratio"
+msgstr ""
+
+#: Template/Element/Component/inline-options.ctp:109
+#: Template/Element/Component/trumbowyg-options.ctp:83
+msgid "Insert"
+msgstr ""
+
+#: Template/Element/Component/input.ctp:27
+msgid "Browse"
+msgstr ""
+
+#: Template/Element/Component/pagination.ctp:8
+msgid "first"
+msgstr ""
+
+#: Template/Element/Component/pagination.ctp:36
+msgid "last"
+msgstr ""
+
+#: Template/Element/Component/pagination.ctp:42
+msgid "Page"
+msgstr ""
+
+#: Template/Element/Component/pagination.ctp:42
+msgid "on"
+msgstr ""
+
+#: Template/Element/Component/pagination.ctp:42
+msgid "total"
+msgstr ""
+
+#: Template/Element/Component/trumbowyg-options.ctp:37
+msgid "Alternate title"
+msgstr ""
+
+#: Template/Element/Component/trumbowyg-options.ctp:38
+msgid "alt here"
+msgstr ""
+
+#: Template/Element/Component/upload.ctp:7
+msgid "Upload files"
+msgstr ""
+
+#: Template/Element/Component/upload.ctp:102
+msgid "Files"
+msgstr ""
+
+#: Template/Element/Component/upload.ctp:105
+msgid "Drag and drop files here, or click on the button"
+msgstr ""
+
+#: Template/Element/Component/upload.ctp:106
+msgid "Max size"
+msgstr ""
+
+#: Template/Element/Component/upload.ctp:120
+msgid "type"
+msgstr ""
+
+#: Template/Element/Component/upload.ctp:121
+msgid "size"
+msgstr ""
+
+#: Template/Element/Component/view.ctp:15
+msgid "Url"
+msgstr ""
+
+#: Template/Element/Component/view.ctp:20
+msgid "Type"
+msgstr ""
+
