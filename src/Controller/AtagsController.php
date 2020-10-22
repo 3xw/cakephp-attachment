@@ -1,7 +1,7 @@
 <?php
-namespace Attachment\Controller;
+namespace Trois\Attachment\Controller;
 
-use Attachment\Controller\AppController;
+use Trois\Attachment\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
 

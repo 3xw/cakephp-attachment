@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Controller\Admin;
+namespace Trois\Attachment\Controller\Admin;
 
-use Attachment\Controller\AppController;
+use Trois\Attachment\Controller\AppController;
 
 /**
 * AtagTypes Controller

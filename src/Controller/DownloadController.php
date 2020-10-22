@@ -1,11 +1,11 @@
 
 <?php
-namespace Attachment\Controller;
-use Attachment\Controller\AppController;
+namespace Trois\Attachment\Controller;
+use Trois\Attachment\Controller\AppController;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\BadRequestException;
-use Attachment\Utility\Token;
-use Attachment\Filesystem\Downloader;
+use Trois\Attachment\Utility\Token;
+use Trois\Attachment\Filesystem\Downloader;
 use Cake\Event\EventInterface;
 class DownloadController extends AppController
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Attachment\Controller;
+namespace Trois\Attachment\Controller;
 
 use App\Controller\AppController as BaseController;
 

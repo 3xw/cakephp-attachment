@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Http\Exception;
+namespace Trois\Attachment\Http\Exception;
 
 use Exception;
 

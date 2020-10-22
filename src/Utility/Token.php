@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Utility;
+namespace Trois\Attachment\Utility;
 
 use Firebase\JWT\JWT;
 use Cake\Utility\Security;

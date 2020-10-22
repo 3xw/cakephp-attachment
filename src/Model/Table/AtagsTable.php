@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Model\Table;
+namespace Trois\Attachment\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;

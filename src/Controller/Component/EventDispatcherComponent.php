@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Controller\Component;
+namespace Trois\Attachment\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;

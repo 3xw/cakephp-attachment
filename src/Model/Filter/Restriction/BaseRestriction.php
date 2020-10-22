@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Model\Filter\Restriction;
+namespace Trois\Attachment\Model\Filter\Restriction;
 
 use Cake\ORM\Query;
 

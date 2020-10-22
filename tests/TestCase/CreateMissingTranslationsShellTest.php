@@ -1,7 +1,7 @@
 <?php
-namespace Attachment\Test\TestCase\Shell;
+namespace Trois\Attachment\Test\TestCase\Shell;
 
-use Attachment\Shell\CreateMissingTranslationsShell;
+use Trois\Attachment\Shell\CreateMissingTranslationsShell;
 use Cake\TestSuite\TestCase;
 
 /**

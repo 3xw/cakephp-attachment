@@ -1,7 +1,7 @@
 <?php
-namespace Attachment\Test\TestCase\Controller;
+namespace Trois\Attachment\Test\TestCase\Controller;
 
-use Attachment\Controller\AttachmentsController;
+use Trois\Attachment\Controller\AttachmentsController;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**

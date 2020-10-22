@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Test\TestCase\Model\Table;
+namespace Trois\Attachment\Test\TestCase\Model\Table;
 
-use Attachment\Model\Table\AarchivesTable;
+use Trois\Attachment\Model\Table\AarchivesTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 

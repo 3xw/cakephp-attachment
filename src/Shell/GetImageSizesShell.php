@@ -1,9 +1,9 @@
 <?php
-namespace Attachment\Shell;
+namespace Trois\Attachment\Shell;
 
 use Cake\Core\Configure;
 use Cake\Console\Shell;
-use Attachment\Filesystem\FilesystemRegistry;
+use Trois\Attachment\Filesystem\FilesystemRegistry;
 
 class GetImageSizesShell extends Shell
 {

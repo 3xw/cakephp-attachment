@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Crud\Action;
+namespace Trois\Attachment\Crud\Action;
 
 use \Crud\Event\Subject;
 use \Cake\Http\Response;

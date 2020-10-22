@@ -1,8 +1,8 @@
 <?php
-namespace Attachment\Filesystem\Protect;
+namespace Trois\Attachment\Filesystem\Protect;
 
 use Aws\CloudFront\UrlSigner;
-use Attachment\Utility\Token;
+use Trois\Attachment\Utility\Token;
 use Cake\Http\ServerRequest;
 
 class AwsSignedUrlsProtection extends BaseProtection

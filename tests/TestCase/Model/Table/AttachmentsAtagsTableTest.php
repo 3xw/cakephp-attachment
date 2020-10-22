@@ -1,7 +1,7 @@
 <?php
-namespace Attachment\Test\TestCase\Model\Table;
+namespace Trois\Attachment\Test\TestCase\Model\Table;
 
-use Attachment\Model\Table\AttachmentsAtagsTable;
+use Trois\Attachment\Model\Table\AttachmentsAtagsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
@@ -37,7 +37,7 @@ class AttachmentsAtagsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('AttachmentsAtags') ? [] : ['className' => 'Attachment\Model\Table\AttachmentsAtagsTable'];
+        $config = TableRegistry::exists('AttachmentsAtags') ? [] : ['className' => 'Trois\Attachment\Model\Table\AttachmentsAtagsTable'];
         $this->AttachmentsAtags = TableRegistry::get('AttachmentsAtags', $config);
     }
 

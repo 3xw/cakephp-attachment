@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Filesystem\Compressor;
+namespace Trois\Attachment\Filesystem\Compressor;
 
 use Cake\Event\Event;
 use Aws\Sns\SnsClient;

@@ -1,7 +1,7 @@
 <?php
-namespace Attachment\Test\TestCase\Controller\Component;
+namespace Trois\Attachment\Test\TestCase\Controller\Component;
 
-use Attachment\Controller\Component\EventDispatcherComponent;
+use Trois\Attachment\Controller\Component\EventDispatcherComponent;
 use Cake\Controller\ComponentRegistry;
 use Cake\TestSuite\TestCase;
 

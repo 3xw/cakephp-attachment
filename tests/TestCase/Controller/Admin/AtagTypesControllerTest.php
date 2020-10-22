@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Test\TestCase\Controller\Admin;
+namespace Trois\Attachment\Test\TestCase\Controller\Admin;
 
-use Attachment\Controller\Admin\AtagTypesController;
+use Trois\Attachment\Controller\Admin\AtagTypesController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 

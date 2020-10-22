@@ -283,7 +283,7 @@ Listners should extend the BaseListener class:
 ```php
 namespace App\Listener;
 
-use Attachment\Listener\BaseListener;
+use Trois\Attachment\Listener\BaseListener;
 use Cake\Event\Event;
 
 class ExtranetMoveFileListener extends BaseListener

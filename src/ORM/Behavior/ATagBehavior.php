@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\ORM\Behavior;
+namespace Trois\Attachment\ORM\Behavior;
 
 use ArrayObject;
 use Cake\Event\Event;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Model\Entity;
+namespace Trois\Attachment\Model\Entity;
 
 use Cake\ORM\Entity;
 

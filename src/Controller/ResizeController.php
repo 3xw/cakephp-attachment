@@ -1,16 +1,16 @@
 <?php
-namespace Attachment\Controller;
+namespace Trois\Attachment\Controller;
 
-use Attachment\Controller\AppController;
+use Trois\Attachment\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\BadRequestException;
-use Attachment\Filesystem\FilesystemRegistry;
+use Trois\Attachment\Filesystem\FilesystemRegistry;
 use Cake\Filesystem\Folder;
 use Cake\Core\App;
 use Intervention\Image\ImageManagerStatic as Image;
-use Attachment\Filesystem\ProfileRegistry;
+use Trois\Attachment\Filesystem\ProfileRegistry;
 
 class ResizeController extends AppController
 {

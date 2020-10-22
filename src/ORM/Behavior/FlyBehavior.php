@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\ORM\Behavior;
+namespace Trois\Attachment\ORM\Behavior;
 
 use ArrayObject;
 use Cake\Event\Event;
@@ -10,9 +10,9 @@ use Cake\Datasource\EntityInterface;
 use Cake\Http\Session;
 use Cake\ORM\Behavior;
 use Cake\ORM\Table;
-use Attachment\Filesystem\Profile;
-use Attachment\Filesystem\UploadedFile;
-use Attachment\Filesystem\ProfileRegistry;
+use Trois\Attachment\Filesystem\Profile;
+use Trois\Attachment\Filesystem\UploadedFile;
+use Trois\Attachment\Filesystem\ProfileRegistry;
 
 class FlyBehavior extends Behavior
 {

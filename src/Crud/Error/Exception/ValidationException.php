@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Crud\Error\Exception;
+namespace Trois\Attachment\Crud\Error\Exception;
 
 use Cake\Http\Exception\BadRequestException;
 use Cake\ORM\Entity;

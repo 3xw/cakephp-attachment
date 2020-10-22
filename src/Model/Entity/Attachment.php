@@ -1,7 +1,7 @@
 <?php
-namespace Attachment\Model\Entity;
+namespace Trois\Attachment\Model\Entity;
 use Cake\ORM\Entity;
-use Attachment\Filesystem\ProfileRegistry;
+use Trois\Attachment\Filesystem\ProfileRegistry;
 class Attachment extends Entity
 {
   protected $_accessible = [

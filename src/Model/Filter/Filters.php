@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Model\Filter;
+namespace Trois\Attachment\Model\Filter;
 
 use Search\Model\Filter\Base;
 use Cake\Core\Configure;

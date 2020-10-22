@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Filesystem;
+namespace Trois\Attachment\Filesystem;
 
-use Attachment\Filesystem\Profile;
-use Attachment\Model\Entity\Attachment;
+use Trois\Attachment\Filesystem\Profile;
+use Trois\Attachment\Model\Entity\Attachment;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Cake\Http\Exception\NotFoundException;
-use Attachment\Filesystem\ProfileRegistry;
+use Trois\Attachment\Filesystem\ProfileRegistry;
 
 class Downloader
 {

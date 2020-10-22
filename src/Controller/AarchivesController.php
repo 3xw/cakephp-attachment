@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Controller;
+namespace Trois\Attachment\Controller;
 
-use Attachment\Controller\AppController;
+use Trois\Attachment\Controller\AppController;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Event\Event;
 use Cake\Core\Configure;

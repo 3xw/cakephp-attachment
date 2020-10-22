@@ -1,8 +1,8 @@
 <?php
-namespace Attachment\Filesystem\Protect;
+namespace Trois\Attachment\Filesystem\Protect;
 
 use Aws\S3\S3Client;
-use Attachment\Utility\Token;
+use Trois\Attachment\Utility\Token;
 use Cake\Http\ServerRequest;
 
 class AwsS3PreSignedUrlsProtection extends BaseProtection

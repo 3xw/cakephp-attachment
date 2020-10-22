@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment;
+namespace Trois\Attachment;
 
 use Cake\Core\BasePlugin;
 use Cake\Routing\RouteBuilder;

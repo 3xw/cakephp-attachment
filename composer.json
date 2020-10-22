@@ -18,7 +18,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Attachment\\": "src"
+      "Trois\\Attachment\\": "src"
     }
   },
   "autoload-dev": {

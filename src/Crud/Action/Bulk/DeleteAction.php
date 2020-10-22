@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Crud\Action\Bulk;
+namespace Trois\Attachment\Crud\Action\Bulk;
 
 use Cake\Controller\Controller;
 use Cake\ORM\Query;

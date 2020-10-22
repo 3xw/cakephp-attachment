@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Filesystem;
+namespace Trois\Attachment\Filesystem;
 
 use Cake\Filesystem\File;
 use Zend\Diactoros\UploadedFile as ZUploadedFile;

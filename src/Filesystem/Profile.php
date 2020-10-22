@@ -1,9 +1,9 @@
 <?php
-namespace Attachment\Filesystem;
+namespace Trois\Attachment\Filesystem;
 
 use Cake\Core\Configure;
-use Attachment\Filesystem\FilesystemRegistry;
-use Attachment\Filesystem\Protect\ProtectionRegistry;
+use Trois\Attachment\Filesystem\FilesystemRegistry;
+use Trois\Attachment\Filesystem\Protect\ProtectionRegistry;
 use Cake\Core\InstanceConfigTrait;
 use Cake\Routing\Router;
 use Cake\Http\ServerRequest;

@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Filesystem;
+namespace Trois\Attachment\Filesystem;
 
 use Cake\Core\Configure;
 

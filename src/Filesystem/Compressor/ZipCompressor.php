@@ -1,9 +1,9 @@
 <?php
-namespace Attachment\Filesystem\Compressor;
+namespace Trois\Attachment\Filesystem\Compressor;
 
-use Attachment\Model\Entity\Aarchive;
+use Trois\Attachment\Model\Entity\Aarchive;
 use Cake\Event\Event;
-use Attachment\Filesystem\ProfileRegistry;
+use Trois\Attachment\Filesystem\ProfileRegistry;
 use League\Flysystem\Filesystem;
 use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use Zend\Diactoros\UploadedFile;

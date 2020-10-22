@@ -1,18 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Model\Table;
+namespace Trois\Attachment\Model\Table;
 
-use Attachment\Model\Entity\Attachment;
+use Trois\Attachment\Model\Entity\Attachment;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Search\Manager;
 use Cake\Core\Configure;
-use Attachment\Http\Exception\UploadException;
+use Trois\Attachment\Http\Exception\UploadException;
 use Cake\Utility\Inflector;
-use App\Model\Filter\AttachmentCollection;
 use ArrayObject;
 use Cake\Event\Event;
 use Cake\Datasource\EntityInterface;

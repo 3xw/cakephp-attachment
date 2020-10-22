@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Crud\Listener;
+namespace Trois\Attachment\Crud\Listener;
 
 use Crud\Listener\ApiListener;
 

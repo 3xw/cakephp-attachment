@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Attachment\Test\TestCase\Controller;
+namespace Trois\Attachment\Test\TestCase\Controller;
 
-use Attachment\Controller\AarchivesController;
+use Trois\Attachment\Controller\AarchivesController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 

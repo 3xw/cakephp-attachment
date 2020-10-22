@@ -1,10 +1,10 @@
 <?php
-namespace Attachment\Shell\Task;
+namespace Trois\Attachment\Shell\Task;
 
 use Cake\Console\Shell;
 use Cake\Core\Configure;
 use Cake\Log\Log;
-use Attachment\Http\Cdn\BaseCdn;
+use Trois\Attachment\Http\Cdn\BaseCdn;
 
 class ClearTask extends Shell
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Listener;
+namespace Trois\Attachment\Listener;
 
 use Cake\Event\Event;
 

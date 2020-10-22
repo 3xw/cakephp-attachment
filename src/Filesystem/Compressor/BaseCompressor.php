@@ -1,9 +1,9 @@
 <?php
-namespace Attachment\Filesystem\Compressor;
+namespace Trois\Attachment\Filesystem\Compressor;
 
 use Cake\Core\InstanceConfigTrait;
 use Cake\Datasource\ModelAwareTrait;
-use Attachment\Model\Entity\Aarchive;
+use Trois\Attachment\Model\Entity\Aarchive;
 use Cake\Event\Event;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\BadRequestException;

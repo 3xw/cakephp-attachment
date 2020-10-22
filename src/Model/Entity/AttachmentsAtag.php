@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Model\Entity;
+namespace Trois\Attachment\Model\Entity;
 
 use Cake\ORM\Entity;
 

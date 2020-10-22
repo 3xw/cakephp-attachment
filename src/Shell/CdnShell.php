@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Shell;
+namespace Trois\Attachment\Shell;
 
 use Cake\Core\Configure;
 use Cake\Utility\Inflector;

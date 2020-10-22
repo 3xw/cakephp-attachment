@@ -1,5 +1,5 @@
 <?php
-namespace Attachment\Filesystem;
+namespace Trois\Attachment\Filesystem;
 /* copied from WyriHaximus
 * no time to wait him upgrade to cakephp 4 : /
 *******************************/
