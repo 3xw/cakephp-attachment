@@ -1,6 +1,6 @@
 {
-  "name": "3xw/attachment",
-  "description": "Attachment plugin for CakePHP",
+  "name": "3xw/cakephp-attachment",
+  "description": "New Attachment plugin for CakePHP",
   "type": "cakephp-plugin",
   "require": {
     "php": ">=7.2",
