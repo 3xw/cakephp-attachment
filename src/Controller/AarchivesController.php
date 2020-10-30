@@ -36,19 +36,19 @@ class AarchivesController extends AppController
           'className' => 'Crud.View'
         ],
         'delete' => [
-          'className' => 'Attachment\Crud\Action\DeleteAction',
+          'className' => 'Trois\Attachment\Crud\Action\DeleteAction',
         ]
       ],
       'listeners' => [
         //'CrudCache',
-        'Attachment\Crud\Listener\JsonApiListener',
+        'Trois\Attachment\Crud\Listener\JsonApiListener',
         'Crud.RelatedModels',
         'Crud.ApiPagination',
         'Crud.ApiQueryLog',
       ]
     ]);
 
-    $this->loadComponent('Attachment.EventDispatcher');
+    $this->loadComponent('Trois\Attachment.EventDispatcher');
   }
 
   public function index()
@@ -74,7 +74,7 @@ class AarchivesController extends AppController
     if(!$this->getRequest()->is('POST') || empty($ids) || !is_array($ids)) throw new BadRequestException('Need POST request with an aids array!');
 
     // compressor
-    $compressor = Configure::read('Attachment.archives');
+    $compressor = Configure::read('Trois/Attachment.archives');
     $this->Crud->on('beforeSave', [$compressor, 'beforeSave']);
     $this->Crud->on('afterSave', [$compressor, 'afterSave']);
 

@@ -22,7 +22,7 @@ class ResizeController extends AppController
   public function proceed($profile, $dim, ...$image )
   {
     // test profile
-    if(!Configure::check('Attachment.profiles.'.$profile)){ throw new NotFoundException('This profile dosen\'t exists!'); }
+    if(!Configure::check('Trois/Attachment.profiles.'.$profile)){ throw new NotFoundException('This profile dosen\'t exists!'); }
     if(!$this->getProfile($profile)->thumbProfile()->name){ throw new BadRequestException('You are not allowed to thmub a thumb profile...'); }
 
     // protection
@@ -40,7 +40,7 @@ class ResizeController extends AppController
     preg_match_all('/([a-zA-Z0-9_:\/.èüéöàä\$£ç\&%#*+?=,;~-]*)\.webp$/', $image, $webp, PREG_SET_ORDER);
     if(!empty($webp))
     {
-      if(!Configure::read('Attachment.thumbnails.compression.cwebp') || !Configure::read('Attachment.thumbnails.compression.convert'))
+      if(!Configure::read('Trois/Attachment.thumbnails.compression.cwebp') || !Configure::read('Trois/Attachment.thumbnails.compression.convert'))
       {
         throw new NotFoundException('wepb and/or convert (ImageMagick) not installed!!');
       }
@@ -104,7 +104,7 @@ class ResizeController extends AppController
 
     // retrieve image
     $contents = $this->getProfile($profile)->read($image);
-    Image::configure(['driver' => Configure::read('Attachment.thumbnails.driver')]);
+    Image::configure(['driver' => Configure::read('Trois/Attachment.thumbnails.driver')]);
     $img = Image::make($contents);
 
     // get original sizes
@@ -162,9 +162,9 @@ class ResizeController extends AppController
     $folder = new Folder($folder, true, 0777);
 
     // quality
-    $quality = $quality? $quality: Configure::read('Attachment.thumbnails.compression.quality');
-    $encodingQuality = ((Configure::read('Attachment.thumbnails.compression.jpegoptim') && ($mimetype == 'image/jpeg' || $mimetype == 'image/jpeg') )
-      || (Configure::read('Attachment.thumbnails.compression.pngquant') && $mimetype == 'image/png' ))? 100: $quality;
+    $quality = $quality? $quality: Configure::read('Trois/Attachment.thumbnails.compression.quality');
+    $encodingQuality = ((Configure::read('Trois/Attachment.thumbnails.compression.jpegoptim') && ($mimetype == 'image/jpeg' || $mimetype == 'image/jpeg') )
+      || (Configure::read('Trois/Attachment.thumbnails.compression.pngquant') && $mimetype == 'image/png' ))? 100: $quality;
 
     // write image
     $img->encode($mimetype, $encodingQuality);
@@ -185,20 +185,20 @@ class ResizeController extends AppController
 
 
     // jpegoptim
-    if(empty($webp) && Configure::read('Attachment.thumbnails.compression.jpegoptim') && ($mimetype == 'image/jpeg' || $mimetype == 'image/jpeg') )
+    if(empty($webp) && Configure::read('Trois/Attachment.thumbnails.compression.jpegoptim') && ($mimetype == 'image/jpeg' || $mimetype == 'image/jpeg') )
     {
-      $jpegoptim = Configure::read('Attachment.thumbnails.compression.jpegoptim');
+      $jpegoptim = Configure::read('Trois/Attachment.thumbnails.compression.jpegoptim');
       exec("$jpegoptim -m $quality --all-progressive --strip-all --strip-iptc --strip-icc $path");
     }
     // pngquant
-    if(empty($webp) && Configure::read('Attachment.thumbnails.compression.pngquant') && $mimetype == 'image/png' )
+    if(empty($webp) && Configure::read('Trois/Attachment.thumbnails.compression.pngquant') && $mimetype == 'image/png' )
     {
-      $pngquant = Configure::read('Attachment.thumbnails.compression.pngquant');
+      $pngquant = Configure::read('Trois/Attachment.thumbnails.compression.pngquant');
       exec("$pngquant $path --ext .png --quality $quality --force");
     }
 
     // cwebp jpeg && png
-    if(!empty($webp) && Configure::read('Attachment.thumbnails.compression.cwebp') && Configure::read('Attachment.thumbnails.compression.convert') && ($mimetype == 'image/jpeg' || $mimetype == 'image/jpeg' || $mimetype == 'image/png') )
+    if(!empty($webp) && Configure::read('Trois/Attachment.thumbnails.compression.cwebp') && Configure::read('Trois/Attachment.thumbnails.compression.convert') && ($mimetype == 'image/jpeg' || $mimetype == 'image/jpeg' || $mimetype == 'image/png') )
     {
 
       $thumbRelativePath = $output = $profile.DS.$dim.DS.$webp[0][0];
@@ -207,7 +207,7 @@ class ResizeController extends AppController
       // CMYK to RGB
       if(($mimetype == 'image/jpeg' || $mimetype == 'image/jpeg'))
       {
-        $convert = Configure::read('Attachment.thumbnails.compression.convert');
+        $convert = Configure::read('Trois/Attachment.thumbnails.compression.convert');
         $imageSize = getimagesize($path);
         if($imageSize['channels'] == 4)
         {
@@ -216,7 +216,7 @@ class ResizeController extends AppController
       }
 
       // FORMAT TO webp
-      $cwebp = Configure::read('Attachment.thumbnails.compression.cwebp');
+      $cwebp = Configure::read('Trois/Attachment.thumbnails.compression.cwebp');
       exec("$cwebp -q $quality $path -o $output 2>&1", $out);
 
       // clean

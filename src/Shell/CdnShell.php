@@ -8,7 +8,7 @@ use Cake\Console\ConsoleOptionParser;
 
 class CdnShell extends Shell
 {
-  public $tasks = ['Attachment.Clear'];
+  public $tasks = ['Trois/Attachment.Clear'];
 
   public function getOptionParser():ConsoleOptionParser
   {

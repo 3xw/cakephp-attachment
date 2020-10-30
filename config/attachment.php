@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'Attachment' => [
+  'Trois/Attachment' => [
 
     'listeners' => [],
 
@@ -18,7 +18,7 @@ return [
         'baseUrl' =>  '/img/'
     	],
       'external' => [
-    		'client' => new Attachment\Filesystem\Adapter\External(),
+    		'client' => new Trois\Attachment\Filesystem\Adapter\External(),
         'baseUrl' =>  null,
     	],
       'thumbnails' => [
@@ -32,7 +32,7 @@ return [
     	],
     ],
 
-    'archives' => new Attachment\Filesystem\Compressor\ZipCompressor([
+    'archives' => new Trois\Attachment\Filesystem\Compressor\ZipCompressor([
       'profile' => 'default'
     ]),
 
@@ -70,7 +70,7 @@ return [
       'types' =>[],
       'atags' => [],
       'atagsDisplay' => false, // false | 'select' | 'input'
-      'restrictions' => [], // or Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED
+      'restrictions' => [], // or Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED
       'cols' => 'col-6 col-sm-4 col-md-3 col-lg-2',
       'relation' => 'belongsToMany',
       'profile' => 'default',
@@ -85,7 +85,7 @@ return [
 
     'browse' => [
       'search' => [
-        'dateField' => 'Attachments.created' 
+        'dateField' => 'Attachments.created'
       ],
       'types' => [
         'image' => [

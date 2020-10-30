@@ -26,7 +26,7 @@ class ATagBehavior extends Behavior
     // GET CONFIG
     $session = new Session();
     $uuid = empty($data['uuid'])? '' : $data['uuid'];
-    $sessionAttachment = $session->read('Attachment.'.$uuid);
+    $sessionAttachment = $session->read('Trois/Attachment.'.$uuid);
     if(!$sessionAttachment){
       $event->stopPropagation();
       //throw new Exception('Attachment keys not found in session! Please pass Attachment settings throught session!');

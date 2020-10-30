@@ -32,37 +32,37 @@ class AttachmentsTable extends Table
       'foreignKey' => 'user_id',
       'className' => 'Users',
     ]);
-    $this->belongsToMany('Attachment.Atags', [
+    $this->belongsToMany('Trois/Attachment.Atags', [
       'foreignKey' => 'attachment_id',
       'targetForeignKey' => 'atag_id',
       'joinTable' => 'attachments_atags',
-      'className' => 'Attachment.Atags',
+      'className' => 'Trois/Attachment.Atags',
     ]);
     $this->hasOne('Aarchives', [
       'type' => 'LEFT',
       'foreignKey' => 'id',
-      'className' => 'Attachment.Aarchives',
+      'className' => 'Trois/Attachment.Aarchives',
     ]);
 
     // native behaviors
     $this->addBehavior('Timestamp');
 
     // custom behaviors
-    $this->addBehavior('Attachment\ORM\Behavior\UserIDBehavior');
-    $this->addBehavior('Attachment\ORM\Behavior\ExternalBehavior');
-    $this->addBehavior('Attachment\ORM\Behavior\EmbedBehavior');
-    $this->addBehavior('Attachment\ORM\Behavior\AarchiveBehavior'); // must be before Fly for deletion if it crash the file remain...
-    $this->addBehavior('Attachment\ORM\Behavior\FlyBehavior');
-    $this->addBehavior('Attachment\ORM\Behavior\ATagBehavior');
-    if(Configure::read('Attachment.translate')) $this->addBehavior('Trois\Utils\ORM\Behavior\TranslateBehavior', ['fields' => ['title','description']]);
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\UserIDBehavior');
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\ExternalBehavior');
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\EmbedBehavior');
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\AarchiveBehavior'); // must be before Fly for deletion if it crash the file remain...
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\FlyBehavior');
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\ATagBehavior');
+    if(Configure::read('Trois/Attachment.translate')) $this->addBehavior('Trois\Utils\ORM\Behavior\TranslateBehavior', ['fields' => ['title','description']]);
 
     // third party behaviors
-    $this->addBehavior('Search.Search',['collectionClass' => 'Attachment.Attachment']);
+    $this->addBehavior('Search.Search',['collectionClass' => 'Trois/Attachment.Attachment']);
   }
 
   public function find(string $type = 'all', array $options = []): Query
   {
-    if ($type == 'all' && Configure::read('Attachment.translate')) $type = 'translations';
+    if ($type == 'all' && Configure::read('Trois/Attachment.translate')) $type = 'translations';
     return parent::find($type, $options);
   }
 
@@ -100,7 +100,7 @@ class AttachmentsTable extends Table
     ->notEmptyString('size');
 
     // MD5 Uique
-    if(Configure::read('Attachment.md5Unique') )
+    if(Configure::read('Trois/Attachment.md5Unique') )
     {
       $validator
       ->requirePresence('md5', 'create')

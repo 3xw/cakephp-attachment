@@ -49,27 +49,27 @@ class AtagsTable extends Table
       'comparison' => 'LIKE',
       'wildcardAny' => '*',
       'wildcardOne' => '?',
-      'field' => ['name']
+      'fields' => ['name']
     ]);
     $this->belongsTo('AtagTypes', [
       'foreignKey' => 'atag_type_id',
-      'className' => 'Attachment.AtagTypes',
+      'className' => 'Trois/Attachment.AtagTypes',
     ]);
     $this->belongsTo('Users', [
       'foreignKey' => 'user_id',
-      'className' => 'Attachment.Users',
+      'className' => 'Trois/Attachment.Users',
     ]);
     $this->belongsToMany('Attachments', [
       'foreignKey' => 'atag_id',
       'targetForeignKey' => 'attachment_id',
       'joinTable' => 'attachments_atags',
-      'className' => 'Attachment.Attachments',
+      'className' => 'Trois/Attachment.Attachments',
     ]);
 
     // custom behaviors
     $this->addBehavior('Trois\Utils\ORM\Behavior\SluggableBehavior', ['field' => 'name']);
-    $this->addBehavior('Attachment\ORM\Behavior\UserIDBehavior');
-    if(Configure::read('Attachment.translate'))
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\UserIDBehavior');
+    if(Configure::read('Trois/Attachment.translate'))
     {
       $this->addBehavior('Trois\Utils\ORM\Behavior\TranslateBehavior', ['fields' => ['name','slug']]);
     }

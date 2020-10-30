@@ -41,7 +41,7 @@ class DeleteAction extends \Crud\Action\DeleteAction
         'status' => false,
         'code' => 400,
         'exception' => $e,
-        'message' => __d('Attachment','unable to delete this Attachment. This attachment looks beeing used by an other record. Please detatch the attachment to related record an then try to delete it again.')
+        'message' => __d('Trois/Attachment','unable to delete this Attachment. This attachment looks beeing used by an other record. Please detatch the attachment to related record an then try to delete it again.')
       ]);
       $this->_controller->set('_serialize', $viewVars);
       $this->_error($subject);

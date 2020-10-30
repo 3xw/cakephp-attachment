@@ -89,7 +89,7 @@ class FlyBehavior extends Behavior
       if($this->getConfig('sessionControl'))
       {
         $this->_session = new Session();
-        $sessionAttachment = $this->_session->read('Attachment.'.$this->_uuid);
+        $sessionAttachment = $this->_session->read('Trois/Attachment.'.$this->_uuid);
         if(!$sessionAttachment)
         {
           $event->stopPropagation();
@@ -97,7 +97,7 @@ class FlyBehavior extends Behavior
         }
         $conf = array_merge($sessionAttachment, $settings);
       }
-      else $conf = array_merge(Configure::read('Attachment.upload'), $settings);
+      else $conf = array_merge(Configure::read('Trois/Attachment.upload'), $settings);
 
       // CHECK type
       if (!in_array($this->_file->getClientMediaType(), $conf['types']))

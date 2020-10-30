@@ -6,14 +6,14 @@ use Cake\Routing\Router;
 Router::connect('/thumbnails/*', ['prefix' => false, 'plugin' => 'Trois\Attachment', 'controller' => 'Resize', 'action' => 'proceed']);
 
 Router::prefix('Admin', function (RouteBuilder $routes) {
-	$routes->plugin('Attachment', function (RouteBuilder $routes) {
+	$routes->plugin('Trois/Attachment', function (RouteBuilder $routes) {
 		$routes->fallbacks();
 	});
 });
 
 // set plugin stuff : )
 Router::plugin(
-    'Attachment',
+    'Trois/Attachment',
     ['path' => '/attachment'],
     function (RouteBuilder $routes)
     {

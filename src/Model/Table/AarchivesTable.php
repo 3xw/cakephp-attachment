@@ -30,14 +30,14 @@ class AarchivesTable extends Table
       'comparison' => 'LIKE',
       'wildcardAny' => '*',
       'wildcardOne' => '?',
-      'field' => ['id']
+      'fields' => ['id']
     ]);
     $this->addBehavior('Timestamp');
 
     $this->belongsTo('Attachments', [
       'type' => 'LEFT',
       'foreignKey' => 'id',
-      'className' => 'Attachment.Attachments',
+      'className' => 'Trois/Attachment.Attachments',
     ]);
 
     // custom behaviors

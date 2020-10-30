@@ -21,7 +21,7 @@ class Restriction extends Base
       foreach($this->getConfig('restrictions') as $restriction)
       {
         $class = Inflector::camelize($restriction);
-        $class = 'Attachment\Model\Filter\Restriction\\' . $class;
+        $class = 'Trois\Attachment\Model\Filter\Restriction\\' . $class;
         if (class_exists($class)) $class::process($this->getQuery(), $value);
       }
     }

@@ -5,7 +5,7 @@ use Cake\Core\Configure;
 
 class ProtectionRegistry
 {
-  const CONFIGURE_KEY_PREFIX = 'Attachment.profiles.';
+  const CONFIGURE_KEY_PREFIX = 'Trois/Attachment.profiles.';
 
   const CONFIGURATION_KEY_SUFFIX = '.protection';
 

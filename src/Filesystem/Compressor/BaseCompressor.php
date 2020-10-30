@@ -27,7 +27,7 @@ abstract class BaseCompressor
   public function __construct(array $config = [])
   {
     $this->setConfig($config);
-    $this->Attachments = $this->loadModel('Attachment.Attachments');
+    $this->Attachments = $this->loadModel('Trois/Attachment.Attachments');
     $this->createAllowedTypes();
   }
 

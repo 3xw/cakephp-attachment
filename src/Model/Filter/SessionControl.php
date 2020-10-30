@@ -20,15 +20,15 @@ class SessionControl extends Base
   {
     // security first
     $uuid = $this->getArgs()[$this->getConfig('name')];
-    if(empty($uuid)) throw new UnauthorizedException(__d('Attachment','Missing uuid'));
-    if(!$s = (new Session())->read('Attachment.'.$uuid)) throw new UnauthorizedException(__d('Attachment','Uuid is not matching any session settings'));
+    if(empty($uuid)) throw new UnauthorizedException(__d('Trois/Attachment','Missing uuid'));
+    if(!$s = (new Session())->read('Trois/Attachment.'.$uuid)) throw new UnauthorizedException(__d('Trois/Attachment','Uuid is not matching any session settings'));
 
     if(!empty($s['restrictions']))
     {
       foreach($s['restrictions'] as $restriction)
       {
         $class = Inflector::camelize($restriction);
-        $class = 'Attachment\Model\Filter\Restriction\\' . $class;
+        $class = 'Trois\Attachment\Model\Filter\Restriction\\' . $class;
         if (class_exists($class)) $class::process($this->getQuery(), Hash::extract($s, $restriction));
       }
     }

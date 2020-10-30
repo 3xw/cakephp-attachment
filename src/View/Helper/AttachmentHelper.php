@@ -40,38 +40,38 @@ class AttachmentHelper extends Helper
     $this->_initComponentAndSession();
 
     // merge global with settings
-    $settings = array_merge(Configure::read('Attachment.upload'), $settings);
+    $settings = array_merge(Configure::read('Trois/Attachment.upload'), $settings);
 
     // attahment(s) selection
     if(empty($settings['attachments'])) $settings['attachments'] = [];
 
     // keys & session
     $uuid = Text::uuid();
-    $this->_View->getRequest()->getSession()->write('Attachment.'.$uuid, $settings);
+    $this->_View->getRequest()->getSession()->write('Trois/Attachment.'.$uuid, $settings);
 
     $uuidField = str_replace('.', '', $field);
-    $this->_View->getRequest()->getSession()->write('Attachment.'.$uuidField, $settings);
+    $this->_View->getRequest()->getSession()->write('Trois/Attachment.'.$uuidField, $settings);
 
 
     // front side settings
-    $settings['options'] = Configure::read('Attachment.options');
+    $settings['options'] = Configure::read('Trois/Attachment.options');
     $settings['uuid'] = $uuid;
     $settings['url'] = $this->Url->build('/');
     $settings['relation'] = ($field == 'Attachments')? 'belongsToMany' : 'belongsTo';
     $settings['field'] = ($field == 'Attachments')? '' : $field;
     $settings['label'] = empty($settings['label'])? Inflector::humanize($field) : $settings['label'];
-    $settings['translate'] = Configure::read('Attachment.translate');
+    $settings['translate'] = Configure::read('Trois/Attachment.translate');
     $settings['i18n'] = [
-      'enable' => Configure::read('Attachment.translate'),
+      'enable' => Configure::read('Trois/Attachment.translate'),
       'languages' => Configure::read('I18n.languages'),
       'defaultLocale' => Configure::read('App.defaultLocale')
     ];
 
     // browse settings
-    $settings['browse'] = Configure::read('Attachment.browse');
+    $settings['browse'] = Configure::read('Trois/Attachment.browse');
 
     // urls
-    $profiles = Configure::read('Attachment.profiles');
+    $profiles = Configure::read('Trois/Attachment.profiles');
     $settings['baseUrls'] = [];
     foreach($profiles as $key => $value) $settings['baseUrls'][$key] = [
       'profile' => Router::url($profiles[$key]['baseUrl'], true),
@@ -123,7 +123,7 @@ class AttachmentHelper extends Helper
   }
   public function fullPath($attachment)
   {
-    $baseUrl = Configure::read('Attachment.profiles.'.$attachment->profile.'.baseUrl');
+    $baseUrl = Configure::read('Trois/Attachment.profiles.'.$attachment->profile.'.baseUrl');
     $start = substr($baseUrl,0 , 4);
     $baseUrl = ( $start == 'http' )? $baseUrl : Router::url($baseUrl, true);
     return $baseUrl.$attachment->path;
@@ -145,7 +145,7 @@ class AttachmentHelper extends Helper
       $srcsets = $params['srcset'];
       unset($params['srcset']);
       $dim = !empty($params['width'])? 'width': 'height';
-      $breakpoints = Configure::read('Attachment.thumbnails.breakpoints');
+      $breakpoints = Configure::read('Trois/Attachment.thumbnails.breakpoints');
       //webp
       preg_match_all('/([a-zA-Z0-9_:\/.èüéöàä\$£ç\&%#*+?=,;~-]*\.png$|[a-zA-Z0-9_:\/.èüéöàä\$£ç\&%#*+?=,;~-]*\.PNG$)/', $params['image'], $noWebp, PREG_SET_ORDER);
       foreach($srcsets as $breakpoint => $values)

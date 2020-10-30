@@ -47,7 +47,7 @@ class AttachmentsController extends AppController
           'api.success.data.entity' => ['id','profile','path','type','subtype','name','size','fullpath', 'date'],
           'api.error.exception' => [
             'type' => 'validate',
-            'class' => 'Attachment\Crud\Error\Exception\ValidationException'
+            'class' => 'Trois\Attachment\Crud\Error\Exception\ValidationException'
           ],
         ],
         'edit' => [
@@ -55,14 +55,14 @@ class AttachmentsController extends AppController
           'relatedModels' => ['Atags']
         ],
         'editAll' => [
-          'className' => 'Attachment\Crud\Action\Bulk\EditAction',
+          'className' => 'Trois\Attachment\Crud\Action\Bulk\EditAction',
           'relatedModels' => ['Atags']
         ],
         'delete' => [
-          'className' => 'Attachment\Crud\Action\DeleteAction',
+          'className' => 'Trois\Attachment\Crud\Action\DeleteAction',
         ],
         'deleteAll' => [
-          'className' => 'Attachment\Crud\Action\Bulk\DeleteAction',
+          'className' => 'Trois\Attachment\Crud\Action\Bulk\DeleteAction',
         ]
       ],
       'listeners' => [
@@ -75,13 +75,13 @@ class AttachmentsController extends AppController
       ]
     ]);
 
-    $this->loadComponent('Attachment.EventDispatcher');
+    $this->loadComponent('Trois/Attachment.EventDispatcher');
   }
 
   public function index()
   {
     // security first !! be sure to restrict index with coresonding session settings!
-    if(empty($this->request->getQuery('uuid'))) throw new UnauthorizedException(__d('Attachment','Missing uuid'));
+    if(empty($this->request->getQuery('uuid'))) throw new UnauthorizedException(__d('Trois/Attachment','Missing uuid'));
 
     return $this->Crud->execute();
   }

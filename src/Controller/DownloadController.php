@@ -23,7 +23,7 @@ class DownloadController extends AppController
     if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
     if(!$token = $this->getRequest()->getData('token')) throw new BadRequestException('Url Form: pair token filed/value needed');
     // get Attachment
-    $attachments = $this->loadModel('Attachment.Attachments')->find()
+    $attachments = $this->loadModel('Trois/Attachment.Attachments')->find()
     ->where(['id IN' => (new Token)->decode($token)->files])
     ->toArray();
     // not found if empty
@@ -44,7 +44,7 @@ class DownloadController extends AppController
   public function file($token)
   {
     // get Attachment
-    $attachment = $this->loadModel('Attachment.Attachments')->find()
+    $attachment = $this->loadModel('Trois/Attachment.Attachments')->find()
     ->where(['id' => (new Token)->decode($token)->file])
     ->firstOrFail();
     // serve

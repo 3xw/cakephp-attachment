@@ -35,12 +35,12 @@ class AtagsController extends AppController
   public function index()
   {
     // security first !!
-    if(empty($this->request->getQuery('uuid'))) throw new UnauthorizedException(__d('Attachment','Missing uuid'));
+    if(empty($this->request->getQuery('uuid'))) throw new UnauthorizedException(__d('Trois/Attachment','Missing uuid'));
 
     $this->Crud->on('beforePaginate', function(Event $event)
     {
       $event->getSubject()->query->contain(['AtagTypes']);
-      if(Configure::read('Attachment.translate'))
+      if(Configure::read('Trois/Attachment.translate'))
       {
         $event->getSubject()->query->find('translations');
       }

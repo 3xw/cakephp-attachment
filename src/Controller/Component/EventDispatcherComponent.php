@@ -46,12 +46,12 @@ class EventDispatcherComponent extends Component
     $this->_request = $this->_registry->getController()->getRequest();
 
     // retrieve listeners
-    $listeners = Configure::read('Attachment.listeners');
+    $listeners = Configure::read('Trois/Attachment.listeners');
     $uuid = $this->_request->getQuery('uuid')? $this->_request->getQuery('uuid'): $this->_request->getData('uuid');
 
     if($uuid)
     {
-      if($sessionListeners = $this->_request->getSession()->read('Attachment.'.$uuid.'.listeners'))
+      if($sessionListeners = $this->_request->getSession()->read('Trois/Attachment.'.$uuid.'.listeners'))
       {
         $listeners = array_merge($listeners, $sessionListeners);
       }

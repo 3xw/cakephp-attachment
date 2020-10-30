@@ -14,7 +14,7 @@ class GetImageSizesShell extends Shell
 
   public function main()
   {
-    Configure::write('Attachment.profiles.shell_script',[
+    Configure::write('Trois/Attachment.profiles.shell_script',[
       'adapter' => 'League\Flysystem\Adapter\Local',
       'client' => new \League\Flysystem\Adapter\Local(WWW_ROOT.'../tmp'),
       'baseUrl' =>  ''
@@ -38,7 +38,7 @@ class GetImageSizesShell extends Shell
       $this->out('processing file: '.$attachment->name);
 
       $profile = $attachment->profile;
-      if(!Configure::check('Attachment.profiles.'.$profile)){ continue; }
+      if(!Configure::check('Trois/Attachment.profiles.'.$profile)){ continue; }
 
       $contents = $this->_filesystem($profile)->read($attachment->path);
       $this->_filesystem('shell_script')->write($attachment->name,$contents);

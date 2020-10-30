@@ -5,7 +5,7 @@ use Cake\Core\Configure;
 
 class ProfileRegistry
 {
-  const CONFIGURE_KEY_PREFIX = 'Attachment.profiles.';
+  const CONFIGURE_KEY_PREFIX = 'Trois/Attachment.profiles.';
 
   protected static $instances = [];
 

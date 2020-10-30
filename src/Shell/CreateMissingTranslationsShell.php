@@ -10,7 +10,7 @@ class CreateMissingTranslationsShell extends Shell
   public function main(...$locales)
   {
     //check config
-    if(!Configure::read('Attachment.translate')) return $this->err('You did not Attachment.translate to "true" !');
+    if(!Configure::read('Trois/Attachment.translate')) return $this->err('You did not Attachment.translate to "true" !');
 
     // check args
     if(empty($locales)) return $this->err('need to pass a least one locale ex: "$ bin/cake CreateMissingTranslations en_US de_DE"');

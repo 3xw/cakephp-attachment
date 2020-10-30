@@ -28,7 +28,7 @@ $this->addPlugin(\ Attachment\Plugin::class, ['bootstrap' => true, 'routes' => t
 Alternatively you can overload with your own settings (config/attachment.php):
 
 ```php
-Configure::write('Attachment.config', ['attachment']);
+Configure::write('Trois\Attachment.config', ['attachment']);
 $this->addPlugin(\ Attachment\Plugin::class, ['bootstrap' => true, 'routes' => true]);
 ```
 
@@ -234,7 +234,7 @@ The upload is made before saving a realted records. global settings are setup un
   'profile' => 'default', // profile to use (where you store files)
   'visibility' => 'public', // public or private
   'speech' => false, // french goody
-  'restrictions' => [] // or Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED
+  'restrictions' => [] // or Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED
 ],
 ```
 
@@ -358,7 +358,7 @@ in src/View/AppView.php
 ```php
 public function initialize()
 {
-	$this->loadHelper('Attachment.Attachment');
+	$this->loadHelper('Trois/Attachment.Attachment');
 }
 ```
 
@@ -376,8 +376,8 @@ In add.ctp
 	  	'cols' => 'col-xs-6 col-md-6 col-lg-4', // optional as it was set in config/attachment.php,
 	  	'maxquantity' => -1,
 	  	'restrictions' => [
-	    	Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
-	    	Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
+	    	Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
+	    	Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
 	  	],
 	  	'attachments' => [] // array of exisiting Attachment entities ( HABTM ) or [entity] ( belongsTo )
 	]
@@ -397,8 +397,8 @@ In edit.ctp
 	  	'cols' => 'col-xs-6 col-md-6 col-lg-4', // optional as it was set in config/attachment.php,
 	  	'maxquantity' => -1,
 	  	'restrictions' => [
-	    	Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
-	    	Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
+	    	Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
+	    	Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
 	  	],
 	  	'attachments' => $posts->attachments // array of exisiting Attachment entities ( HABTM ) or entity ( belongsTo )
 	]
@@ -416,8 +416,8 @@ In edit.ctp
 		'listStyle' => true,
 		'profile' => 's3', // optional as it was set in config/attachment.php
   'restrictions' => [
-    Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
-    Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
+    Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
+    Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
   ]
 ]) ?>
 ```
@@ -450,8 +450,8 @@ echo $this->element('Trois/Tinymce.tinymce',[
 			'thumbBaseUrl' => '', //IF NOT $this->Url->build('/')
       'atags' => [],
       'restrictions' => [
-        Attachment\View\Helper\AttachmentHelper::TAG_OR_RESTRICTED,
-        Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
+        Trois\Attachment\View\Helper\AttachmentHelper::TAG_OR_RESTRICTED,
+        Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
       ],
     ])
   ]
@@ -491,8 +491,8 @@ $this->element('locale',['fields' => ['meta',
 					],
 					'atags' => [],
 					'restrictions' => [
-						Attachment\View\Helper\AttachmentHelper::TAG_OR_RESTRICTED,
-						Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
+						Trois\Attachment\View\Helper\AttachmentHelper::TAG_OR_RESTRICTED,
+						Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
 					],
 				]
 			]

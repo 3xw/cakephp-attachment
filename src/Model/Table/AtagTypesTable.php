@@ -47,16 +47,16 @@ class AtagTypesTable extends Table
       'comparison' => 'LIKE',
       'wildcardAny' => '*',
       'wildcardOne' => '?',
-      'field' => ['name']
+      'fields' => ['name']
     ]);
     $this->hasMany('Atags', [
       'foreignKey' => 'atag_type_id',
-      'className' => 'Attachment.Atags',
+      'className' => 'Trois/Attachment.Atags',
     ]);
 
     // custom behaviors
     $this->addBehavior('Trois\Utils\ORM\Behavior\SluggableBehavior', ['field' => 'name']);
-    if(Configure::read('Attachment.translate'))
+    if(Configure::read('Trois/Attachment.translate'))
     {
       $this->addBehavior('Trois\Utils\ORM\Behavior\TranslateBehavior', ['fields' => ['name']]);
     }

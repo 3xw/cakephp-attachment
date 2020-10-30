@@ -17,7 +17,7 @@ use League\Flysystem\Plugin\ListWith;
 
 class FilesystemRegistry
 {
-  const CONFIGURE_KEY_PREFIX = 'Attachment.profiles.';
+  const CONFIGURE_KEY_PREFIX = 'Trois/Attachment.profiles.';
 
   const INVALID_ARGUMENT_MSG = 'Filesystem "%s" has no client or factory or parameters specific to build a client';
 
