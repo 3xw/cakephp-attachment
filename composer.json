@@ -23,7 +23,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Trois\Attachment\\Test\\": "tests",
+      "Trois\\Attachment\\Test\\": "tests",
       "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
 
     }
