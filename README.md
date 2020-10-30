@@ -1,4 +1,4 @@
-# Attachment plugin for CakePHP ^3.7
+# Attachment plugin for CakePHP 4.*
 Attachment plugin solves common problems with media, files and embed data.
 The goal is to store files where you want ( Dropbox, AWS S3, ... ) and keep a record of it in a table.
 
