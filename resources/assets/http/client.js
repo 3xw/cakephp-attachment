@@ -3,7 +3,7 @@ import axios from 'axios'
 const
 Http = axios.create({
   headers: {
-    'X-CSRF-TOKEN'    : window.csrfToken,
+    'X-CSRF-TOKEN'    : window.getCsrfToken(),
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   }
