@@ -7,12 +7,14 @@ import locale from 'element-ui/lib/locale/lang/fr'
 // utils
 import '@/utils/directives'
 import '@/utils/filters'
+import '@/utils/getCsrfToken'
 import '@/utils/utils'
 
 // plugins
 import '@/plugins/tinymce.js'
 
-// init
-Vue.component('attachment-loader', AttachmentLoader)
+// use
 Vue.use(VuePackeryPlugin)
-Vue.use(ElementUI, { locale })
+
+// components
+Vue.component('attachment-loader', AttachmentLoader)

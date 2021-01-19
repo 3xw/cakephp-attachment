@@ -1,13 +1,16 @@
 <?php
 namespace Trois\Attachment\View\Helper;
+
 use Cake\View\Helper;
 use Cake\View\View;
-use Trois\Attachment\Filesystem\FilesystemRegistry;
 use Cake\Core\Configure;
 use Cake\Routing\Router;
 use Cake\Utility\Text;
 use Cake\Utility\Inflector;
+
+use Trois\Attachment\Filesystem\FilesystemRegistry;
 use Trois\Attachment\Filesystem\ProfileRegistry;
+
 class AttachmentHelper extends Helper
 {
   const OPEN = 'open';
