@@ -20,9 +20,9 @@
   </section>
 </template>
 <script>
-import { client } from '@/http/client.js'
-import AttachmentInputs from '@/components/AttachmentInputs.vue'
-import Attachment from '@/components/Attachment.vue'
+import { client } from '../http/client.js'
+import AttachmentInputs from './AttachmentInputs.vue'
+import Attachment from './Attachment.vue'
 export default {
   name: 'attachment-edit',
   components:

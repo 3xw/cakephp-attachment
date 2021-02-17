@@ -174,19 +174,19 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 import createCrudModule from 'vuex-crud';
 
 // js scripts
-import { client, parseResponse, parseResponseWithPaginate, parseTags} from '@/http/client.js'
-import attachment from '@/store/store.js'
+import { client, parseResponse, parseResponseWithPaginate, parseTags} from '../http/client.js'
+import attachment from '../store/store.js'
 
 // vue components
-import Atags from '@/components/Atags.vue'
-import Attachment from '@/components/Attachment.vue'
-import Attachments from '@/components/Attachments.vue'
-import InlineOptions from '@/components/InlineOptions.vue'
-import Upload from '@/components/Upload.vue'
-import Embed from '@/components/Embed.vue'
-import Edit from '@/components/Edit.vue'
-import iconFilter from '@/components/icons/filter.vue'
-import iconAdd from '@/components/icons/add.vue'
+import Atags from './Atags.vue'
+import Attachment from './Attachment.vue'
+import Attachments from './Attachments.vue'
+import InlineOptions from './InlineOptions.vue'
+import Upload from './Upload.vue'
+import Embed from './Embed.vue'
+import Edit from './Edit.vue'
+import iconFilter from './icons/filter.vue'
+import iconAdd from './icons/add.vue'
 
 
 export default

@@ -22,26 +22,10 @@ class AttachmentHelper extends Helper
 
   public $helpers = ['Url','Html'];
   private $_filesystems = [];
-  private $_inputComponentCount = 0;
   private $_version = false;
-
-  private function _initComponentAndSession()
-  {
-    // only once : )
-    $this->_inputComponentCount++;
-    if($this->_inputComponentCount > 1) return;
-
-    // init
-    $this->_View->getRequest()->getSession()->write('Attachment', 'oui');
-    $this->Html->css(['attachment/main.min.css'],['block' => true]);
-    $this->Html->script(['attachment/main.min.js'],['block' => true]);
-  }
 
   public function setup($field,$settings)
   {
-    // compo and Session
-    $this->_initComponentAndSession();
-
     // merge global with settings
     $settings = array_merge(Configure::read('Trois/Attachment.upload'), $settings);
 
@@ -84,11 +68,6 @@ class AttachmentHelper extends Helper
     return $settings;
   }
 
-  public function component($name, $props = [])
-  {
-    return $this->_View->Html->tag('attachment-loader', '', ['name' => $name, 'props' => json_encode($props)]);
-  }
-
   public function index($settings = [])
   {
     // actions
@@ -101,9 +80,9 @@ class AttachmentHelper extends Helper
       ],
       $settings
     ));
-    return $this->component('attachment-browse',['aid' => $settings['uuid'],':settings' => $settings]);
+    return $this->getView()->Html->tag('attachment-browse', null,['aid' => $settings['uuid'],':settings' => json_encode($settings)]);
   }
-  public function input($field, $settings = [])
+  public function input($field, $settings = [], $attributes = [])
   {
     $settings = $this->setup($field, array_merge(
       [
@@ -114,7 +93,9 @@ class AttachmentHelper extends Helper
       ],
       $settings
     ));
-    return $this->component('attachment-browse',['aid' => $settings['uuid'],':settings' => $settings]);
+    $attributes = array_merge($attributes, ['aid' => $settings['uuid'],':settings' => json_encode($settings)]);
+
+    return $this->getView()->Html->tag('attachment-browse', null,$attributes);
   }
   public function filesystem($profile)
   {

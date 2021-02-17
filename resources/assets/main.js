@@ -1,5 +1,6 @@
 import ElementUI from 'element-ui'
 import AttachmentLoader from '@/components/AttachmentLoader.vue'
+import Browse from '@/components/Browse.vue'
 import VuePackeryPlugin from 'vue-packery-plugin'
 
 import locale from 'element-ui/lib/locale/lang/fr'
@@ -17,4 +18,5 @@ import '@/plugins/tinymce.js'
 Vue.use(VuePackeryPlugin)
 
 // components
-Vue.component('attachment-loader', AttachmentLoader)
+Vue.component(AttachmentLoader.name, AttachmentLoader)
+Vue.component(Browse.name, Browse)

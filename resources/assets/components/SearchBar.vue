@@ -26,7 +26,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import iconSearch from '@/components/icons/search.vue'
+import iconSearch from './icons/search.vue'
 import moment from 'moment';
 
 export default

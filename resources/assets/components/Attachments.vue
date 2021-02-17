@@ -140,21 +140,21 @@
 // npm libs
 import { mapActions } from 'vuex'
 
-import { client } from '@/http/client.js'
+import { client } from '../http/client.js'
 
 import { packeryEvents } from 'vue-packery-plugin'
-import Attachment from '@/components/Attachment.vue'
-import Pagination from '@/components/Pagination.vue'
-import Preview from '@/components/Preview.vue'
-import Infos from '@/components/Infos.vue'
+import Attachment from './Attachment.vue'
+import Pagination from './Pagination.vue'
+import Preview from './Preview.vue'
+import Infos from './Infos.vue'
 
-//import Archive from '@/components/Archives.vue'
+//import Archive from './Archives.vue'
 
-import iconGrid from '@/components/icons/viewGrid.vue'
-import iconMosaic from '@/components/icons/viewMosaic.vue'
-import iconList from '@/components/icons/viewList.vue'
+import iconGrid from './icons/viewGrid.vue'
+import iconMosaic from './icons/viewMosaic.vue'
+import iconList from './icons/viewList.vue'
 
-import SearchBar from '@/components/SearchBar.vue'
+import SearchBar from './SearchBar.vue'
 
 import imagesLoaded from 'vue-images-loaded'
 
