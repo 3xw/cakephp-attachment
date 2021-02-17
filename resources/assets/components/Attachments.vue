@@ -117,7 +117,7 @@
         </div>
         <div v-else-if="mode == 'thumbInfo'">
           <table class="table w-100">
-            <attachment v-for="(attachment, i ) in attachments" :index="i" :aid="aid" :mode="mode" :attachment="attachment" ></attachment>
+            <attachment v-for="(attachment, i ) in attachments" :key="i" :index="i" :aid="aid" :mode="mode" :attachment="attachment" ></attachment>
           </table>
         </div>
       </transition>

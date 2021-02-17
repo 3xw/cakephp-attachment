@@ -170,12 +170,10 @@
 </template>
 <script>
 // npm libs
-import { mapState, mapGetters, mapActions } from 'vuex'
-import createCrudModule from 'vuex-crud';
+import { mapActions } from 'vuex'
 
 // js scripts
-import { client, parseResponse, parseResponseWithPaginate, parseTags} from '../http/client.js'
-import attachment from '../store/store.js'
+import storable from '../mixins/storable.js'
 
 // vue components
 import Atags from './Atags.vue'
@@ -192,6 +190,7 @@ import iconAdd from './icons/add.vue'
 export default
 {
   name: 'attachment-browse',
+  mixins: [storable],
   components:
   {
     'attachment-atags': Atags,
@@ -205,15 +204,9 @@ export default
     'icon-filter': iconFilter,
   },
   props: { aid: String, settings: Object },
-  data()
-  {
-    return {
-      mode: 'browse',
-      overlay: false,
-      loading: false,
-      tinymce: false,
-    }
-  },
+  data: () => ({
+    tinymce: false,
+  }),
   computed:
   {
     aParams()
@@ -270,64 +263,6 @@ export default
   },
   created()
   {
-
-    //Remove Char who breaks store
-    this.aid = this.aid.replace(/\./g, '')
-
-    // init
-    this.overlay = this.settings.overlay
-    this.mode = this.settings.mode
-
-    // create new module and store settings
-    this.$store.registerModule(this.aid, Object.assign({}, attachment))
-    this.$store.set(this.aid + '/settings', this.settings)
-
-
-    if(this.mode == 'input' && this.settings.attachments.length > 0)
-      this.$store.set(this.aid + '/selection.files', this.settings.attachments)
-
-    // CRUD
-    client.baseURL = this.settings.url
-
-    this.$store.registerModule(this.aid+'/attachments', createCrudModule({
-      resource: 'attachments',
-      urlRoot: this.settings.url+'attachment/attachments',
-      client,
-      parseSingle: parseResponse,
-      parseList: parseResponseWithPaginate,
-      onFetchListStart: () => {
-        this.loading = true
-      },
-      onFetchListSuccess: (o, response) => {
-        this.loading = false
-        this.$store.set(this.aid + '/pagination', response.pagination)
-      },
-    }))
-    this.$store.registerModule(this.aid+'/atags', createCrudModule({
-      resource: 'atags',
-      urlRoot: this.settings.url+'attachment/atags',
-      client,
-      parseSingle: parseResponse,
-      parseList: parseTags
-    }))
-    this.$store.registerModule(this.aid+'/token', createCrudModule({
-      resource: 'token',
-      only: ['CREATE'],
-      urlRoot: this.settings.url+'attachment/download/get-zip-token',
-      client,
-      idAttribute: 'token',
-      onCreateSuccess: (o, response) => {
-        this.$store.set(this.aid + '/selection.token', response.data.token)
-      },
-    }))
-    this.$store.registerModule(this.aid+'/aarchives', createCrudModule({
-      resource: 'aarchives',
-      only: ['CREATE'],
-      urlRoot: this.settings.url+'attachment/aarchives',
-      client,
-      parseSingle: parseResponse,
-    }))
-
     //this.fetchAarchives();
 
     // set uuid & fetch data ( all in one because of deep watching )
