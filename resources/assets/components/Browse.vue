@@ -263,8 +263,6 @@ export default
   },
   created()
   {
-    //this.fetchAarchives();
-
     // set uuid & fetch data ( all in one because of deep watching )
     this.aParams.uuid = this.tParams.uuid = this.aid
   },
