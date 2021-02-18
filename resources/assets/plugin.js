@@ -4,6 +4,12 @@ import './assets/scss/theme.scss'
 // COMPONENTS
 import Browse from './components/Browse.vue'
 
+// UTILS
+import './utils/directives'
+import './utils/filters'
+import './utils/getCsrfToken'
+import './utils/utils'
+
 // PLUGINS
 import VuePackeryPlugin from 'vue-packery-plugin'
 Vue.use(VuePackeryPlugin)

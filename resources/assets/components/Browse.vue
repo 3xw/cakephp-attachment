@@ -203,7 +203,9 @@ export default
     'icon-add': iconAdd,
     'icon-filter': iconFilter,
   },
-  props: { aid: String, settings: Object },
+  props: {
+    entity: Object
+  },
   data: () => ({
     tinymce: false,
   }),
@@ -244,7 +246,12 @@ export default
       for(let i = 0;i < value.length;i++){
         ids.push(value[i].id)
       }
-      //this.createSelectedFilesToken({data: {files: ids}})
+      // CMS add
+      if(this.entity)
+      {
+        if(this.settings.relation == 'belongsToMany') this.entity['attachments'] = value
+        else this.entity[this.settings.field] = value[0]
+      }
     },
     mode()
     {
