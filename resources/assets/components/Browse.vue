@@ -246,12 +246,9 @@ export default
       for(let i = 0;i < value.length;i++){
         ids.push(value[i].id)
       }
+
       // CMS add
-      if(this.entity)
-      {
-        if(this.settings.relation == 'belongsToMany') this.entity['attachments'] = value
-        else this.entity[this.settings.field] = value[0]
-      }
+      if(this.entity && this.entity.setAttachments)this.entity.setAttachments(value)
     },
     mode()
     {
