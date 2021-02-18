@@ -137,7 +137,7 @@ class AttachmentsTable extends Table
     ->allowEmptyString('title');
 
     $validator
-    ->dateTime('date')
+    ->dateTime('date',[ \Cake\Validation\Validation::DATETIME_ISO8601])
     ->allowEmptyDateTime('date');
 
     $validator
