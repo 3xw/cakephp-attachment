@@ -71,7 +71,7 @@ return [
       'atags' => [],
       'atagsDisplay' => false, // false | 'select' | 'input'
       'restrictions' => [], // or Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED
-      'cols' => 'col-6 col-sm-4 col-md-3 col-lg-2',
+      'cols' => 'col-12 col-md-6',
       'relation' => 'belongsToMany',
       'profile' => 'default',
       'visibility' => 'public',
