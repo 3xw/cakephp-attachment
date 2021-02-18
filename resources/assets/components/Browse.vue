@@ -14,8 +14,8 @@
         </div>
 
         <!-- files -->
-        <div class="row">
-          <draggable v-model="selectedFiles" @start="drag=true" @end="drag=false">
+        <div >
+          <draggable class="row" v-model="selectedFiles" @start="drag=true" @end="drag=false">
             <div v-for="(attachment, i ) in selectedFiles" :key="attachment.id" class="col-12" :class="settings.cols">
               <attachment :index="i" :aid="aid" mode="input" :attachment="attachment" :settings="settings"></attachment>
             </div>
