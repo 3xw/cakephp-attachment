@@ -15,9 +15,12 @@
 
         <!-- files -->
         <div class="row">
-          <div v-for="(attachment, i ) in selectedFiles" :key="i" class="col-12" :class="settings.cols">
-            <attachment :index="i" :aid="aid" mode="input" :attachment="attachment" :settings="settings"></attachment>
-          </div>
+          <draggable v-model="selectedFiles" @start="drag=true" @end="drag=false">
+            <div v-for="(attachment, i ) in selectedFiles" :key="attachment.id" class="col-12" :class="settings.cols">
+              <attachment :index="i" :aid="aid" mode="input" :attachment="attachment" :settings="settings"></attachment>
+            </div>
+          </draggable>
+
           <div v-if="selectedFiles.length == 0">
             <input v-if="settings.relation == 'belongsTo'" type="hidden" :name="settings.field" value="">
             <input v-if="settings.relation != 'belongsTo'" type="hidden" name="attachments[]" value="">
@@ -176,6 +179,8 @@ import { mapActions } from 'vuex'
 import storable from '../mixins/storable.js'
 
 // vue components
+import draggable from 'vuedraggable'
+
 import Atags from './Atags.vue'
 import Attachment from './Attachment.vue'
 import Attachments from './Attachments.vue'
@@ -193,6 +198,7 @@ export default
   mixins: [storable],
   components:
   {
+    draggable,
     'attachment-atags': Atags,
     'attachment-upload': Upload,
     'attachment-embed': Embed,
@@ -219,9 +225,10 @@ export default
     {
       return this.$store.get(this.aid + '/tParams')
     },
-    selectedFiles()
+    selectedFiles:
     {
-      return this.$store.get(this.aid + '/selection.files')
+      get() { return this.$store.get(this.aid + '/selection.files') },
+      set( val ) { this.$store.set(this.aid + '/selection.files', val) }
     }
   },
   watch:
