@@ -40,7 +40,9 @@ export default class TinyPlugin
     this.editor.attachment.mode = 'hidden'
     this.editor.attachment.tinymce = true
     this.editor.attachment.$mount()
-    window.vueTinymce[this.aid].$el.appendChild(this.editor.attachment.$el)
+
+    // classy way : )
+    window.vueTinymce[this.aid].appendPlugin(this.editor.attachment)
   }
 
   addEventListener()
