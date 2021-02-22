@@ -37,7 +37,7 @@
       <!-- dissmiss -->
       <section v-if="settings.overlay" class="">
         <div class="text-right">
-          <button @click="mode = (tinymce)? 'hidden' : 'input'" type="button" name="button" class="btn btn-danger">FERMER</button>
+          <button @click="mode = (tinymce)? (selectedFiles.length? 'editor-options': 'hidden') : 'input'" type="button" name="button" class="btn btn-danger">FERMER</button>
         </div>
       </section>
 

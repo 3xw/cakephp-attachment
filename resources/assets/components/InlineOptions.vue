@@ -11,15 +11,7 @@
 
             <!-- col 1 -->
             <div class="col-md-6">
-              <div class="thumbnail" >
-                <!-- thumb -->
-                <attachment-thumb :url="settings.url" :file="file"></attachment-thumb>
-
-                <div class="caption">
-                  {{file.name | truncate(100) }}<br/>
-                  {{file.size | bytesToMegaBytes | decimal(2) }} MB<br/>
-                </div>
-              </div>
+              <attachment :aid="aid" mode="thumb" :attachment="file" ></attachment>
             </div>
 
             <!-- ACTION -->
@@ -115,11 +107,14 @@
 </template>
 
 <script>
+import Attachment from './Attachment.vue'
+
 export default
 {
   name: 'attachment-inline-options',
+  components:{ Attachment },
   props: {
-    file: [],
+    file: Object,
     settings: Object,
     aid: String
   },
@@ -189,7 +184,7 @@ export default
     success: function()
     {
       this.close()
-      this.$parent.$emit('options-success', this.selection, this.file)
+      this.$parent.$emit('options-success', this.file, this.selection)
     }
   }
 }

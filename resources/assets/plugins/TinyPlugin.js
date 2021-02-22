@@ -47,16 +47,15 @@ export default class TinyPlugin
 
   addEventListener()
   {
-    this.editor.attachment.$on('options-success', this.addAttachment)
+    //this.editor.attachment.$on('options-success', this.addAttachment)
+
+    this.editor.attachment.$on('options-success', (file, options) => {
+      if(options.displayAs == 'Link') this.editor.insertContent('<a href="'+file.fullpath+'" target="'+options.target+'">'+options.title+'</a>')
+      else this.editor.insertContent(this.createImageNode(file, options))
+    })
   }
 
-  addAttachment(file, options)
-  {
-    if(options.displayAs == 'Link') this.editor.insertContent('<a href="'+file.fullpath+'" target="'+options.target+'">'+options.title+'</a>')
-    else this.editor.insertContent(this.createImageNode(file, options))
-  }
-
-  createImageNodefile(file, options)
+  createImageNode(file, options)
   {
     let html = '<img'
     let classes = 'img-responsive img-fluid '
@@ -106,7 +105,6 @@ export default class TinyPlugin
 
   browse()
   {
-    console.log('browse');
     this.editor.attachment.overlay = true
     this.editor.attachment.mode = 'browse'
   }
