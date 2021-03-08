@@ -26,11 +26,28 @@ class AttachmentHelper extends Helper
 
   public function setup($field,$settings)
   {
+    if($field == 'Attachments') $field = 'attachments';
+
     // merge global with settings
     $settings = array_merge(Configure::read('Trois/Attachment.upload'), $settings);
 
     // attahment(s) selection
-    if(empty($settings['attachments'])) $settings['attachments'] = [];
+    $settings['attachments'] = empty($settings['attachments'])? []: $settings['attachments'];
+
+    // with entity extract files
+    if(empty($settings['attachments']) && !empty($settings['entity']))
+    {
+      if(substr($field, -1) == 's') $settings['attachments'] = $settings['entity']->{$field};
+      else
+      {
+        $f = strpos($field, '_id') === false? $field: substr($field, 0, strpos($field, '_id'));
+        if($settings['entity']->{$f}) $settings['attachments'] = [$settings['entity']->{$f}];
+      }
+    }
+
+    // with entity extract errors!
+    $settings['errors'] = [];
+    if(!empty($settings['entity']) && $settings['entity']->getError($field)) $settings['errors'] = $settings['entity']->getError($field);
 
     // keys & session
     $uuid = Text::uuid();
@@ -39,13 +56,15 @@ class AttachmentHelper extends Helper
     $uuidField = str_replace('.', '', $field);
     $this->_View->getRequest()->getSession()->write('Trois/Attachment.'.$uuidField, $settings);
 
+    // delete entity if present
+    if(!empty($settings['entity'])) unset($settings['entity']);
 
     // front side settings
     $settings['options'] = Configure::read('Trois/Attachment.options');
     $settings['uuid'] = $uuid;
     $settings['url'] = $this->Url->build('/');
-    $settings['relation'] = ($field == 'Attachments')? 'belongsToMany' : 'belongsTo';
-    $settings['field'] = ($field == 'Attachments')? '' : $field;
+    $settings['relation'] = substr($field, -1) == 's'? 'belongsToMany' : 'belongsTo';
+    $settings['field'] = $field;
     $settings['label'] = empty($settings['label'])? Inflector::humanize($field) : $settings['label'];
     $settings['translate'] = Configure::read('Trois/Attachment.translate');
     $settings['i18n'] = [
@@ -82,6 +101,7 @@ class AttachmentHelper extends Helper
     ));
     return $this->getView()->Html->tag('attachment-browse', null,['aid' => $settings['uuid'],':settings' => json_encode($settings)]);
   }
+
   public function input($field, $settings = [], $attributes = [])
   {
     $settings = $this->setup($field, array_merge(

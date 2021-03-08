@@ -27,6 +27,7 @@
           </div>
         </div>
 
+        <div v-for="(err, i) in settings.errors" :key="i" class="error-message">{{err}}</div>
 
       </div>
     </div><!-- // END INPUT VIEW -->
