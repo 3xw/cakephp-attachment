@@ -1,0 +1,30 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2021-03-16 16:26+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: Controller/AtagsController.php:38
+#: Controller/AttachmentsController.php:84
+#: Model/Filter/SessionControl.php:23
+msgid "Missing uuid"
+msgstr ""
+
+#: Crud/Action/DeleteAction.php:44
+msgid "unable to delete this Attachment. This attachment looks beeing used by an other record. Please detatch the attachment to related record an then try to delete it again."
+msgstr ""
+
+#: Model/Filter/SessionControl.php:24
+msgid "Uuid is not matching any session settings"
+msgstr ""
+
