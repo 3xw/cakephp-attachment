@@ -129,13 +129,21 @@ export default
       this.uploading = false
       this.hasUploaded = true
       this.$store.commit(this.aid+'/addUploadedFile', response.data.data )
-      this.upload()
+      this.finish()
     },
     errorUploadCb: function(response)
     {
       this.uploading = false
       this.errors.push(response)
-      this.upload()
+      this.finish()
+    },
+    finish: function()
+    {
+      if(this.errors.length == 0)
+      {
+        this.$parent.mode = 'browse'
+        this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ refresh: new Date().getTime() }))
+      }
     },
   }
 }

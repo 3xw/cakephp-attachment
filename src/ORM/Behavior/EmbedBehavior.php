@@ -107,7 +107,7 @@ class EmbedBehavior extends Behavior
 
       foreach($testAttributes as $key => $test){
         preg_match($test, $data[$embed_field], $match);
-        if( !empty($match) && count($match > 1)) $attributes[$key] = "\"$match[1]\"";
+        if( !empty($match) && count($match) > 1) $attributes[$key] = "\"$match[1]\"";
       }
 
       // replace with cleaned iframe
