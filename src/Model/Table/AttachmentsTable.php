@@ -74,18 +74,18 @@ class AttachmentsTable extends Table
 
     $validator
     ->scalar('profile')
-    ->maxLength('profile', 45)
+    ->maxLength('profile', 255)
     ->notEmptyFile('profile');
 
     $validator
     ->scalar('type')
-    ->maxLength('type', 45)
+    ->maxLength('type', 255)
     ->requirePresence('type', 'create')
     ->notEmptyString('type');
 
     $validator
     ->scalar('subtype')
-    ->maxLength('subtype', 45)
+    ->maxLength('subtype', 255)
     ->requirePresence('subtype', 'create')
     ->notEmptyString('subtype');
 
