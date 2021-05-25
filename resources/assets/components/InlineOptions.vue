@@ -16,9 +16,9 @@
 
             <!-- ACTION -->
             <div class="col-md-6">
-              <select v-if="file.type == 'image'" v-model="selection.displayAs" class="form-control">
+              <select v-model="selection.displayAs" class="form-control">
                 <option value="Link">Link</option>
-                <option value="Image">Image</option>
+                <option v-if="file.type == 'image'" value="Image">Image</option>
               </select>
 
 
@@ -130,7 +130,7 @@ export default
   }},
   created: function()
   {
-    //YO
+    if(this.file.type != 'image') this.selection.displayAs = 'Link'
   },
   watch:
   {
