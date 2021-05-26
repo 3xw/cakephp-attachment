@@ -17,7 +17,7 @@
   </div>
 </nav>
 <div class="utils--spacer-semi"></div>
-<div class="row no-gutters">
+<div class="row no-gutters g-0">
   <div class="col-11 mx-auto ">
     <!-- LIST ELEMENT -->
     <div class="card">
@@ -68,7 +68,7 @@
       <!-- END CONTEMT -->
       <!-- START FOOTER -->
       <div class="card-footer">
-        <div class="row no-gutters">
+        <div class="row no-gutters g-0">
           <div class="col-6">
             <?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?>
           </div>

@@ -44,7 +44,7 @@
 
       <!-- browse mode -->
       <section v-if="mode == 'browse'" class="section-attachment--browse">
-        <div class="row no-gutters">
+        <div class="row no-gutters g-0">
           <div class="w-100"></div>
           <div class="col-md-3 col-xl-2">
             <div class="section__side">
