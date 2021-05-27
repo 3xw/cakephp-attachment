@@ -50,7 +50,7 @@ export default class TinyPlugin
     //this.editor.attachment.$on('options-success', this.addAttachment)
 
     this.editor.attachment.$on('options-success', (file, options) => {
-      if(options.displayAs == 'Link') this.editor.insertContent('<a href="'+file.fullpath+'" target="'+options.target+'">'+options.title+'</a>')
+      if(options.displayAs == 'Link') this.editor.insertContent('<a href="'+this.settings.baseUrls[file.profile].profile+file.path+'" target="'+options.target+'">'+options.title+'</a>')
       else this.editor.insertContent(this.createImageNode(file, options))
     })
   }
