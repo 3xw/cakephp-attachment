@@ -92,10 +92,11 @@
     </div>
 
     <div class="section__index" v-if="attachments && $parent.loading == false">
-      <h3 class="text-right">
+      <h3 class="text-end">
         <span v-if="pagination && pagination.count">{{pagination.count}}</span>
         <span v-else>0</span>
         Fichiers
+        <span v-if="size.length">  &nbsp; | &nbsp; {{ parseInt(size[0].size) | bytesToMegaBytes | decimal(2) }} MB</span>
       </h3>
       <div class="utils--spacer-mini"></div>
       <transition name="fade">
@@ -214,8 +215,13 @@ export default
     },
     downloadToken()
     {
-      return this.$store.get(this.aid+'/selection.token')
-    }
+      return this.$store.get(this.aid + '/selection.token')
+    },
+    size()
+    {
+      console.log(this.$store.get(this.aid + '/size/list'));
+      return this.$store.get(this.aid + '/size/list')
+    },
   },
   watch: {
     mode: function(){

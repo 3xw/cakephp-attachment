@@ -164,7 +164,7 @@ $colors: (
 .attachment-thumb__icon-container>div { position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: #FB404B; display: flex; align-items: center; justify-content: center; }
 .attachment-thumb__icon-container i { z-index: 2; color: white; font-size: 24px; }
 .attachment-thumb .card-body{
-  padding: $margin--mini 0;
+  padding: $margin--mini;
   *{ color: #A9A9A9; }
 }
 .attachment-thumb__actions{

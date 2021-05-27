@@ -63,6 +63,9 @@ class AttachmentsController extends AppController
         ],
         'deleteAll' => [
           'className' => 'Trois\Attachment\Crud\Action\Bulk\DeleteAction',
+        ],
+        'getSize' => [
+          'className' => 'Trois\Attachment\Crud\Action\GetSizeAction',
         ]
       ],
       'listeners' => [
@@ -73,6 +76,10 @@ class AttachmentsController extends AppController
         'Crud.ApiQueryLog',
         'Crud.Search'
       ]
+    ]);
+
+    $this->loadComponent('Search.Search', [
+      'actions' => ['getSize']
     ]);
 
     $this->loadComponent('Trois/Attachment.EventDispatcher');
@@ -88,9 +95,10 @@ class AttachmentsController extends AppController
 
   public function view($id)
   {
-      $this->Crud->on('beforeFind', function(\Cake\Event\Event $event) {
-          $event->getSubject()->query->contain(['Aarchives']);
-      });
-      return $this->Crud->execute();
+    $this->Crud->on('beforeFind', function(\Cake\Event\Event $event) {
+        $event->getSubject()->query->contain(['Aarchives']);
+    });
+    return $this->Crud->execute();
   }
+
 }

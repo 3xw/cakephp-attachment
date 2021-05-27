@@ -239,6 +239,7 @@ export default
       handler(){
         if(this.mode == 'browse'){
           this.fetchAttachments({config:{ params: this.aParams}})
+          if(this.settings.size) this.fetchSize({config:{ params: this.aParams}})
         }
       },
       deep: true
@@ -289,6 +290,10 @@ export default
       fetchAttachments(dispatch, payload)
       {
         return dispatch(this.aid + '/attachments/fetchList', payload)
+      },
+      fetchSize(dispatch, payload)
+      {
+        return dispatch(this.aid + '/size/fetchList', payload)
       },
       fetchTags(dispatch, payload)
       {

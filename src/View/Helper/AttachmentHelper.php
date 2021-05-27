@@ -94,6 +94,7 @@ class AttachmentHelper extends Helper
     $settings = $this->setup('Attachments',array_merge(
       [
         'mode' => 'browse',
+        'size' => false,
         'overlay' => false,
         'actions' => ['view','download'],
         'groupActions' => ['archive','edit','add','delete']

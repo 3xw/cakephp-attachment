@@ -53,6 +53,13 @@ export default
         this.$store.set(this.aid + '/selection.token', response.data.token)
       },
     }))
+    this.$store.registerModule(this.aid+'/size', createCrudModule({
+      resource: 'size',
+      urlRoot: this.settings.url+'attachment/attachments/get-size',
+      client,
+      parseList: parseResponse,
+      idAttribute: 'uuid',
+    }))
     this.$store.registerModule(this.aid+'/aarchives', createCrudModule({
       resource: 'aarchives',
       only: ['CREATE'],
