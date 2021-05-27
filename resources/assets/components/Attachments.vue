@@ -100,7 +100,7 @@
       <div class="utils--spacer-mini"></div>
       <transition name="fade">
         <div v-if="mode == 'mosaic'" v-images-loaded="imgReady">
-          <div  v-packery='{itemSelector: ".packery-item", percentPosition: true}' id="mosaic" class="row packery-row">
+          <div  v-packery='{itemSelector: ".packery-item", percentPosition: true}' id="mosaic" class="row gx-5 packery-row">
             <div v-for="(attachment, i ) in attachments" :key="i" v-packery-item class="packery-item col-lg-3 col-md-6">
               <attachment :index="i" :aid="aid" :mode="mode" :attachment="attachment" ></attachment>
             </div>
@@ -108,7 +108,7 @@
         </div>
         <div v-else-if="mode == 'thumb'">
           <div>
-            <div class="row">
+            <div class="row g-4">
               <div v-for="(attachment, i ) in attachments" :key="i" class="col-sm-6 col-md-4 col-lg-3 col-xl-2">
                 <attachment :index="i" :aid="aid" :mode="mode" :attachment="attachment" ></attachment>
               </div>
