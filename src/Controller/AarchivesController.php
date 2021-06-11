@@ -48,7 +48,7 @@ class AarchivesController extends AppController
       ]
     ]);
 
-    $this->loadComponent('Trois\Attachment.EventDispatcher');
+    $this->loadComponent('Trois/Attachment.EventDispatcher');
   }
 
   public function index()
