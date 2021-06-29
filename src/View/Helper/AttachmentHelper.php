@@ -101,7 +101,7 @@ class AttachmentHelper extends Helper
       ],
       $settings
     ));
-    return $this->getView()->Html->tag('attachment-browse', null,['aid' => $settings['uuid'],':settings' => json_encode($settings)]);
+    return $this->getView()->Html->tag('attachment-browse', ' ',['aid' => $settings['uuid'],':settings' => json_encode($settings)]);
   }
 
   public function input($field, $settings = [], $attributes = [])
@@ -117,7 +117,7 @@ class AttachmentHelper extends Helper
     ));
     $attributes = array_merge($attributes, ['aid' => $settings['uuid'],':settings' => json_encode($settings)]);
 
-    return $this->getView()->Html->tag('attachment-browse', null,$attributes);
+    return $this->getView()->Html->tag('attachment-browse', ' ',$attributes);
   }
   public function filesystem($profile)
   {
@@ -167,7 +167,7 @@ class AttachmentHelper extends Helper
         }
         $srcset = substr($srcset,0, -2);
         $type = empty($noWebp)? 'image/jpeg': 'image/png';
-        $html = $this->Html->tag('source','',['srcset' => $srcset, 'media' => $breakpoints[$breakpoint], 'type' => $type]).$html;
+        $html = $this->Html->tag('source',' ',['srcset' => $srcset, 'media' => $breakpoints[$breakpoint], 'type' => $type]).$html;
         // webp
         $srcset = '';
         $newParams = $params;
@@ -182,7 +182,7 @@ class AttachmentHelper extends Helper
             $srcset .= $this->thumbSrc( $newParams ).' '.$r.'x, ';
           }
           $srcset = substr($srcset,0, -2);
-          $html = $this->Html->tag('source','',['srcset' => $srcset, 'media' => $breakpoints[$breakpoint], 'type' => 'image/webp']).$html;
+          $html = $this->Html->tag('source',' ',['srcset' => $srcset, 'media' => $breakpoints[$breakpoint], 'type' => 'image/webp']).$html;
         }
       }
       $html = $this->Html->tag('picture',$html);
