@@ -227,11 +227,14 @@ export default
       }
     },
     downloadFile(attachment){
+      window.open(attachment.url,'_blank');
+      /*
       client.get(attachment.url, {responseType: 'arraybuffer'})
       .then(response => {
         this.forceFileDownload(response, attachment)
       })
       .catch((response) => console.log(response))
+      */
     },
     preview(attachment){
       this.$store.set(this.aid + '/preview', attachment)
