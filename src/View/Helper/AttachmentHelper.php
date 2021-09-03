@@ -62,6 +62,7 @@ class AttachmentHelper extends Helper
 
     // front side settings
     $settings['options'] = Configure::read('Trois/Attachment.options');
+    $settings['profiles'] = Configure::read('Trois/Attachment.profiles');
     $settings['uuid'] = $uuid;
     $settings['url'] = $this->Url->build('/');
     $settings['relation'] = substr($field, -1) == 's'? 'belongsToMany' : 'belongsTo';

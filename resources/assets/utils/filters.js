@@ -109,11 +109,13 @@ Vue.filter('isNotEmbed', function (file) {
   }
 });
 
-Vue.filter('isThumbable', function (file) {
+Vue.filter('isThumbable', function (file, hasCustomThumbService = false) {
   switch(file.type+'/'+file.subtype){
     case 'image/jpeg':
     case 'image/png':
     case 'image/gif':
+    return true;
+    break;
     case 'video/mp4':
     case 'video/webm':
     case 'video/mov':
@@ -121,7 +123,7 @@ Vue.filter('isThumbable', function (file) {
     case 'video/ogg':
     case 'video/mkv':
     case 'application/pdf':
-    return true;
+    return hasCustomThumbService
     break;
     case 'embed/youtube':
     case 'embed/vimeo':
