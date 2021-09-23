@@ -15,7 +15,8 @@ class UserIDBehavior extends Behavior
 
   public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
   {
-    $identity = Router::getRequest()->getAttribute('identity');
+    if(!$req = Router::getRequest()) return null;
+    $identity = $req->getAttribute('identity');
     $identity = $identity ?? [];
     $loggedUserId = $identity['id'] ?? null;
     $data[$this->getConfig('user_id')] = $loggedUserId;
