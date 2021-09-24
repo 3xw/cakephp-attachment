@@ -27,7 +27,7 @@ class FileDownloader
   static public function urlToFormArray(string $url, string $profile = 'default'): array
   {
     // check url
-    if(empty($url)) return self::createFormArray($profile);
+    if(empty($url) && substr($url, 0, 4) == 'http' ) return self::createFormArray($profile);
 
     // get name
     $parts = explode('/',$url);
@@ -39,8 +39,13 @@ class FileDownloader
     // check status
     if(substr($headers[0], 9, 3) != 200) return self::createFormArray($profile, $name);
 
+    // set content type
+    $clientMediaType = null;
+    if(!empty($headers['Content-Type'])) $clientMediaType = $headers['Content-Type'];
+    if(!empty($headers['content-type'])) $clientMediaType = $headers['content-type'];
+
     // download & return array
-    return self::createFormArray($profile, $name, $headers['Content-Type'], file_get_contents($url));
+    return self::createFormArray($profile, $name, $clientMediaType, file_get_contents($url));
   }
 
   static public function createFormArray(string $profile = 'default', string $name = '', string $clientMediaType = null, string $content = ''): array

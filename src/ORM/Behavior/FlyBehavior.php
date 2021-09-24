@@ -40,13 +40,13 @@ class FlyBehavior extends Behavior
 
     if (!empty($data[$field]) && is_a($data[$field], '\Zend\Diactoros\UploadedFile'))
     {
-      $this->_file = new UploadedFile($data[$field]);
-
-      if ($this->_file->getError() !== UPLOAD_ERR_OK)
+      if ($data[$field]->getError() !== UPLOAD_ERR_OK)
       {
         $event->stopPropagation();
         return false;
       }
+
+      $this->_file = new UploadedFile($data[$field]);
 
       $data[$field] = $this->_file->getPath();
 
