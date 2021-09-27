@@ -86,7 +86,7 @@ class FlyBehavior extends Behavior
       $type = $type[0];
 
       // GET CONFIG
-      if($this->getConfig('sessionControl'))
+      if($this->getConfig('sessionControl') && PHP_SAPI !== 'cli')
       {
         $this->_session = new Session();
         $sessionAttachment = $this->_session->read('Trois/Attachment.'.$this->_uuid);
@@ -94,6 +94,7 @@ class FlyBehavior extends Behavior
         {
           $event->stopPropagation();
           $entity->setError($field,['Attachment keys not found in session! Please pass Attachment settings throught session!']);
+          return false;
         }
         $conf = array_merge($sessionAttachment, $settings);
       }
