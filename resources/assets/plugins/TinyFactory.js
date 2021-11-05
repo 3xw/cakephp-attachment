@@ -12,11 +12,10 @@ export default class TinyFactory
 
     this.store = store
     this.pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager')
-    this.pluginManager.add('attachment', this.createPlugin)
-  }
 
-  static createPlugin(editor)
-  {
-    new TinyPlugin(editor, TinyFactory.store)
+    //this.pluginManager.add('attachment', this.createPlugin)
+    this.pluginManager.add('attachment', function(editor, url){
+      new TinyPlugin(editor, TinyFactory.store)
+    })
   }
 }

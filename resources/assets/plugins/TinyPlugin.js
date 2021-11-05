@@ -10,6 +10,8 @@ export default class TinyPlugin
 
   constructor(editor, store)
   {
+    console.log('TnyAttachment constructor');
+
     this.editor = editor
     this.store = store
 
@@ -30,7 +32,8 @@ export default class TinyPlugin
 
   init()
   {
-    let BrowseCompoClass = Vue.component(Browse.name)
+    console.log('TnyAttachment init vue component');
+    let BrowseCompoClass = Vue.component(Browse.name, Browse)
 
     //FORCE OVERLAY
     this.settings.overlay = 1
