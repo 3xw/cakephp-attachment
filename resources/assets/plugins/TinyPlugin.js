@@ -42,7 +42,7 @@ export default class TinyPlugin
     this.editor.attachment.$mount()
 
     // classy way : )
-    window.vueTinymce[this.aid].appendPlugin(this.editor.attachment)
+    window.vueTinymce[this.editor.settings.id].appendPlugin(this.editor.attachment)
   }
 
   addEventListener()
