@@ -96,7 +96,7 @@ class Profile
       'visibility' => $visibility,
       'mimetype' => $mimetype
     ]);
-    fclose($stream);
+    while(is_resource($stream)) fclose($stream);
   }
 
   public function write($path, $contents)
@@ -162,6 +162,11 @@ class Profile
   public function copy($from, $to)
   {
     return $this->filesystem()->copy($from, $to);
+  }
+
+  public function getMetadata($path)
+  {
+    return $this->filesystem()->getMetadata($path);
   }
 
   public function getMimetype($path)

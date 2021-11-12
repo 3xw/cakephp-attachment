@@ -38,7 +38,18 @@ class ProfileCommand extends Command
     public function execute(Arguments $args, ConsoleIo $io)
     {
       $profileRegistry = new ProfileRegistry;
-      $profile = $profileRegistry->retrieve('default');
-      debug($profile->store('/path/image.png', 'test-x.png', '/', 'public', 'image/png'));
+
+      if(
+        (!$profileName = $args->getArgumentAt(0)) ||
+        (!$localPath = $args->getArgumentAt(1)) ||
+        (!$path = $args->getArgumentAt(2)) ||
+        (!$mime = $args->getArgumentAt(3))
+      )
+      throw new \Exception("You must provide profile localPath path mime", 1);
+
+      $profile = $profileRegistry->retrieve($profileName);
+      $profile->store($localPath, $path, false, 'public', $mime);
+      debug($profile->getMetadata($path));
+      $profile->delete($path);
     }
 }
