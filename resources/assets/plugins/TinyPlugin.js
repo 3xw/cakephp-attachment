@@ -16,7 +16,7 @@ export default class TinyPlugin
     this.store = store
 
     this.settings = this.editor.settings.attachment_settings
-    this.aid = this.getName()
+    this.aid = this.getName().replace(/[\[\]]/g, '')
 
     this.init()
     this.addEventListener()
