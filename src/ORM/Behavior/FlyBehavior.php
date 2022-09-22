@@ -2,8 +2,9 @@
 namespace Trois\Attachment\ORM\Behavior;
 
 use ArrayObject;
-use Cake\Event\Event;
 use Exception;
+use Psr\Http\Message\UploadedFileInterface;
+use Cake\Event\Event;
 use Cake\Utility\Inflector;
 use Cake\Core\Configure;
 use Cake\Datasource\EntityInterface;
@@ -38,7 +39,7 @@ class FlyBehavior extends Behavior
     // rest for bulk;
     $this->_file = null;
 
-    if (!empty($data[$field]) && is_a($data[$field], '\Zend\Diactoros\UploadedFile'))
+    if (!empty($data[$field]) && ($data[$field] instanceof UploadedFileInterface))
     {
       if ($data[$field]->getError() !== UPLOAD_ERR_OK)
       {

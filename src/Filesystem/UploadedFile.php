@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Trois\Attachment\Filesystem;
 
 use Cake\Filesystem\File;
-use Zend\Diactoros\UploadedFile as ZUploadedFile;
+use Psr\Http\Message\UploadedFileInterface;
 
 class UploadedFile
 {
@@ -12,7 +12,7 @@ class UploadedFile
 
   protected $_path;
 
-  public function __construct(ZUploadedFile $zFile)
+  public function __construct(UploadedFileInterface $zFile)
   {
     $this->zFile = $zFile;
     $this->_metadata = $this->zFile->getStream()->getMetadata();
