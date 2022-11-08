@@ -1,4 +1,4 @@
-import createCrudModule from 'vuex-crud';
+import createCrudModule from '../vuex/crud';
 
 import { client, parseResponse, parseResponseWithPaginate, parseTags} from '../http/client.js'
 import module from '../store/module.js'
