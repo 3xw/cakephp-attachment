@@ -49,7 +49,7 @@
             <img v-if="$options.filters.isThumbable(attachment, hasCustomThumbService)" alt="" v-bind:src="thumbBaseUrl('w678c4-3q90', attachment)" class="card-img-top" />
             <span v-html="$options.filters.icon(attachment)"></span>
             <!-- overlay -->
-            <div class="attachment-thumb__hover">
+            <div @click="previewThumb($event, attachment)" class="attachment-thumb__hover">
               <div v-if="isSelected(attachment.id)" class="d-flex flex-column justify-content-center align-items-center">
                 <icon-check></icon-check>
                 <div class="utils--spacer-mini"></div>
@@ -61,7 +61,7 @@
                   <div title="Infos" alt="Infos" class="btn btn--grey color--white" @click="infos(attachment)"><i class="material-icons">info</i></div>
 
                   <!-- VIEW -->
-                  <div v-if="settings.actions.indexOf('view') != -1 && attachment.type != 'application' || (attachment.type == 'application' && attachment.subtype == 'pdf')" @click="preview(attachment)" title="Aperçu" alt="Aperçu" class="btn btn--green color--white">
+                  <div @click="preview(attachment)" title="Aperçu" alt="Aperçu" class="btn btn--green color--white">
                     <i class="material-icons"> remove_red_eye</i>
                   </div>
 
@@ -234,13 +234,17 @@ export default
       })
       .catch((response) => console.log(response))
     },
-    preview(attachment){
-      if(attachment.type == 'application'){
-        window.open(attachment.url,'_blank');
-      }else{
-        this.$store.set(this.aid + '/preview', attachment)
-        this.$forceUpdate()
+    previewThumb(event, attachment) {
+      console.log(event.target.tagName);
+      if (event.target.tagName !== 'DIV') {
+        return;
       }
+      this.$store.set(this.aid + '/preview', attachment)
+      this.$forceUpdate()
+    },
+    preview(attachment){
+      this.$store.set(this.aid + '/preview', attachment)
+      this.$forceUpdate()
     },
     infos(attachment){
       this.$store.set(this.aid + '/infos', attachment)

@@ -8,7 +8,7 @@
           <li>
             <ul class="list-unstyled list-inline" ><!-- v-if="types.isActive" -->
               <li class="text--upper list-inline-item pointer" v-for="(option, i2) in settings.browse.types" :key="i2" @click="types.current = option.mime.join(',');$forceUpdate();filterType();"  :class="{active: types.current == option.mime.join(',')}">
-                <strong>{{option.label}}</strong>
+                <strong>{{ option.label }}</strong>
               </li>
             </ul>
           </li>
@@ -76,7 +76,7 @@
           </div>
           <div class="section__sort d-flex flex-row align-items-center">
             <p class="small color--grey d-inline-block mb-0">Ordre: &nbsp;&nbsp;</p>
-            <select v-model="direction" @change="changeOrder">
+            <select class="no-select-2" v-model="direction" @change="changeOrder">
               <option value="desc">Plus récent en premier</option>
               <option value="asc">Plus ancien en premier</option>
             </select>
@@ -101,8 +101,8 @@
       <div class="utils--spacer-mini"></div>
       <transition name="fade">
         <div v-if="mode == 'mosaic'" v-images-loaded="imgReady">
-          <div  v-packery='{itemSelector: ".packery-item", percentPosition: true}' id="mosaic" class="row gx-5 packery-row">
-            <div v-for="(attachment, i ) in attachments" :key="i" v-packery-item class="packery-item col-lg-3 col-md-6">
+          <div  id="mosaic">
+            <div class="mosaic-img-container" v-for="(attachment, i ) in attachments" :key="i">
               <attachment :index="i" :aid="aid" :mode="mode" :attachment="attachment" ></attachment>
             </div>
           </div>
@@ -175,7 +175,7 @@ export default
         name: 'Types',
         slug: 'type',
         isActive: false,
-        current: 'image/*',
+        current: '',
       },
       hasProcessingArchive: false,
       aarchiveIds: []

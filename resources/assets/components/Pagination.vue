@@ -4,7 +4,7 @@
       <ul class="pagination">
         <li class="page-item" v-if="start" v-bind:class="{ 'disabled': !pagination.has_prev_page}">
           <a class="page-link" href="#" aria-label="First" @click.prevent="changePage(1)">
-            <span aria-hidden="true">first</span>
+            <span aria-hidden="true">première</span>
           </a>
         </li>
         <li class="page-item" v-if="(pagination.current_page-offset-1) > 1">
@@ -32,13 +32,13 @@
         </li>
         <li class="page-item" v-if="end" v-bind:class="{ 'disabled': !pagination.has_next_page}">
           <a class="page-link" href="#" aria-label="Last" @click.prevent="changePage(pagination.page_count)">
-            <span aria-hidden="true">last</span>
+            <span aria-hidden="true">dernière</span>
           </a>
         </li>
       </ul>
     </nav>
     <small>
-      Page {{pagination.current_page}} on {{pagination.page_count}} (total: {{pagination.count}})
+      Page {{pagination.current_page}} sur {{pagination.page_count}} (total: {{pagination.count}})
     </small>
   </div>
 </template>

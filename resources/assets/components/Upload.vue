@@ -3,7 +3,7 @@
 
     <!-- progress -->
     <div v-if="uploading" class="progress__info">
-      <label>Uploading file: "{{fileName}}"</label>
+      <label>Téléchargement du fichier : "{{fileName}}"</label>
       <div class="progress">
         <div class="progress-bar" role="progressbar" :style="{ width: percent + '%' }" >{{percent}}</div>
       </div>
@@ -17,7 +17,7 @@
         <div v-if="file.preview" class="alert__preview-img">
           <img :src="file.preview" >
         </div>
-        File: {{file.name}} ready to upload!
+        Fichier: {{file.name}} prêt à être téléchargé!
       </div>
 
       <!-- alerts -->
@@ -33,7 +33,7 @@
 
       <!-- file input -->
       <div class="input">
-        <label>Files
+        <label>Fichiers
           <input type="file" id="files" ref="files" multiple @change="validate">
         </label>
       </div>
@@ -42,7 +42,7 @@
 
       <!-- submit -->
       <div class="input">
-        <button type="button" name="button" class="btn btn-success" @click="upload">Upload</button>
+        <button type="button" name="button" class="btn btn-success" @click="upload">Télécharger</button>
       </div>
 
 

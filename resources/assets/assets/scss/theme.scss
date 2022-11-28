@@ -1,5 +1,5 @@
 //UI STYLE
-@import "~element-ui/lib/theme-chalk/index.css";
+// @import "~element-ui/lib/theme-chalk/index.css";
 
 /* VARS
 ***************************************/
@@ -167,6 +167,8 @@ $colors: (
   padding: $margin--mini;
   *{ color: #A9A9A9; }
 }
+.attachment-preview-image{width: fit-content !important;display: flex;flex-direction: column;margin: auto;height: fit-content !important;}
+.attachment-preview-actions{position: absolute;right: 0;top: 0; height: 35px !important; width: 40px !important;.btn{color: white;}}
 .attachment-thumb__actions{
   position: absolute;top: 0;right: 0;bottom: 0;left: 0;padding: $margin--mini;z-index: 200;
   .btn{padding: 5px 8px 6px;margin: 0;cursor: pointer;}
@@ -185,7 +187,26 @@ $colors: (
   //img{border: 1px solid #efefef;}
 }
 
+.btn-group{
+  .btn{
+    .material-icons { color: white; }
+  }
+  .btn:hover{
+    .material-icons{color: #302f2f;}
+  }
+  
+}
 
+.date-picker{
+  border: 1px solid #efefef;
+  label{color: #A9A9A9;padding: 0 1rem;margin: auto 0;}
+  input{color: #A9A9A9;border: none;margin: 0 1rem;}
+}
+
+.arrow{
+  &-left{position:absolute;left: 25px;transform: translateY(-50%);z-index: 100; top: 50%; width: 50px !important; height: 50px !important; background: rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center;color: #fff; i{font-size: 30px !important;}}
+  &-right{position:absolute;right: 25px;transform: translateY(-50%);z-index: 100; top: 50%; width: 50px !important; height: 50px !important; background: rgba(0,0,0,0.5); cursor: pointer; display: flex; align-items: center; justify-content: center;color: #fff; i{font-size: 30px !important;}}
+}
 /* SECTION
 *****************************/
 .section-attachment{
@@ -254,13 +275,14 @@ $colors: (
   $this: &;
 
   &--modal{
-    position: fixed;top: 0;right: 0;bottom: 0;left: 0;display: flex;flex-direction: column;align-items: center;justify-content: center;padding: $margin--default;background: rgba(0,0,0,0.6);z-index: 2000;
+    position: fixed;top: 0;right: 0;bottom: 0;left: 0;display: flex;flex-direction: column;align-items: center;justify-content: center;padding: $margin--default;background: rgba(0,0,0,0.8);z-index: 2000;
     #{$this}__close{
       position: absolute;top: $margin--semi;right: $margin--semi;cursor: pointer;
       i{color: map-get($colors, 'white');font-size: 3rem;}
     }
     #{$this}__content{
       width: 80vw;height: 80vh;text-align: center;
+      display: flex;flex-direction: row; justify-content: center;align-items: center;
       img, video{max-height: 100%;object-fit: contain;margin: 0 auto;}
       div, iframe{width: 100%;height: 100%;}
       #{$this}__infos{
@@ -358,4 +380,44 @@ $colors: (
 }
 .rotating {
   animation: rotatings 1.5s linear infinite;
+}
+
+.file-logo{
+  width: 84px !important;
+  height: 84px !important;
+  position: absolute;
+  left: -84px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.attachment-preview{
+  width: fit-content !important;
+  height: fit-content !important;
+  max-height: 80vh;
+  img{max-height: 70vh !important;}
+  iframe{height: 70vh !important;width: 80vw !important;}
+}
+.info-display{
+  position: relative;
+  text-align: left;
+  margin-top: 10px;
+  min-width: 300px;
+  height: fit-content !important;
+}
+
+#mosaic{
+  column-count: 4;
+  column-gap: 20px;
+  .mosaic-img-container{ margin-bottom: 20px;}
+  @media (max-width: 1200px) {
+    column-count: 3;
+  }
+  @media (max-width: 992px) {
+    column-count: 2;
+  }
+  @media (max-width: 768px) {
+    column-count: 1;
+  }
 }

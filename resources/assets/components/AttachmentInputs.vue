@@ -48,7 +48,7 @@
       <!-- no translate -->
       <div v-if="!settings.i18n.enable" class="col-md-6">
         <div class="input text">
-          <label for="title">Title</label>
+          <label for="title">Titre</label>
           <input @change="update" v-model="file.title" type="text" name="title" class="form-control" id="title">
         </div>
         <div class="input text">
@@ -64,7 +64,7 @@
 
       <div class="col-md-6">
         <div class="input text">
-          <label for="author">Author</label>
+          <label for="author">Source</label>
           <input @change="update" v-model="file.author" type="text" name="author" class="form-control" id="author">
         </div>
         <div class="input text">

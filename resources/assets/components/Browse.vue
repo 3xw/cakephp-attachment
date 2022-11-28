@@ -52,7 +52,7 @@
                 <icon-add></icon-add>&nbsp;&nbsp;&nbsp;&nbsp;<p class="mb-0">Ajouter des fichiers</p>
               </div>
               <div class="section__nav">
-                <div class="d-flex flex-row align-items-center">
+                <div class="d-flex flex-row align-items-center filter-title">
                   <icon-filter></icon-filter>&nbsp;&nbsp;&nbsp;&nbsp;<p class="mb-0">Filtres et tags</p>
                 </div>
                 <div class="utils--spacer-semi"></div>
@@ -91,7 +91,7 @@
             <div class="utils--spacer-semi"></div>
             <div class="row">
               <div class="col-12 col-md-3">
-                <label>Tags</label>
+                <label>Ajouter des tags</label>
                 <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters" :options="settings.options"></attachment-atags>
               </div>
               <div class="col-12 col-md-9">

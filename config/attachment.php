@@ -88,6 +88,10 @@ return [
         'dateField' => 'Attachments.created'
       ],
       'types' => [
+        'all' => [
+          'label' => __('Tout'),
+          'mime' => ['']
+        ],
         'image' => [
           'label' => __('Images'),
           'mime' => ['image/*']

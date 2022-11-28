@@ -1,6 +1,6 @@
 <template>
     <div>
-      <label class="sr-only" for="inlineFormInputGroup">Username</label>
+      <!-- <label class="sr-only" for="inlineFormInputGroup">Username</label> -->
       <div class="input-group mb-2">
         <input v-model="needle" @keyup.enter="search" type="text" class="form-control" id="inlineFormInputGroup" placeholder="RECHERCHE">
         <div type="submit" class="input-group-append bg--blue-light">
@@ -9,14 +9,12 @@
           </div>
         </div>
 
-        <div class="">
-          <el-date-picker
-            v-model="daterange"
-            type="daterange"
-            align="right"
-            start-placeholder="Start Date"
-            end-placeholder="End Date">
-          </el-date-picker>
+        <div class="d-flex flex-row date-picker">
+          <label for="">Du</label>
+          <input type="date" v-model="startDate">
+          
+          <label for="">au</label>
+          <input type="date" v-model="endDate">
         </div>
 
       </div>
@@ -40,22 +38,31 @@ export default
   {
     return {
       needle: '',
-      daterange: ''
+      endDate: '',
+      startDate: ''
     }
   },
   watch:{
-    daterange(value)
-    {
-      if(!Array.isArray(value)) this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ date: '', page: 1 }))
-      else
-      {
-        for(let i in value) value[i] = moment(value[i]).format('YYYY-MM-DD')
-        this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ date: value.join(','), page: 1 }))
+    endDate(value){
+      this.endDate = moment(value).format('YYYY-MM-DD');
+      if(!(this.startDate == '')) { 
+        this.daterange();
       }
-    }
+    },
+    startDate(value){
+      this.startDate = moment(value).format('YYYY-MM-DD');
+      if(!(this.endDate == '')) { 
+        this.daterange();
+      }
+    },
   },
   methods:
   {
+    daterange() {
+      let value = [this.startDate, this.endDate];
+      console.log(value);
+      this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { date: value.join(','), page: 1 }))
+    },
     search()
     {
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ search: this.needle, page: 1 }))
