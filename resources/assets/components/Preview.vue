@@ -117,6 +117,18 @@ export default {
         })
         .catch((response) => console.log(response))
     },
+    forceFileDownload(response, attachment) {
+      if (navigator.appVersion.toString().indexOf('.NET') > 0) {
+        window.navigator.msSaveBlob(new Blob([response.data], { type: response.headers['content-type'] }), attachment.name);
+      } else {
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', attachment.name) //or any other extension
+        document.body.appendChild(link)
+        link.click()
+      }
+    },
     infos(attachment) {
       console.log(this.$store.set(this.aid + '/infos', attachment));
       console.log(this.$store.get(this.aid + '/infos'));
