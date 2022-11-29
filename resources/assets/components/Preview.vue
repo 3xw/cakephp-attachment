@@ -8,8 +8,7 @@
       <div @click="slide('next')" class="arrow-right"><i class="material-icons"> chevron_right </i></div>
       <div class="attachment-preview">
         <div class="attachment-preview-image" v-if="attachment.type == 'image'">
-          <img v-if="attachment.width > 1200" :src="thumbBaseUrl('w1200q90',attachment)" class="img-fluid">
-          <img v-else :src="attachment.url">
+          <img :src="thumbBaseUrl(`w${(attachment.width < 1200) ? attachment.width : 1200}q95`,attachment)" class="img-fluid" :key="attachment.id">
         </div>
         <video v-else-if="attachment.type == 'video'" :src="attachment.url" controls class="img-fluid"></video>
         <div v-else-if="attachment.type == 'embed'">{{attachment.embed}}</div>
