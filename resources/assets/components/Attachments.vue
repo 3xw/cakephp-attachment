@@ -143,7 +143,6 @@ import { mapActions } from 'vuex'
 
 import { client } from '../http/client.js'
 
-import { packeryEvents } from 'vue-packery-plugin'
 import Attachment from './Attachment.vue'
 import Pagination from './Pagination.vue'
 import Preview from './Preview.vue'
@@ -267,13 +266,6 @@ export default
     changeOrder()
     {
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ sort: this.sort, direction: this.direction, page: 1 }))
-    },
-    reLayout()
-    {
-      setTimeout(function(){
-        var grid = document.getElementById('mosaic')
-        packeryEvents.$emit('layout', grid)
-      }, 200)
     },
     imgReady()
     {

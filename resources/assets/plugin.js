@@ -10,10 +10,6 @@ import './utils/filters'
 import './utils/getCsrfToken'
 import './utils/utils'
 
-// PLUGINS
-import VuePackeryPlugin from 'vue-packery-plugin'
-Vue.use(VuePackeryPlugin)
-
 // WORK
 const
 components = [Browse],
