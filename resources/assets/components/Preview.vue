@@ -180,6 +180,31 @@ export default {
         }
       }
     },
-  }
+  },
+  mounted() {
+    console.log('hello');
+    document.addEventListener('keydown', (event) => {
+      if (this.open) {
+        if (event.key === 'ArrowLeft') {
+          this.slide('prev')
+        }
+        if (event.key === 'ArrowRight') {
+          this.slide('next')
+        }
+      }
+    })
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', (event) => {
+      if (this.open) {
+        if (event.key === 'ArrowLeft') {
+          this.slide('prev')
+        }
+        if (event.key === 'ArrowRight') {
+          this.slide('next')
+        }
+      }
+    })
+  },
 }
 </script>
