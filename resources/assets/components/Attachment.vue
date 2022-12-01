@@ -248,6 +248,7 @@ export default
       this.$forceUpdate()
     },
     infos(attachment){
+      this.$store.set(this.aid + '/infos', '')
       this.$store.set(this.aid + '/infos', attachment)
       this.$forceUpdate()
     },

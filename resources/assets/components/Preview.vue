@@ -106,7 +106,6 @@ export default {
   },
   methods: {
     closePreview(event) {
-      console.log(event.target.className);
       if (event.target.className === 'block-attachment__content' || event.target.className === 'block-attachment--modal') {
         this.open = false
       }
@@ -182,7 +181,6 @@ export default {
     },
   },
   mounted() {
-    console.log('hello');
     document.addEventListener('keydown', (event) => {
       if (this.open) {
         if (event.key === 'ArrowLeft') {
