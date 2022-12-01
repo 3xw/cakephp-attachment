@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="block-attachment--modal" v-if="open && attachment.id">
+  <div class="block-attachment--modal" v-if="open && attachment.id" @click="closePreview">
     <div @click="open = false" class="block-attachment__close">
       <i class="material-icons"> clear </i>
     </div>
@@ -105,6 +105,12 @@ export default {
   created(){
   },
   methods: {
+    closePreview(event) {
+      console.log(event.target.className);
+      if (event.target.className === 'block-attachment__content' || event.target.className === 'block-attachment--modal') {
+        this.open = false
+      }
+    },
     close()
     {
       this.open = false

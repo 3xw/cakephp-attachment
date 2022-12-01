@@ -156,14 +156,9 @@ import iconList from './icons/viewList.vue'
 
 import SearchBar from './SearchBar.vue'
 
-import imagesLoaded from 'vue-images-loaded'
-
 export default
 {
   name:'attachments',
-  directives: {
-    imagesLoaded
-  },
   props: { aid: String, settings: Object },
   data(){
     return {
@@ -225,7 +220,6 @@ export default
   watch: {
     mode: function(){
       if(this.mode == 'mosaic'){
-        this.reLayout()
       }else{
       }
     }
@@ -266,10 +260,6 @@ export default
     changeOrder()
     {
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ sort: this.sort, direction: this.direction, page: 1 }))
-    },
-    imgReady()
-    {
-      this.reLayout()
     },
     dowloadSelection()
     {
@@ -331,9 +321,5 @@ export default
       this.$parent.mode = 'editor-options'
     }
   },
-  mounted()
-  {
-    this.reLayout()
-  }
 }
 </script>

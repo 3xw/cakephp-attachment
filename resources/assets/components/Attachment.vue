@@ -235,14 +235,15 @@ export default
       .catch((response) => console.log(response))
     },
     previewThumb(event, attachment) {
-      console.log(event.target.tagName);
       if (event.target.tagName !== 'DIV') {
         return;
       }
+      this.$store.set(this.aid + '/preview', '');
       this.$store.set(this.aid + '/preview', attachment)
       this.$forceUpdate()
     },
     preview(attachment){
+      this.$store.set(this.aid + '/preview', '');
       this.$store.set(this.aid + '/preview', attachment)
       this.$forceUpdate()
     },
