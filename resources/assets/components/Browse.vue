@@ -246,7 +246,10 @@ export default
     },
     tParams:
     {
-      handler(){ this.fetchTags({config:{ params: this.tParams}}) },
+      handler(){ 
+        console.log('watch tags') 
+        this.fetchTags({config:{ params: this.tParams}}) 
+      },
       deep: true
     },
     selectedFiles(value)

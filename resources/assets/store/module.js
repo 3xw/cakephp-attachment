@@ -27,6 +27,8 @@ export default
       },
       tParams:{
         uuid: '',
+        refresh: '',
+        type: '',
       },
       pagination: {},
       settings: {},
@@ -68,6 +70,10 @@ export default
     // browse
     'aParams': (state, payload) => {
       state.aParams = payload
+    },
+    // atags
+    'tParams': (state, payload) => {
+      state.tParams = payload
     },
     'pagination': (state, payload) => {
       state.pagination = payload

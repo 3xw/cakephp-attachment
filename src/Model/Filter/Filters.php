@@ -30,6 +30,8 @@ class Filters extends Base
         case 'square':
         array_push($conditions['OR'], ['Attachments.width = Attachments.height']);
         break;
+        case 'last_upload':
+        break;
       }
     }
     $this->getQuery()->where($conditions);

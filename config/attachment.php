@@ -67,6 +67,7 @@ return [
       'dir' => false,
       'maxsize' => 30, // 30MB,
       'maxquantity' => -1,
+      'minwidth' => 0,
       'types' =>[],
       'atags' => [],
       'atagsDisplay' => false, // false | 'select' | 'input'
@@ -76,6 +77,7 @@ return [
       'profile' => 'default',
       'visibility' => 'public',
       'speech' => false,
+      'mandatory_tag' => false,
       'pagination' => [
         'offset' => 9, // = 10 pages
         'start' => true,
@@ -87,6 +89,7 @@ return [
       'search' => [
         'dateField' => 'Attachments.created'
       ],
+      'filter_tags' => true,
       'types' => [
         'all' => [
           'label' => __('Tout'),

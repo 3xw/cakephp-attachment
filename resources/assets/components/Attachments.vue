@@ -68,10 +68,11 @@
       <div class="utils--spacer-semi"></div>
       <div class="d-flex flex-row justify-content-between align-items-center">
         <div>
-          <div v-if="aParams.atags || aParams.filters" class="f-flex flex-row">
+          <div v-if="aParams.atags || aParams.filters || aParams.date" class="f-flex flex-row">
             <p class="small color--grey d-inline-block">Filtre(s): </p>
-            <span v-if="aParams.atags" class="badge badge-secondary" @click="removeAtag(atag)" :key="atag" v-for="atag in aParams.atags.split(',')">{{atag}} <i class="material-icons">close</i></span>
-            <span v-if="aParams.filters" class="badge badge-secondary" @click="removeFilter(filter)" :key="atag" v-for="filter in aParams.filters.split(',')">{{filter}} <i class="material-icons">close</i></span>
+            <span v-if="aParams.atags" class="badge badge-secondary bg-secondary" @click="removeAtag(atag)" :key="atag" v-for="atag in aParams.atags.split(',')">{{atag}} <i class="material-icons">close</i></span>
+            <span v-if="aParams.filters" class="badge badge-secondary bg-secondary" @click="removeFilter(filter)" :key="atag" v-for="filter in aParams.filters.split(',')">{{filter}} <i class="material-icons">close</i></span>
+            <span v-if="aParams.date" class="badge badge-secondary bg-secondary" @click="removeDate()" > Date <i class="material-icons">close</i></span>
             <div class="utils--spacer-semi"></div>
           </div>
           <div class="section__sort d-flex flex-row align-items-center">
@@ -189,6 +190,9 @@ export default
     'icon-mosaic': iconMosaic,
     'icon-list': iconList
   },
+  mounted() {
+    console.log(this.$store.get(this.aid + '/aParams'));
+  },
   computed:
   {
     aParams()
@@ -246,7 +250,10 @@ export default
       for(var i = 0 ; i < list.length ; i++) {
         if(list[i] == filter) list.splice(i, 1)
       }
-      this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ filters: list.join(','), page: 1 }))
+      this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { filters: list.join(','), page: 1 }))
+    },
+    removeDate(filter) {
+      this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { date: '', page: 1 }))
     },
     filterType()
     {
@@ -254,6 +261,7 @@ export default
         if(!this.types.current.match(/image/g)){
           this.mode = 'thumb'
         }
+        this.$store.set(this.aid + '/tParams', Object.assign(this.$store.get(this.aid + '/tParams'), { refresh: new Date().getTime(), type: this.types.current }))
         this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ type: this.types.current, filters: '', atags: '', page: 1 }))
       }
     },
@@ -288,6 +296,7 @@ export default
     {
       this.$store.commit(this.aid+'/flushSelection')
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ refresh: new Date().getTime() }))
+      this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { refresh: new Date().getTime() }))
     },
     deleteError()
     {

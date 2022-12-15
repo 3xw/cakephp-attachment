@@ -1,33 +1,8 @@
 <template>
   <section class="">
 
-    <!-- progress -->
-    <div v-if="uploading" class="progress__info">
-      <label>Téléchargement du fichier : "{{fileName}}"</label>
-      <div class="progress">
-        <div class="progress-bar" role="progressbar" :style="{ width: percent + '%' }" >{{percent}}</div>
-      </div>
-    </div>
-
     <!-- selection -->
     <div class="">
-
-      <!-- files -->
-      <div v-for="(file, i) in files" class="alert alert-info">
-        <div v-if="file.preview" class="alert__preview-img">
-          <img :src="file.preview" >
-        </div>
-        Fichier: {{file.name}} prêt à être téléchargé!
-      </div>
-
-      <!-- alerts -->
-      <div v-for="(error, i) in errors" class="alert alert-warning" role="alert">
-        {{error}}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
       <!-- inputs -->
       <attachment-inputs :aid="aid" mode="upload"></attachment-inputs>
 
@@ -38,14 +13,34 @@
         </label>
       </div>
 
-
+      <!-- progress -->
+      <div v-if="uploading" class="progress__info">
+        <div v-if="filesToUpload < 2">
+          <label>Téléchargement du fichier : "{{fileName}}"</label>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" :style="{ width: percent + '%' }">{{percent}}</div>
+          </div>
+        </div>
+        <div v-else >
+          <label>{{ (filesToUpload - files.length) }} fichiers sur {{ filesToUpload }}."</label>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" :style="{ width: ((filesToUpload - files.length) * (100 / filesToUpload)) + '%' }">{{percent}}</div>
+          </div>
+        </div>
+      </div>
 
       <!-- submit -->
       <div class="input">
-        <button type="button" name="button" class="btn btn-success" @click="upload">Télécharger</button>
+        <button type="button" name="button" class="btn btn-success" @click="preUpload">Télécharger</button>
       </div>
 
-
+      <!-- alerts -->
+      <div v-for="(error, i) in errors" class="alert alert-warning" role="alert">
+        {{error}}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
 
     </div>
 
@@ -76,7 +71,9 @@ export default
       fileName: '',
       files: [],
       errors: [],
-      hasUploaded: 0
+      hasUploaded: 0,
+      filesToUpload: 0,
+      firstUploadTime: 0,
     }
   },
   computed:
@@ -100,6 +97,7 @@ export default
   },
   created()
   {
+    this.firstUploadTime = 0
     this.$store.commit(this.aid+'/flushUploadedFiles')
   },
   watch:
@@ -130,7 +128,7 @@ export default
       for(let i in this.$refs.files.files)
       {
         let file = this.$refs.files.files[i]
-
+        
         // test size
         let size = file.size / 1024 / 1024 ;
         if(!size) return
@@ -138,24 +136,72 @@ export default
         {
           errors.push(file.name +  ' ce fichier est trop lourd. La taille max est de ' + this.settings.maxsize + 'MB.')
         }
+
+        function waitForImage(imgElem) {
+          return new Promise(res => {
+            if (imgElem.complete) {
+              return res();
+            }
+            imgElem.onload = () => res();
+            imgElem.onerror = () => res();
+          });
+        }
+
+        //test width
+        if (file.type.split('/')[0] == 'image') {
+          var _URL = window.URL || window.webkitURL;
+          var img = new Image();
+          var objectUrl = _URL.createObjectURL(file);
+          var minwidth = this.settings.minwidth
+          img.src = objectUrl;
+        }
+
         // test
         if(this.settings.types.indexOf(file.type) === false || file.type == "" )
         {
           errors.push(file.name +  ' ce type de fichier n\' est pas supporté.')
         }
-        this.errors = errors;
-        if(this.errors.length == 0) this.files.push(file)
+        
+
+        (async () => {
+          if (file.type.split('/')[0] == 'image'){
+            await waitForImage(img);
+            if (img.naturalWidth < minwidth) {
+              errors.push('La taille de l\'image "' + file.name + '" est trop petite (min. ' + minwidth + 'px).');
+            }
+            _URL.revokeObjectURL(objectUrl);
+            this.errors = errors;
+            if (this.errors.length == 0) { this.files.push(file) } 
+          }else{
+            this.errors = errors;
+            if (this.errors.length == 0) { this.files.push(file) } 
+          }
+        })();
       }
+    },
+    preUpload: function()
+    {
+      if(this.files.length > 1) this.filesToUpload = this.files.length
+      this.upload()
     },
     upload: function()
     {
-      if(this.files.length != 0) return this.uploadFile(this.files.shift())
+      if(this.files.length != 0){
+        if(this.settings.mandatory_tag){
+          if(this.atags.length == 0){
+            alert('Vous devez choisir au moins un tag.')
+            return
+          }
+        }
+        return this.uploadFile(this.files.shift())
+      } 
       else
       {
         if(this.errors.length == 0)
         {
           this.$parent.mode = 'browse'
-          this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ refresh: new Date().getTime() }))
+          this.filesToUpload > 1 ? alert('Tous les fichiers ont été téléchargés.') : alert('Le fichier a été téléchargé.')
+          this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { refresh: new Date().getTime(), date: this.firstUploadTime }))
         }
       }
     },
@@ -179,7 +225,7 @@ export default
         headers: {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
         onUploadProgress: this.progressHandler
       }
-
+      if (this.firstUploadTime === 0) this.firstUploadTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
       client.post(this.settings.url+'attachment/attachments/add.json', formData, params)
       .then(this.uploadSuccessCb, this.errorUploadCb)
     },
