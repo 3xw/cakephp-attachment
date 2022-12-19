@@ -24,7 +24,7 @@
         <div v-else >
           <label>{{ (filesToUpload - files.length) }} fichiers sur {{ filesToUpload }}."</label>
           <div class="progress">
-            <div class="progress-bar" role="progressbar" :style="{ width: ((filesToUpload - files.length) * (100 / filesToUpload)) + '%' }">{{percent}}</div>
+            <div class="progress-bar" role="progressbar" :style="{ width: ((filesToUpload - files.length) * (100 / filesToUpload)) + '%' }">&nbsp;</div>
           </div>
         </div>
       </div>

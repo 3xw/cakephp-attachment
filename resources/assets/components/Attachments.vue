@@ -72,7 +72,7 @@
             <p class="small color--grey d-inline-block">Filtre(s): </p>
             <span v-if="aParams.atags" class="badge badge-secondary bg-secondary" @click="removeAtag(atag)" :key="atag" v-for="atag in aParams.atags.split(',')">{{atag}} <i class="material-icons">close</i></span>
             <span v-if="aParams.filters" class="badge badge-secondary bg-secondary" @click="removeFilter(filter)" :key="atag" v-for="filter in aParams.filters.split(',')">{{filter}} <i class="material-icons">close</i></span>
-            <span v-if="aParams.date" class="badge badge-secondary bg-secondary" @click="removeDate()" > Date <i class="material-icons">close</i></span>
+            <span v-if="aParams.date" class="badge badge-secondary bg-secondary" @click="removeDate()" > {{ aParams.date.split(',').length > 1 ? aParams.date.split(',')[0] + ' - ' + aParams.date.split(',')[1] : 'Derniers fichiers ajoutés' }} <i class="material-icons">close</i></span>
             <div class="utils--spacer-semi"></div>
           </div>
           <div class="section__sort d-flex flex-row align-items-center">
