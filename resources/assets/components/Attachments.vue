@@ -253,6 +253,8 @@ export default
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { filters: list.join(','), page: 1 }))
     },
     removeDate(filter) {
+      document.getElementById("date-start").value = "";
+      document.getElementById("date-end").value = "";
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { date: '', page: 1 }))
     },
     filterType()
