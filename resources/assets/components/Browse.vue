@@ -246,7 +246,9 @@ export default
     },
     tParams:
     {
-      handler(){ this.fetchTags({config:{ params: this.tParams}}) },
+      handler(){ 
+        this.fetchTags({config:{ params: this.tParams}}) 
+      },
       deep: true
     },
     selectedFiles(value)
@@ -276,6 +278,8 @@ export default
   },
   created()
   {
+    this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { sort: this.settings.browse.search.dateField.split('.').pop() }))
+
     // set uuid & fetch data ( all in one because of deep watching )
     this.aParams.uuid = this.tParams.uuid = this.aid
   },

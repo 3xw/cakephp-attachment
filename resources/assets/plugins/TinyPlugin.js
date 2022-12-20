@@ -10,8 +10,6 @@ export default class TinyPlugin
 
   constructor(editor, store)
   {
-    console.log('TnyAttachment constructor');
-
     this.editor = editor
     this.store = store
 
@@ -32,7 +30,6 @@ export default class TinyPlugin
 
   init()
   {
-    console.log('TnyAttachment init vue component');
     let BrowseCompoClass = Vue.component(Browse.name, Browse)
 
     //FORCE OVERLAY
@@ -114,7 +111,6 @@ export default class TinyPlugin
 
   upload()
   {
-    console.log('upload');
     this.editor.attachment.overlay = true
     this.editor.attachment.mode = 'upload'
   }

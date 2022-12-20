@@ -39,7 +39,18 @@ class AtagsController extends AppController
 
     $this->Crud->on('beforePaginate', function(Event $event)
     {
-      $event->getSubject()->query->contain(['AtagTypes']);
+      $query = $event->getSubject()->query->contain(['AtagTypes']);
+
+      if(Configure::read('Trois/Attachment.browse.filter_tags')){
+        $type = $this->request->getQuery('type') == '' ? 'all' : explode('/',$this->request->getQuery('type'))[0];
+        if($type == 'all'){
+          $query->matching('Attachments')->group(['Atags.id']);
+        }else {
+          $query->matching('Attachments', function ($q) {
+            return $q->where(['Attachments.type' => explode('/', $this->request->getQuery('type'))[0]]);
+          })->group(['Atags.id']);
+        }
+      }
       if(Configure::read('Trois/Attachment.translate'))
       {
         $event->getSubject()->query->find('translations');

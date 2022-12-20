@@ -11,10 +11,10 @@
 
         <div class="d-flex flex-row date-picker">
           <label for="">Du</label>
-          <input type="date" v-model="startDate">
+          <input id="date-start" type="date" v-model="startDate">
           
           <label for="">au</label>
-          <input type="date" v-model="endDate">
+          <input id="date-end" type="date" v-model="endDate">
         </div>
 
       </div>
@@ -60,7 +60,6 @@ export default
   {
     daterange() {
       let value = [this.startDate, this.endDate];
-      console.log(value);
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { date: value.join(','), page: 1 }))
     },
     search()
