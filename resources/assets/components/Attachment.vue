@@ -275,7 +275,6 @@ export default
             this.$forceUpdate()
           }
         })
-        .catch(() => console.log('error occured'))
       }
     }
   }

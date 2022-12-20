@@ -31,7 +31,6 @@ export default {
         }
         else obj[i] = baseObj[i]
       }
-      console.log(obj);
       return obj
     }
   },

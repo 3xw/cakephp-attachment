@@ -135,9 +135,6 @@ export default {
       }
     },
     infos(attachment) {
-      console.log(this.$store.set(this.aid + '/infos', attachment));
-      console.log(this.$store.get(this.aid + '/infos'));
-
       return this.$store.get(this.aid + '/infos', attachment)
     },
     thumbBaseUrl(modifs, attachment) {
