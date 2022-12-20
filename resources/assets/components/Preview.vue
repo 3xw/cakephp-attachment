@@ -129,7 +129,7 @@ export default {
         const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }))
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', attachment.name) //or any other extension
+        link.setAttribute('download', attachment.filename) //or any other extension
         document.body.appendChild(link)
         link.click()
       }
