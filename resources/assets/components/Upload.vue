@@ -22,7 +22,7 @@
           </div>
         </div>
         <div v-else >
-          <label>{{ (filesToUpload - files.length) }} fichiers sur {{ filesToUpload }}."</label>
+          <label>{{ (filesToUpload - files.length) }} fichiers sur {{ filesToUpload }}.</label>
           <div class="progress">
             <div class="progress-bar" role="progressbar" :style="{ width: ((filesToUpload - files.length) * (100 / filesToUpload)) + '%' }">&nbsp;</div>
           </div>
@@ -35,7 +35,7 @@
       </div>
 
       <!-- alerts -->
-      <div v-for="(error, i) in errors" class="alert alert-warning" role="alert">
+      <div v-for="(error, i) in errors" :key="i" class="alert alert-warning" role="alert">
         {{error}}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -74,6 +74,7 @@ export default
       hasUploaded: 0,
       filesToUpload: 0,
       firstUploadTime: 0,
+      finishUpload: false
     }
   },
   computed:
@@ -98,6 +99,7 @@ export default
   created()
   {
     this.firstUploadTime = 0
+    this.finishUpload = false
     this.$store.commit(this.aid+'/flushUploadedFiles')
   },
   watch:
@@ -200,7 +202,7 @@ export default
         if(this.errors.length == 0)
         {
           this.$parent.mode = 'browse'
-          this.filesToUpload > 1 ? alert('Tous les fichiers ont été téléchargés.') : alert('Le fichier a été téléchargé.')
+          this.finishUpload = true
           this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { refresh: new Date().getTime(), date: this.firstUploadTime }))
         }
       }

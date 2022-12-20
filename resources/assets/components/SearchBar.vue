@@ -60,7 +60,6 @@ export default
   {
     daterange() {
       let value = [this.startDate, this.endDate];
-      console.log(value);
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { date: value.join(','), page: 1 }))
     },
     search()

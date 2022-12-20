@@ -1,5 +1,9 @@
 <template>
   <section class="section-attachment--index">
+    <!-- uploaded files -->
+    <div v-if="aParams.date && aParams.date.split(',').length === 1" class="alert alert-info">
+      Tous les fichiers ont bien été téléchargés!
+    </div>
     <div class="section__header">
       <attachment-search-bar :aid="aid"></attachment-search-bar>
       <div class="utils--spacer-semi"></div>
@@ -163,7 +167,7 @@ export default
   props: { aid: String, settings: Object },
   data(){
     return {
-      sort: 'date',
+      sort: this.settings.browse.search.dateField.split('.').pop(),
       direction: 'desc',
       mode: 'thumb',
       types: {
@@ -191,7 +195,6 @@ export default
     'icon-list': iconList
   },
   mounted() {
-    console.log(this.$store.get(this.aid + '/aParams'));
   },
   computed:
   {
@@ -217,7 +220,6 @@ export default
     },
     size()
     {
-      console.log(this.$store.get(this.aid + '/size/list'));
       return this.$store.get(this.aid + '/size/list')
     },
   },
