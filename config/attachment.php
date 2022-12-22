@@ -91,8 +91,6 @@ return [
       ],
       'download' => [
         'filename' => [
-          'created',
-          'title'
         ]
       ],
       'filter_tags' => false, // true = n'affiche que les tags qui ont des fichiers
