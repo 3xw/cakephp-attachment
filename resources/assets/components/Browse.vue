@@ -215,6 +215,8 @@ export default
   },
   data: () => ({
     tinymce: false,
+    query: window.location.search,
+    history: window.history,
   }),
   computed:
   {
@@ -230,7 +232,7 @@ export default
     {
       get() { return this.$store.get(this.aid + '/selection.files') },
       set( val ) { this.$store.set(this.aid + '/selection.files', val) }
-    }
+    },
   },
   watch:
   {
@@ -265,6 +267,8 @@ export default
     {
       this.$forceUpdate()
 
+      if (this.getQueryVariable('mode') != this.mode) this.setModeAsState(this.mode)
+
       switch(this.mode)
       {
         case 'browse':
@@ -274,7 +278,7 @@ export default
         default:
         this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ upload: 1 }))
       }
-    }
+    },
   },
   created()
   {
@@ -282,6 +286,13 @@ export default
 
     // set uuid & fetch data ( all in one because of deep watching )
     this.aParams.uuid = this.tParams.uuid = this.aid
+  },
+  mounted()
+  {
+    this.setDefaultQuery()
+    window.onpopstate = () => {
+      this.setModeFromQuery()
+    }
   },
   methods:
   {
@@ -307,7 +318,28 @@ export default
       {
         return dispatch(this.aid + '/token/create', payload)
       },
-    })
+    }),
+    setDefaultQuery() {
+      this.query == '' ? this.setModeAsState('browse') : this.setModeFromQuery()
+    },
+    getQueryVariable(variable)
+    {
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == variable) { return pair[1]; }
+      }
+      return (false);
+    },
+    setModeFromQuery() {
+      this.mode = this.getQueryVariable('mode')
+    },
+    setModeAsState(mode)
+    {
+      let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?mode=' + mode
+      window.history.pushState({ path: newurl }, '', newurl)
+    },
   }
 }
 </script>
