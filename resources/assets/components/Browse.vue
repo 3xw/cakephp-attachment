@@ -217,6 +217,7 @@ export default
     tinymce: false,
     query: window.location.search,
     history: window.history,
+    displayQuery: true,
   }),
   computed:
   {
@@ -267,7 +268,7 @@ export default
     {
       this.$forceUpdate()
 
-      if (this.getQueryVariable('mode') != this.mode) this.setModeAsState(this.mode)
+      if (this.displayQuery && this.getQueryVariable('mode') != this.mode) this.setModeAsState(this.mode)
 
       switch(this.mode)
       {
@@ -289,9 +290,12 @@ export default
   },
   mounted()
   {
-    this.setDefaultQuery()
-    window.onpopstate = () => {
-      this.setModeFromQuery()
+    if (this.mode == 'input' || this.mode == 'hidden') this.displayQuery = false;
+    if(this.displayQuery){
+      this.setDefaultQuery()
+      window.onpopstate = () => {
+        this.setModeFromQuery()
+      }
     }
   },
   methods:
