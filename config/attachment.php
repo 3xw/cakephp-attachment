@@ -89,6 +89,10 @@ return [
       'search' => [
         'dateField' => 'Attachments.created'
       ],
+      'download' => [
+        'filename' => [
+        ]
+      ],
       'filter_tags' => false, // true = n'affiche que les tags qui ont des fichiers
       'types' => [
         'all' => [

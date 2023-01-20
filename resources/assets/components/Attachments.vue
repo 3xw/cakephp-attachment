@@ -35,12 +35,12 @@
             </button>
 
             <!-- ARCHIVE -->
-            <button
+            <!-- <button
               v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('archive') != -1"
               @click="requestArchive"
               type="button" name="button" class="btn btn--blue mb-0 color--white">
               TÉLÉCHARGER
-            </button>
+            </button> -->
 
             <!-- EDIT -->
             <button
@@ -273,7 +273,7 @@ export default
     {
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'),{ sort: this.sort, direction: this.direction, page: 1 }))
     },
-    dowloadSelection()
+    downloadSelection()
     {
       let token = this.$store.get(this.aid+'/selection.token')
       this.$refs.dform.submit()

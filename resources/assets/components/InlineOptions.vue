@@ -186,6 +186,13 @@ export default
       this.close()
       this.$parent.$emit('options-success', this.file, this.selection)
     }
-  }
+  },
+  mounted() {
+    this.selection = {
+      displayAs:'Link',
+      target: '_blank',
+      align: 'normal',
+    }
+  },
 }
 </script>
