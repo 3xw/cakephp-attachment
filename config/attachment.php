@@ -90,8 +90,8 @@ return [
         'dateField' => 'Attachments.created'
       ],
       'download' => [
-        'filename' => [
-        ]
+        'filename' => [ // 'date' for date entered by user, 'created' for date added to db or other params, can be cumulated
+        ],
       ],
       'filter_tags' => false, // true = n'affiche que les tags qui ont des fichiers
       'types' => [

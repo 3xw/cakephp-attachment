@@ -1,4 +1,4 @@
-<?
+<?php
 namespace Trois\Attachment\Filesystem\Adapter;
 
 use League\Flysystem\Config;
