@@ -35,7 +35,7 @@ $this->addPlugin(\ Attachment\Plugin::class, ['bootstrap' => true, 'routes' => t
 ### Installation.db
 
 ```bash
-bin/cake Migrations migrate -p Attachment
+bin/cake migrations migrate -p Trois/Attachment
 ```
 
 a sql file can found at path:
