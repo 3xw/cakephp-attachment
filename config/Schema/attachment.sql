@@ -1,53 +1,94 @@
-# Dump of table atags
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `atags`;
-
-CREATE TABLE `atags` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `slug` varchar(255) NOT NULL,
+-- -----------------------------------------------------
+-- Table `attachment`.`atags`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `attachment`.`atags` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
+  `atag_type_id` INT NULL,
+  `user_id` CHAR(36) NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`),
-  UNIQUE KEY `slug_UNIQUE` (`slug`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC),
+  UNIQUE INDEX `slug_UNIQUE` (`slug` ASC))
+ENGINE = InnoDB
+AUTO_INCREMENT = 21;
 
-# Dump of table attachments
-# ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `attachments`;
+-- -----------------------------------------------------
+-- Table `attachment`.`attachments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `attachment`.`attachments` (
+  `id` CHAR(36) NOT NULL,
+  `profile` VARCHAR(45) NOT NULL DEFAULT 'default',
+  `type` VARCHAR(45) NOT NULL,
+  `subtype` VARCHAR(45) NOT NULL,
+  `created` DATETIME NOT NULL,
+  `modified` DATETIME NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `size` BIGINT UNSIGNED NOT NULL,
+  `md5` VARCHAR(32) NOT NULL,
+  `path` VARCHAR(255) NULL DEFAULT NULL,
+  `embed` TEXT NULL DEFAULT NULL,
+  `title` VARCHAR(255) NULL DEFAULT NULL,
+  `date` DATETIME NULL DEFAULT NULL,
+  `description` TEXT NULL DEFAULT NULL,
+  `author` VARCHAR(255) NULL DEFAULT NULL,
+  `copyright` VARCHAR(255) NULL DEFAULT NULL,
+  `width` INT(10) UNSIGNED NULL DEFAULT '0',
+  `height` INT(10) UNSIGNED NULL DEFAULT '0',
+  `duration` INT UNSIGNED NULL,
+  `meta` TEXT NULL,
+  `user_id` CHAR(36) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 63;
 
-CREATE TABLE `attachments` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `created` datetime NOT NULL,
-  `modified` datetime NOT NULL,
-  `type` varchar(45) NOT NULL,
-  `subtype` varchar(45) NOT NULL,
-  `size` int(11) NOT NULL,
-  `md5` varchar(32) NOT NULL,
-  `date` datetime DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `description` text,
-  `author` varchar(255) DEFAULT NULL,
-  `copyright` varchar(255) DEFAULT NULL,
-  `path` varchar(255) DEFAULT NULL,
-  `embed` text,
-  `profile` varchar(45) NOT NULL DEFAULT 'default',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-# Dump of table attachments_atags
-# ------------------------------------------------------------
+-- -----------------------------------------------------
+-- Table `attachment`.`atag_types`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `attachment`.`atag_types` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `slug` VARCHAR(255) NOT NULL,
+  `exclusive` TINYINT(1) NOT NULL DEFAULT 0,
+  `order` INT NULL DEFAULT 0,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `attachments_atags`;
 
-CREATE TABLE `attachments_atags` (
-  `attachment_id` bigint(20) NOT NULL,
-  `atag_id` int(11) NOT NULL,
-  PRIMARY KEY (`attachment_id`,`atag_id`),
-  KEY `fk_attachments_has_atags_atags1_idx` (`atag_id`),
-  KEY `fk_attachments_has_atags_attachments1_idx` (`attachment_id`),
-  CONSTRAINT `fk_attachments_has_atags_atags1` FOREIGN KEY (`atag_id`) REFERENCES `atags` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_attachments_has_atags_attachments1` FOREIGN KEY (`attachment_id`) REFERENCES `attachments` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- -----------------------------------------------------
+-- Table `attachment`.`ai18n`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `attachment`.`ai18n` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `locale` VARCHAR(6) NOT NULL,
+  `model` VARCHAR(255) NOT NULL,
+  `foreign_key` CHAR(36) NOT NULL,
+  `field` VARCHAR(255) NOT NULL,
+  `content` TEXT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fkey` (`foreign_key` ASC))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `attachment`.`attachments_atags`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `attachment`.`attachments_atags` (
+  `attachment_id` CHAR(36) NOT NULL,
+  `atag_id` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`attachment_id`, `atag_id`),
+  INDEX `fk_attachments_has_atags_atags1_idx` (`atag_id` ASC),
+  INDEX `fk_attachments_has_atags_attachments_idx` (`attachment_id` ASC),
+  CONSTRAINT `fk_attachments_has_atags_attachments`
+    FOREIGN KEY (`attachment_id`)
+    REFERENCES `attachment`.`attachments` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_attachments_has_atags_atags1`
+    FOREIGN KEY (`atag_id`)
+    REFERENCES `attachment`.`atags` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
