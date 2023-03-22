@@ -108,11 +108,7 @@ export default
       for(let i = 0;i < this.$parent.attachmentInputs.fields.length;i++){
         let input = this.$parent.attachmentInputs.fields[i]
         let key = input.key
-        if(key == 'date'){
-          this.file[key] = input.value.split('+')[0]
-        }else{
-          this.file[key] = input.value
-        }
+        this.file[key] = input.value
       }
     }
 

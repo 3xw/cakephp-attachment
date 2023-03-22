@@ -82,8 +82,8 @@
           <div class="section__sort d-flex flex-row align-items-center">
             <p class="small color--grey d-inline-block mb-0">Ordre: &nbsp;&nbsp;</p>
             <select class="no-select-2" v-model="direction" @change="changeOrder">
-              <option value="asc">Plus récent en premier</option>
-              <option value="desc">Plus ancien en premier</option>
+              <option value="desc">Plus récent en premier</option>
+              <option value="asc">Plus ancien en premier</option>
             </select>
           </div>
         </div>
