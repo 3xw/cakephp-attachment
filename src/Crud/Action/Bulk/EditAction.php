@@ -20,10 +20,10 @@ class EditAction extends BaseJsonRestAction
     $patched = [];
     foreach($indexedList as $pk => $entity)
     {
-      if($this->subject->data[$pk]['date']){
-        $date = new Time($this->subject->data[$pk]['date']);
-        $this->subject->data[$pk]['date'] = $date->format('Y-m-d H:i:s');
-      }
+      // if($this->subject->data[$pk]['date']){
+      //   $date = new Time($this->subject->data[$pk]['date']);
+      //   $this->subject->data[$pk]['date'] = $date->format('Y-m-d H:i:s');
+      // }
       $patched[] = $this->_table()->patchEntity(
         $entity,
         $this->subject->data[$pk],

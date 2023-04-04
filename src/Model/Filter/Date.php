@@ -24,7 +24,7 @@ class Date extends Base
       }
       $this->getQuery()
         ->where(function ($exp, $q) use ($from, $to) {
-          return $exp->between(Configure::read('Trois/Attachment.browse.search.dateField'), $from, $to);
+          return $exp->between('Attachments.created', $from, $to);
         });
 
       return true;
