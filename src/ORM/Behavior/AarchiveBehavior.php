@@ -19,6 +19,6 @@ class AarchiveBehavior extends Behavior
       ->first()
     );
 
-    if(!empty($entity->aarchive)) $this->Aarchives->delete($entity->aarchive);
+    if(!empty($entity->aarchive)) $this->_table->Aarchives->delete($entity->aarchive);
   }
 }
