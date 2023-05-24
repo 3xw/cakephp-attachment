@@ -16,6 +16,7 @@
           <li v-if="attachment.description"><strong>Description</strong>: {{attachment.description}}</li>
           <li v-if="attachment.author"><strong>Auteur</strong>: {{attachment.author}}</li>
           <li v-if="attachment.copyright"><strong>Copyright</strong>: {{attachment.copyright}}</li>
+          <li v-if="attachment.url && !attachment.url.includes('?')"><strong>URL</strong>: {{ attachment.url }}</li>
           <!--<li v-if="attachment.meta"><strong>Meta</strong>: {{attachment.meta}}</li>-->
         </ul>
       </div>
