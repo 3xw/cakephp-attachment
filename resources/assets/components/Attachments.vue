@@ -35,12 +35,17 @@
             </button>
 
             <!-- ARCHIVE -->
-            <!-- <button
-              v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('archive') != -1"
-              @click="requestArchive"
+            <button
+
+              v-if="selectedFiles.length > 1 && settings.browse.download.multiple && !downloading" 
+              @click="multiDownload"
               type="button" name="button" class="btn btn--blue mb-0 color--white">
               TÉLÉCHARGER
-            </button> -->
+            </button>
+
+            <button v-if="downloading" disabled  class="btn btn--blue mb-0 color--white">
+              TÉLÉCHARGEMENT EN COURS
+            </button>
 
             <!-- EDIT -->
             <button
@@ -93,7 +98,6 @@
           <button type="button" @click="mode = 'thumbInfo'" name="button" class="btn btn--white mb-0" :class="{active: mode == 'thumbInfo'}"><icon-list></icon-list></button>
         </div>
       </div>
-
     </div>
 
     <div class="section__index" v-if="attachments && $parent.loading == false">
@@ -176,6 +180,7 @@ export default
         isActive: false,
         current: '',
       },
+      downloading: false,
       hasProcessingArchive: false,
       aarchiveIds: []
 
@@ -305,6 +310,54 @@ export default
     deleteError()
     {
       alert('Une erreur est survenue veuillez réessayer.')
+    },
+    multiDownload()
+    {
+      let selectedFiles = this.$store.get(this.aid + '/selection.files')
+      let body = []
+      selectedFiles.forEach((a) =>{
+        body.push(a.path)
+      })
+
+      let params = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Client': this.settings.browse.download.client,
+          'Authorization': 'Bearer '+ this.settings.browse.download.token
+        },
+      }
+
+      this.downloading = true
+      const response = fetch(this.settings.browse.download.url, {
+        ...params,
+        body: JSON.stringify(body),
+      })
+      .then(response => response.blob())  // Convert the response stream to a Blob
+      .then(blob => {
+        this.downloading = false
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'download.zip');  // Set the file name for download
+
+        document.body.appendChild(link);
+        link.click();
+
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+      })
+      .catch(error => {
+        this.downloading = false
+        console.error('Download error:', error);
+      });
+      
+
+      
+      console.log(selectedFiles)
+      console.log(this.$store.get(this.aid))
+
     },
     requestArchive()
     {
