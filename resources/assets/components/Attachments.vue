@@ -335,6 +335,7 @@ export default
       })
       .then(response => response.blob())  // Convert the response stream to a Blob
       .then(blob => {
+        this.$store.commit(this.aid + '/flushSelection');
         this.downloading = false
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
