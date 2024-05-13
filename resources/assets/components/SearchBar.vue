@@ -1,24 +1,25 @@
 <template>
-    <div>
-      <!-- <label class="sr-only" for="inlineFormInputGroup">Username</label> -->
-      <div class="input-group mb-2">
-        <input v-model="needle" @keyup.enter="search" type="text" class="form-control" id="inlineFormInputGroup" placeholder="RECHERCHE">
-        <div type="submit" class="input-group-append bg--blue-light">
-          <div @click="search" class="input-group-text bg--blue-light h-100">
-            <icon-search></icon-search>
-          </div>
+  <div>
+    <!-- <label class="sr-only" for="inlineFormInputGroup">Username</label> -->
+    <div class="input-group mb-2">
+      <input v-model="needle" @keydown="enterSearch" type="text" class="form-control"
+        id="inlineFormInputGroup" placeholder="RECHERCHE">
+      <div type="submit" class="input-group-append bg--blue-light">
+        <div @click="search" class="input-group-text bg--blue-light h-100">
+          <icon-search></icon-search>
         </div>
-
-        <div class="d-flex flex-row date-picker">
-          <label for="">Du</label>
-          <input id="date-start" type="date" v-model="startDate">
-          
-          <label for="">au</label>
-          <input id="date-end" type="date" v-model="endDate">
-        </div>
-
       </div>
+
+      <div class="d-flex flex-row date-picker">
+        <label for="">Du</label>
+        <input id="date-start" type="date" v-model="startDate">
+
+        <label for="">au</label>
+        <input id="date-end" type="date" v-model="endDate">
+      </div>
+
     </div>
+  </div>
   </div>
 </template>
 
@@ -61,6 +62,13 @@ export default
     daterange() {
       let value = [this.startDate, this.endDate];
       this.$store.set(this.aid + '/aParams', Object.assign(this.$store.get(this.aid + '/aParams'), { date: value.join(','), page: 1 }))
+    },
+    enterSearch(e) {
+      if (e.keyCode == 13) {
+        e.preventDefault()
+        e.stopPropagation()
+        this.search()
+      }
     },
     search()
     {
