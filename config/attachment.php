@@ -92,6 +92,10 @@ return [
       'download' => [
         'filename' => [ // 'date' for date entered by user, 'created' for date added to db or other params, can be cumulated
         ],
+        'multiple' => false,
+        'client' => '',
+        'url' => '', 
+        'token' => '',
       ],
       'filter_tags' => false, // true = n'affiche que les tags qui ont des fichiers
       'types' => [

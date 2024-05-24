@@ -122,6 +122,9 @@ export default
     // update if data present
     if(this.attachment) Object.assign(this.file, this.attachment)
 
+    // map data to fit datetime-local format
+    this.file.date = this.file.date ? this.file.date.split('+')[0] : ''
+
     this.update()
   },
   methods:

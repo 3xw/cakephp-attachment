@@ -22,7 +22,9 @@ class Search extends Base
         'Atags.slug LIKE' => $needle,
         'Attachments.title LIKE' => $needle,
         'Attachments.description LIKE' => $needle,
-        'Attachments.name LIKE' => $needle,
+        'Attachments.author LIKE' => $needle,
+        'Attachments.copyright LIKE' => $needle,
+        'Attachments.name LIKE' => $needle
       ]
     ]);
 
