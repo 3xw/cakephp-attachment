@@ -55,7 +55,7 @@ const createActions = ({
           })
           .catch((err) => {
             const parsedError = parseError(err);
-
+            console.log('parsedError', parsedError);
             commit('fetchListError', parsedError);
 
             return Promise.reject(parsedError);
@@ -94,6 +94,7 @@ const createActions = ({
           })
           .catch((err) => {
             const parsedError = parseError(err);
+            console.log('parsedError', parsedError);
 
             commit('fetchSingleError', parsedError);
 
@@ -128,6 +129,7 @@ const createActions = ({
           })
           .catch((err) => {
             const parsedError = parseError(err);
+            console.log('parsedError', parsedError);
 
             commit('createError', parsedError);
 
@@ -168,6 +170,7 @@ const createActions = ({
           })
           .catch((err) => {
             const parsedError = parseError(err);
+            console.log('parsedError', parsedError);
 
             commit('updateError', parsedError);
 
@@ -208,6 +211,7 @@ const createActions = ({
           })
           .catch((err) => {
             const parsedError = parseError(err);
+            console.log('parsedError', parsedError);
 
             commit('replaceError', parsedError);
 
@@ -247,6 +251,7 @@ const createActions = ({
           })
           .catch((err) => {
             const parsedError = parseError(err);
+            console.log('parsedError', parsedError);
 
             commit('destroyError', parsedError);
 

@@ -1,5 +1,5 @@
 <template>
-  <main >
+  <main>
 
     <!-- INPUT VIEW -->
     <div v-if="mode == 'input'" class="input form-group">
@@ -14,7 +14,7 @@
         </div>
 
         <!-- files -->
-        <div >
+        <div>
           <draggable class="row" v-model="selectedFiles" @start="drag=true" @end="drag=false">
             <div v-for="(attachment, i ) in selectedFiles" :key="attachment.id" class="col-12" :class="settings.cols">
               <attachment :index="i" :aid="aid" mode="input" :attachment="attachment" :settings="settings"></attachment>
@@ -33,12 +33,14 @@
     </div><!-- // END INPUT VIEW -->
 
     <!-- BROWSE UPLOAD EMBED VIEW -->
-    <div v-if="mode != 'input'" class="section-attachment--container" :class="{ 'attachment-overlay-full': settings.overlay, 'd-none': (mode == 'hidden') }">
+    <div v-if="mode != 'input'" class="section-attachment--container"
+      :class="{ 'attachment-overlay-full': settings.overlay, 'd-none': (mode == 'hidden') }">
 
       <!-- dissmiss -->
       <section v-if="settings.overlay" class="">
         <div class="text-right">
-          <button @click="mode = (tinymce)? (selectedFiles.length? 'editor-options': 'hidden') : 'input'" type="button" name="button" class="btn btn-danger">FERMER</button>
+          <button @click="mode = (tinymce)? (selectedFiles.length? 'editor-options': 'hidden') : 'input'" type="button"
+            name="button" class="btn btn-danger">FERMER</button>
         </div>
       </section>
 
@@ -48,7 +50,9 @@
           <div class="w-100"></div>
           <div class="col-md-3 col-xl-2">
             <div class="section__side">
-              <div v-if="settings.groupActions.indexOf('add') != -1" class="section__add section--blue-light color--blue-dark action pointer d-flex flex-row align-items-center" @click="mode = 'upload';$forceUpdate();">
+              <div v-if="settings.groupActions.indexOf('add') != -1"
+                class="section__add section--blue-light color--blue-dark action pointer d-flex flex-row align-items-center"
+                @click="mode = 'upload';$forceUpdate();">
                 <icon-add></icon-add>&nbsp;&nbsp;&nbsp;&nbsp;<p class="mb-0">Ajouter des fichiers</p>
               </div>
               <div class="section__nav">
@@ -56,7 +60,8 @@
                   <icon-filter></icon-filter>&nbsp;&nbsp;&nbsp;&nbsp;<p class="mb-0">Filtres et tags</p>
                 </div>
                 <div class="utils--spacer-semi"></div>
-                <attachment-atags :aid="aid" :upload="false" :filters="settings.browse.filters" :options="settings.options"></attachment-atags>
+                <attachment-atags :aid="aid" :upload="false" :filters="settings.browse.filters"
+                  :options="settings.options" :userFilter="settings.user_filter"></attachment-atags>
               </div>
             </div>
           </div>
@@ -78,99 +83,100 @@
 
                   <!-- EMBED -->
                   <button
-                  v-if="reIndexOf(settings.types, /embed/gm) != -1 && settings.groupActions.indexOf('tinymce') == -1"
-                  @click="mode = 'embed'"
-                  type="button"  name="button" class="btn btn--blue color--white">
-                  AJOUTER UN CODE EMBED
-                </button>
+                    v-if="reIndexOf(settings.types, /embed/gm) != -1 && settings.groupActions.indexOf('tinymce') == -1"
+                    @click="mode = 'embed'" type="button" name="button" class="btn btn--blue color--white">
+                    AJOUTER UN CODE EMBED
+                  </button>
 
-                <button @click="mode = 'browse'" type="button" name="button" class="btn btn-danger">ANNULER</button>
-              </div>
+                  <button @click="mode = 'browse'" type="button" name="button" class="btn btn-danger">ANNULER</button>
+                </div>
 
-            </div>
-            <div class="utils--spacer-semi"></div>
-            <div class="row">
-              <div class="col-12 col-md-3">
-                <label>Ajouter des tags</label>
-                <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters" :options="settings.options"></attachment-atags>
               </div>
-              <div class="col-12 col-md-9">
-                <attachment-upload :aid="aid"></attachment-upload>
+              <div class="utils--spacer-semi"></div>
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <label>Ajouter des tags</label>
+                  <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters"
+                    :options="settings.options"></attachment-atags>
+                </div>
+                <div class="col-12 col-md-9">
+                  <attachment-upload :aid="aid"></attachment-upload>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!--- embed -->
-    <section v-if="mode == 'embed'" class="section-attachment--embed">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="section__nav">
-            <div class="d-flex flex-row justify-content-between align-items-center">
-              <h1>Ajouter un code embed</h1>
+      <!--- embed -->
+      <section v-if="mode == 'embed'" class="section-attachment--embed">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section__nav">
+              <div class="d-flex flex-row justify-content-between align-items-center">
+                <h1>Ajouter un code embed</h1>
 
-              <div class="btn-group">
+                <div class="btn-group">
 
-                <!-- UPLOAD -->
-                <button
-                @click="mode = 'upload'"
-                type="button"  name="button" class="btn btn--blue color--white">
-                UPLOADER UN FICHIER
-              </button>
+                  <!-- UPLOAD -->
+                  <button @click="mode = 'upload'" type="button" name="button" class="btn btn--blue color--white">
+                    UPLOADER UN FICHIER
+                  </button>
 
-              <button @click="mode = 'browse'" type="button" name="button" class="btn btn-danger">ANNULER</button>
-            </div>
+                  <button @click="mode = 'browse'" type="button" name="button" class="btn btn-danger">ANNULER</button>
+                </div>
 
-          </div>
-          <div class="utils--spacer-semi"></div>
-          <div class="row">
-            <div class="col-12 col-md-3">
-              <label>Tags</label>
-              <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters" :options="settings.options"></attachment-atags>
-            </div>
-            <div class="col-12 col-md-9">
-              <attachment-embed :aid="aid"></attachment-embed>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- edit mode -->
-  <section v-if="mode == 'edit'" class="section-attachment--upload">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="section__nav">
-          <div class="d-flex flex-row justify-content-between align-items-center">
-            <h1>Editer des fichiers</h1>
-            <button @click="mode = 'browse';" type="button" name="button" class="btn btn-danger">ANNULER</button>
-          </div>
-          <div class="utils--spacer-semi"></div>
-          <div class="row">
-            <div class="col-12 col-md-3">
-              <label>Tags</label>
-              <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters" :options="settings.options"></attachment-atags>
-            </div>
-            <div class="col-12 col-md-9">
-              <attachment-edit :aid="aid" :settings="settings"></attachment-edit>
+              </div>
+              <div class="utils--spacer-semi"></div>
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <label>Tags</label>
+                  <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters"
+                    :options="settings.options"></attachment-atags>
+                </div>
+                <div class="col-12 col-md-9">
+                  <attachment-embed :aid="aid"></attachment-embed>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- TinyMCE Options inline-options -->
-  <section v-if="mode == 'editor-options'" class="section-attachment--editor-options">
-    <inline-options :file="(selectedFiles)? selectedFiles[0] : false" :aid="aid" :settings="settings"></inline-options>
-  </section>
+      <!-- edit mode -->
+      <section v-if="mode == 'edit'" class="section-attachment--upload">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section__nav">
+              <div class="d-flex flex-row justify-content-between align-items-center">
+                <h1>Editer des fichiers</h1>
+                <button @click="mode = 'browse';" type="button" name="button" class="btn btn-danger">ANNULER</button>
+              </div>
+              <div class="utils--spacer-semi"></div>
+              <div class="row">
+                <div class="col-12 col-md-3">
+                  <label>Tags</label>
+                  <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters"
+                    :options="settings.options"></attachment-atags>
+                </div>
+                <div class="col-12 col-md-9">
+                  <attachment-edit :aid="aid" :settings="settings"></attachment-edit>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-</div><!-- // END BROWSE UPLOAD EMBED VIEW -->
+      <!-- TinyMCE Options inline-options -->
+      <section v-if="mode == 'editor-options'" class="section-attachment--editor-options">
+        <inline-options :file="(selectedFiles)? selectedFiles[0] : false" :aid="aid"
+          :settings="settings"></inline-options>
+      </section>
 
-</main>
+    </div><!-- // END BROWSE UPLOAD EMBED VIEW -->
+
+  </main>
 </template>
 <script>
 // npm libs
@@ -264,8 +270,9 @@ export default
       // CMS add
       if(this.entity && this.entity.setAttachments)this.entity.setAttachments(value)
     },
-    mode()
+    async mode()
     {
+      this.$store.set(this.aid + '/tParams', Object.assign(this.$store.get(this.aid + '/tParams'), { selected: '', mode: this.mode }))
       this.$forceUpdate()
 
       if (this.displayQuery && this.getQueryVariable('mode') != this.mode) this.setModeAsState(this.mode)
@@ -290,6 +297,7 @@ export default
   },
   mounted()
   {
+    this.$store.set(this.aid + '/tParams', Object.assign(this.$store.get(this.aid + '/tParams'), { mode: this.mode }))
     if (this.mode == 'input' || this.mode == 'hidden') this.displayQuery = false;
     if(this.displayQuery){
       this.setDefaultQuery()

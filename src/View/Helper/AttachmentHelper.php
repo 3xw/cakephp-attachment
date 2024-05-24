@@ -75,6 +75,20 @@ class AttachmentHelper extends Helper
       'defaultLocale' => Configure::read('App.defaultLocale')
     ];
 
+    // user filter settings
+    $user = $this->_View->getRequest()->getSession()->read('Auth');
+
+    $tagsIds = [];
+    if(!empty($user->atags))
+    {
+      foreach($user->atags as $tag) $tagsIds[] = $tag['id'];
+    }
+
+    $settings['user_filter'] = [
+      'tags' => $tagsIds,
+      'tag_types' => Configure::read('Trois/Attachment.browse.user_filter_tag_types')
+    ];
+    
     // browse settings
     $settings['browse'] = Configure::read('Trois/Attachment.browse');
 

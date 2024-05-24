@@ -98,6 +98,8 @@ return [
         'token' => '',
       ],
       'filter_tags' => false, // true = n'affiche que les tags qui ont des fichiers
+      'only_used_tags' => true,
+      'user_filter_tag_types' => [], // ids des types de tags à filtrer si user à des tags associés. Si vide, tous les tags sont affichés
       'types' => [
         'all' => [
           'label' => __('Tout'),

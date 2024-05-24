@@ -4,15 +4,25 @@ declare(strict_types=1);
 namespace Trois\Attachment;
 
 use Cake\Core\BasePlugin;
+use Cake\ORM\TableRegistry;
 use Cake\Routing\RouteBuilder;
 use Cake\Console\CommandCollection;
 use Cake\Core\PluginApplicationInterface;
+use Cake\Core\Configure;
 
 class Plugin extends BasePlugin
 {
   public function bootstrap(PluginApplicationInterface $app): void
   {
     parent::bootstrap($app);
+    
+    if(!empty(Configure::read('Trois/Attachment.browse.user_filter_tag_types'))){
+      $usersTable = TableRegistry::getTableLocator()->get('Users');
+      $usersTable->addBehavior('Trois/Attachment.UserATags');
+    }
+
+    
+
   }
 
   public function console(CommandCollection $commands): CommandCollection

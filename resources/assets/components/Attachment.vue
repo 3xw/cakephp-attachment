@@ -228,9 +228,11 @@ export default
       }
     },
     downloadFile(attachment){
+      this.$parent.downloading = true
       client.get(attachment.url, {responseType: 'arraybuffer'})
-      .then(response => {
-        this.forceFileDownload(response, attachment)
+      .then(async (response) => {
+        await this.forceFileDownload(response, attachment)
+        this.$parent.downloading = false
       })
       .catch((response) => console.log(response))
     },

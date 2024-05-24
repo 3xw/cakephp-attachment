@@ -89,6 +89,25 @@ class AttachmentsController extends AppController
   {
     // security first !! be sure to restrict index with coresonding session settings!
     if(empty($this->request->getQuery('uuid'))) throw new UnauthorizedException(__d('Trois/Attachment','Missing uuid'));
+    $this->Crud->on('beforePaginate', function (Event $event) {
+      if(!empty(Configure::read('Trois/Attachment.browse.user_filter_tag_types'))){
+        $this->loadModel('Users');
+        $id = $this->getRequest()->getSession()->read('Auth')->id;
+        $user = $this->Users->get($id, ['contain' => ['Atags']]);
+        $tagsIds = [];
+        if(!empty($user->atags))
+        {
+          foreach($user->atags as $tag) $tagsIds[] = $tag['id'];
+        }
+        if(!empty($tagsIds)){
+          $event->getSubject()->query
+            ->contain(['Atags'])
+            ->matching('Atags', function ($q) use ($tagsIds) {
+              return $q->where(['Atags.id IN' => $tagsIds]);
+          });
+        }
+      }
+    });
 
     return $this->Crud->execute();
   }

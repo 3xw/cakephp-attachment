@@ -10,8 +10,10 @@
       <div class="d-flex flex-row justify-content-between align-items-center">
         <ul class="list-unstyled">
           <li>
-            <ul class="list-unstyled list-inline" ><!-- v-if="types.isActive" -->
-              <li class="text--upper list-inline-item pointer" v-for="(option, i2) in settings.browse.types" :key="i2" @click="types.current = option.mime.join(',');$forceUpdate();filterType();"  :class="{active: types.current == option.mime.join(',')}">
+            <ul class="list-unstyled list-inline"><!-- v-if="types.isActive" -->
+              <li class="text--upper list-inline-item pointer" v-for="(option, i2) in settings.browse.types" :key="i2"
+                @click="types.current = option.mime.join(',');$forceUpdate();filterType();"
+                :class="{active: types.current == option.mime.join(',')}">
                 <strong>{{ option.label }}</strong>
               </li>
             </ul>
@@ -22,52 +24,42 @@
           <div class="btn-group">
 
             <!-- FORM DOWNLOAD -->
-            <form ref="dform" :action="$store.get(this.aid + '/settings.url')+'attachment/download/files'" method="POST">
+            <form ref="dform" :action="$store.get(this.aid + '/settings.url')+'attachment/download/files'"
+              method="POST">
               <input type="hidden" name="token" v-model="downloadToken">
             </form>
 
             <!-- SELECT -->
-            <button
-              v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('select') != -1"
-              @click="confirmSelection"
-              type="button" name="button" class="btn btn--blue mb-0 color--white">
+            <button v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('select') != -1"
+              @click="confirmSelection" type="button" name="button" class="btn btn--blue mb-0 color--white">
               CHOISIR
             </button>
 
             <!-- ARCHIVE -->
-            <button
-
-              v-if="selectedFiles.length > 1 && settings.browse.download.multiple && !downloading" 
-              @click="multiDownload"
-              type="button" name="button" class="btn btn--blue mb-0 color--white">
+            <button v-if="selectedFiles.length > 1 && settings.browse.download.multiple && !downloading"
+              @click="multiDownload" type="button" name="button" class="btn btn--blue mb-0 color--white">
               TÉLÉCHARGER
             </button>
 
-            <button v-if="downloading" disabled  class="btn btn--blue mb-0 color--white">
+            <button v-if="downloading" disabled class="btn btn--blue mb-0 color--white">
               TÉLÉCHARGEMENT EN COURS
             </button>
 
             <!-- EDIT -->
-            <button
-              v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('edit') != -1"
-              @click="editSelection"
-              type="button"  name="button" class="btn btn--orange mb-0 color--white">
+            <button v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('edit') != -1"
+              @click="editSelection" type="button" name="button" class="btn btn--orange mb-0 color--white">
               EDITER
             </button>
 
             <!-- EDIT -->
-            <button
-              v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('tinymce') != -1"
-              @click="editorOptions"
-              type="button"  name="button" class="btn btn--orange mb-0 color--white">
+            <button v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('tinymce') != -1"
+              @click="editorOptions" type="button" name="button" class="btn btn--orange mb-0 color--white">
               AJOUTER A L'ÉDITEUR
             </button>
 
             <!-- DELETE -->
-            <button
-              v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('delete') != -1"
-              @click="deleteSelection"
-              type="button" name="button" class="btn btn--red mb-0 color--white">
+            <button v-if="selectedFiles.length > 0 && settings.groupActions.indexOf('delete') != -1"
+              @click="deleteSelection" type="button" name="button" class="btn btn--red mb-0 color--white">
               SUPPRIMER
             </button>
 
@@ -79,9 +71,14 @@
         <div>
           <div v-if="aParams.atags || aParams.filters || aParams.date" class="f-flex flex-row">
             <p class="small color--grey d-inline-block">Filtre(s): </p>
-            <span v-if="aParams.atags" class="badge badge-secondary bg-secondary" @click="removeAtag(atag)" :key="atag" v-for="atag in aParams.atags.split(',')">{{atag}} <i class="material-icons">close</i></span>
-            <span v-if="aParams.filters" class="badge badge-secondary bg-secondary" @click="removeFilter(filter)" :key="atag" v-for="filter in aParams.filters.split(',')">{{filter}} <i class="material-icons">close</i></span>
-            <span v-if="aParams.date" class="badge badge-secondary bg-secondary" @click="removeDate()" > {{ aParams.date.split(',').length > 1 ? aParams.date.split(',')[0] + ' - ' + aParams.date.split(',')[1] : 'Derniers fichiers ajoutés' }} <i class="material-icons">close</i></span>
+            <span v-if="aParams.atags" class="badge badge-secondary bg-secondary" @click="removeAtag(atag)" :key="atag"
+              v-for="atag in aParams.atags.split(',')">{{atag}} <i class="material-icons">close</i></span>
+            <span v-if="aParams.filters" class="badge badge-secondary bg-secondary" @click="removeFilter(filter)"
+              :key="atag" v-for="filter in aParams.filters.split(',')">{{filter}} <i
+                class="material-icons">close</i></span>
+            <span v-if="aParams.date" class="badge badge-secondary bg-secondary" @click="removeDate()"> {{
+              aParams.date.split(',').length > 1 ? aParams.date.split(',')[0] + ' - ' + aParams.date.split(',')[1] :
+              'Derniers fichiers ajoutés' }} <i class="material-icons">close</i></span>
             <div class="utils--spacer-semi"></div>
           </div>
           <div class="section__sort d-flex flex-row align-items-center">
@@ -93,26 +90,29 @@
           </div>
         </div>
         <div class="section__filter d-flex flex-row">
-          <button type="button" @click="mode = 'thumb'" name="button" class="btn btn--white mb-0" :class="{active: mode == 'thumb'}"><icon-grid></icon-grid></button>
-          <button v-if="types.current == 'image/*'" type="button" @click="mode = 'mosaic'" name="button" class="btn btn--white mb-0" :class="{active: mode == 'mosaic'}"><icon-mosaic></icon-mosaic></button>
-          <button type="button" @click="mode = 'thumbInfo'" name="button" class="btn btn--white mb-0" :class="{active: mode == 'thumbInfo'}"><icon-list></icon-list></button>
+          <button type="button" @click="mode = 'thumb'" name="button" class="btn btn--white mb-0"
+            :class="{active: mode == 'thumb'}"><icon-grid></icon-grid></button>
+          <button v-if="types.current == 'image/*'" type="button" @click="mode = 'mosaic'" name="button"
+            class="btn btn--white mb-0" :class="{active: mode == 'mosaic'}"><icon-mosaic></icon-mosaic></button>
+          <button type="button" @click="mode = 'thumbInfo'" name="button" class="btn btn--white mb-0"
+            :class="{active: mode == 'thumbInfo'}"><icon-list></icon-list></button>
         </div>
       </div>
     </div>
 
-    <div class="section__index" v-if="attachments && $parent.loading == false">
+    <div class="section__index" v-if="attachments && $parent.loading == false && !downloading">
       <h3 class="text-end">
         <span v-if="pagination && pagination.count">{{pagination.count}}</span>
         <span v-else>0</span>
         Fichiers
-        <span v-if="size.length">  &nbsp; | &nbsp; {{ parseInt(size[0].size) | bytesToMegaBytes | decimal(2) }} MB</span>
+        <span v-if="size.length"> &nbsp; | &nbsp; {{ parseInt(size[0].size) | bytesToMegaBytes | decimal(2) }} MB</span>
       </h3>
       <div class="utils--spacer-mini"></div>
       <transition name="fade">
         <div v-if="mode == 'mosaic'" v-images-loaded="imgReady">
-          <div  id="mosaic">
+          <div id="mosaic">
             <div class="mosaic-img-container" v-for="(attachment, i ) in attachments" :key="i">
-              <attachment :index="i" :aid="aid" :mode="mode" :attachment="attachment" ></attachment>
+              <attachment :index="i" :aid="aid" :mode="mode" :attachment="attachment"></attachment>
             </div>
           </div>
         </div>
@@ -120,14 +120,15 @@
           <div>
             <div class="row g-4">
               <div v-for="(attachment, i ) in attachments" :key="i" class="col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                <attachment :index="i" :aid="aid" :mode="mode" :attachment="attachment" ></attachment>
+                <attachment :index="i" :aid="aid" :mode="mode" :attachment="attachment"></attachment>
               </div>
             </div>
           </div>
         </div>
         <div v-else-if="mode == 'thumbInfo'">
           <table class="table w-100">
-            <attachment v-for="(attachment, i ) in attachments" :key="i" :index="i" :aid="aid" :mode="mode" :attachment="attachment" ></attachment>
+            <attachment v-for="(attachment, i ) in attachments" :key="i" :index="i" :aid="aid" :mode="mode"
+              :attachment="attachment"></attachment>
           </table>
         </div>
       </transition>
@@ -137,7 +138,7 @@
         <attachment-pagination :aid="aid" :pagination="pagination" :settings="settings"></attachment-pagination>
       </div>
     </div>
-    <div v-if="$parent.loading == true" class=" text-center">
+    <div v-if="$parent.loading == true || downloading" class=" text-center">
       <img src="https://static.wgr.ch/attachment/loading.gif" alt="">
     </div>
     <attachment-preview :aid="aid" :open="false"></attachment-preview>

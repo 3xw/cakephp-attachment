@@ -5,8 +5,11 @@
         <div class="section-attachment__list-title d-flex flex-row justify-content-between">
           <p class="text--upper mb-0 color--grey-light-text">{{filter.label}}</p>
         </div>
-        <ul class="list-unstyled section-attachment__sublist" ><!-- v-if="filter.isActive" -->
-          <li v-for="(option, i2) in filter.options" :key="i2" @click="option.isActive = !option.isActive;$forceUpdate();filterOption(option.slug); " class="d-flex flex-row justify-content-between align-items-center" :class="{active: checkFilterActive(i, i2, option.slug)}">
+        <ul class="list-unstyled section-attachment__sublist"><!-- v-if="filter.isActive" -->
+          <li v-for="(option, i2) in filter.options" :key="i2"
+            @click="option.isActive = !option.isActive;$forceUpdate();filterOption(option.slug); "
+            class="d-flex flex-row justify-content-between align-items-center"
+            :class="{active: checkFilterActive(i, i2, option.slug)}">
             {{option.label}} <input type="checkbox" :checked="checkFilterActive(i, i2, option.slug)">
           </li>
         </ul>
@@ -15,14 +18,14 @@
         <div class="section-attachment__list-title d-flex flex-row justify-content-between">
           <p class="text--upper mb-0 color--grey-light-text">{{atagType.name}}</p>
         </div>
-        <ul class="list-unstyled section-attachment__sublist" > <!--v-if="atagType.isActive"-->
-          <li
-            v-for="(atag, i2) in atagType.atags"
-            v-if="!visibility.hiddenValues.atags.includes(atag.slug)"
-            @click="toggle(i, i2)"
+        <ul class="list-unstyled section-attachment__sublist"> <!--v-if="atagType.isActive"-->
+          <li v-for="(atag, i2) in atagType.atags"
+            v-if="!visibility.hiddenValues.atags.includes(atag.slug) && !isTagUserFiltered(atag.id, atagType.id)"
+            @click="isOnlyUserTag(atag.id) ? '' : toggle(i, i2)"
             class="d-flex flex-row justify-content-between align-items-center"
             :class="{active: ((upload)? atag.isActive : checkActive(i, i2, atag.name))}">
-            {{atag.name}} <input type="checkbox" :checked="(upload)? atag.isActive : checkActive(i, i2, atag.name)">
+            {{atag.name}} <input type="checkbox" :disabled="!upload && isOnlyUserTag(atag.id)"
+              :checked="(upload) ? atag.isActive : (checkActive(i, i2, atag.name) || isOnlyUserTag(atag.id)) ">
           </li>
         </ul>
       </li>
@@ -34,7 +37,7 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 export default
 {
   name:'attachment-atags',
-  props: { aid: String, upload:Boolean, filters: Array, options: Object },
+  props: { aid: String, upload:Boolean, filters: Array, options: Object, userFilter: Array},
   data(){
     return {
       visibility: {
@@ -51,7 +54,7 @@ export default
           atagTypes: [],
           atags: []
         }
-      }
+      },
     }
   },
   computed:
@@ -76,21 +79,31 @@ export default
         }
         return visibilityParams
     },
+    isUpload()
+    {
+      return this.upload
+    }
   },
   watch: {
     aParams:
     {
-      handler(){
+      async handler(){
+        await new Promise(resolve => setTimeout(resolve, 1000))
         this.checkForHiddenOptions()
         this.removeTagsActived()
         this.checkAllActived()
       },
       deep: true
-    }
+    },
+    atagTypes(newVal, oldVal)
+    {
+        if (newVal.length > 0 && oldVal.length === 0){
+            this.toggleUserFilteredTags()
+        }
+    },
   },
   created()
   {
-
   },
   mounted()
   {
@@ -106,6 +119,12 @@ export default
       // toogle
       if(!this.atagTypes[index1].atags[index2].isActive) this.atagTypes[index1].atags[index2].isActive = true
       else this.atagTypes[index1].atags[index2].isActive = false
+
+      if(!this.upload){
+        let selectedTags = []
+        for (let i1 in this.atagTypes) for (let i2 in this.atagTypes[i1].atags) if (this.atagTypes[i1].atags[i2].isActive) selectedTags.push(this.atagTypes[i1].atags[i2].name)
+        this.$store.set(this.aid + '/tParams', Object.assign(this.$store.get(this.aid + '/tParams'), { selected: selectedTags.join(',') }))
+      }
 
       // force render
       this.$forceUpdate()
@@ -232,6 +251,18 @@ export default
         }
       }
       this.$forceUpdate()
+    },
+    isTagUserFiltered(atagId, atagTypeId){
+      if(this.upload) return false
+      if (this.userFilter.tags.length > 0 && this.userFilter.tag_types.length > 0 && this.userFilter.tag_types.includes(atagTypeId)){
+        return !this.userFilter.tags.includes(atagId)
+      }
+      return false
+    },
+    isOnlyUserTag(atagId){
+      if (this.upload) return false
+      if (this.userFilter.tags.length === 1 && this.userFilter.tags.includes(atagId)) console.log('isOnlyUserTag', atagId, this.userFilter.tags);
+      return this.userFilter.tags.length === 1 && this.userFilter.tags.includes(atagId)
     }
   }
 }

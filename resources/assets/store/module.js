@@ -29,6 +29,8 @@ export default
         uuid: '',
         refresh: '',
         type: '',
+        selected: '',
+        mode: '',
       },
       pagination: {},
       settings: {},

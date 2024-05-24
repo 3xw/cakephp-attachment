@@ -20,7 +20,13 @@ const createCrud = ({
   client = defaultClient,
   onFetchListStart = () => {},
   onFetchListSuccess = () => {},
-  onFetchListError = () => {},
+  onFetchListError = (error) => {
+    if(error.fetchListError.response.status == 403){
+      if(confirm('Votre session a expiré, veuillez vous reconnecter')){
+        window.location.reload();
+      }
+    }
+  },
   onFetchSingleStart = () => {},
   onFetchSingleSuccess = () => {},
   onFetchSingleError = () => {},
