@@ -19,11 +19,24 @@ const createCrud = ({
   getters = {},
   client = defaultClient,
   onFetchListStart = () => {},
-  onFetchListSuccess = () => {},
+  onFetchListSuccess = () => {
+    try{
+      localStorage.removeItem('asReloaded')
+    }catch(e){ 
+      console.log(e)
+    }
+  },
   onFetchListError = (error) => {
-    if(error.fetchListError.response.status == 403){
-      if(confirm('Votre session a expiré, veuillez vous reconnecter')){
+    if(error.fetchListError.response.status == 403 && localStorage.getItem('asReloaded') == null){
+      if(confirm('Votre session a expiré, la page va être rechargeé.')){
+        localStorage.setItem('asReloaded', true)
         window.location.reload();
+      }else{
+        try{
+          localStorage.removeItem('asReloaded')
+        }catch(e){
+          console.log(e)
+        }
       }
     }
   },

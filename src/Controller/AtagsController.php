@@ -22,12 +22,7 @@ class AtagsController extends AppController
     parent::initialize();
 
     $this->loadComponent('Crud.Crud', [
-      'actions' => [
-        'index' => [
-          'className' => 'Crud.Index',
-          'relatedModels' => ['Attachments']
-        ],
-      ],
+      'actions' => ['Crud.Index'],
       'listeners' => [
         //'CrudCache',
         'Crud.Api',

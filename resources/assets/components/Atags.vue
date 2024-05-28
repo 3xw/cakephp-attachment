@@ -95,12 +95,6 @@ export default
       },
       deep: true
     },
-    atagTypes(newVal, oldVal)
-    {
-        if (newVal.length > 0 && oldVal.length === 0){
-            this.toggleUserFilteredTags()
-        }
-    },
   },
   created()
   {
