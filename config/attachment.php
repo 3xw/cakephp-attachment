@@ -36,6 +36,10 @@ return [
       'profile' => 'default'
     ]),
 
+    'multiUpload' => [
+      'enabled' => false,
+    ],
+
     // unique
     'md5Unique' => true,
 
