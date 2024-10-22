@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0cd14d75196e71b931c63b6ca3de0d34",
+    "content-hash": "2eaf849ab66575eafc8638e1f21ff09b",
     "packages": [
         {
             "name": "3xw/cakephp-utils",
@@ -4275,11 +4275,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "league/flysystem-sftp-v3": 20,
-        "league/flysystem-ziparchive": 20,
-        "league/flysystem-aws-s3-v3": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -10,9 +10,9 @@
     "3xw/cakephp-utils":"^4.0",
     "intervention/image": "^2.3",
     "firebase/php-jwt": "^5.0",
-    "league/flysystem-sftp-v3": "3.x-dev",
-    "league/flysystem-ziparchive": "3.x-dev",
-    "league/flysystem-aws-s3-v3": "3.x-dev"
+    "league/flysystem-sftp-v3": "^3.0",
+    "league/flysystem-ziparchive": "^3.0",
+    "league/flysystem-aws-s3-v3": "^3.0"
   },
   "require-dev": {
     "phpunit/phpunit": "*"
