@@ -10,26 +10,26 @@ return [
 
       // packed profiles
       'default' => [
-    		'client' => new League\Flysystem\Adapter\Local(WWW_ROOT.'files'),
-        'baseUrl' =>  '/files/'
-    	],
+        'client' => new League\Flysystem\Local\LocalFilesystemAdapter(WWW_ROOT . 'files'),
+        'baseUrl' => '/files/'
+      ],
       'img' => [
-    		'client' => new League\Flysystem\Adapter\Local(WWW_ROOT.'img'),
-        'baseUrl' =>  '/img/'
-    	],
-      'external' => [
-    		'client' => new Trois\Attachment\Filesystem\Adapter\External(),
-        'baseUrl' =>  null,
-    	],
+        'client' => new League\Flysystem\Local\LocalFilesystemAdapter(WWW_ROOT . 'img'),
+        'baseUrl' => '/img/'
+      ],
+      // 'external' => [
+      // 	'client' => new Trois\Attachment\Filesystem\Adapter\External(),
+      //   'baseUrl' =>  null,
+      // ],
       'thumbnails' => [
-    		'client' => new League\Flysystem\Adapter\Local(WWW_ROOT.'thumbnails'),
-        'baseUrl' =>  '/thumbnails/',
+        'client' => new League\Flysystem\Local\LocalFilesystemAdapter(WWW_ROOT . 'thumbnails'),
+        'baseUrl' => '/thumbnails/',
         'thumbnails' => false
-    	],
+      ],
       'sys_temp' => [
-    		'client' => new League\Flysystem\Adapter\Local(sys_get_temp_dir()),
-        'baseUrl' =>  null,
-    	],
+        'client' => new League\Flysystem\Local\LocalFilesystemAdapter(sys_get_temp_dir()),
+        'baseUrl' => null,
+      ],
     ],
 
     'archives' => new Trois\Attachment\Filesystem\Compressor\ZipCompressor([
@@ -72,7 +72,7 @@ return [
       'maxsize' => 30, // 30MB,
       'maxquantity' => -1,
       'minwidth' => 0, // taille de l'image en px | 0 = pas de contrainte
-      'types' =>[],
+      'types' => [],
       'atags' => [],
       'atagsDisplay' => false, // false | 'select' | 'input'
       'restrictions' => [], // or Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED
@@ -98,7 +98,7 @@ return [
         ],
         'multiple' => false,
         'client' => '',
-        'url' => '', 
+        'url' => '',
         'token' => '',
       ],
       'filter_tags' => false, // true = n'affiche que les tags qui ont des fichiers
@@ -158,4 +158,5 @@ return [
       'aligns' => [], // or some of following [0,1,2,3,4,5,6,7,8] with 0 center, 1 top, 4 left, 5 right top corner, 8 left top corner ....
       'crops' => []
     ]
-]];
+  ]
+];
