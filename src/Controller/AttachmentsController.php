@@ -2,6 +2,7 @@
 namespace Trois\Attachment\Controller;
 
 use Trois\Attachment\Controller\AppController;
+use Trois\Attachment\Filesystem\ProfileRegistry;
 use Cake\Event\Event;
 use Crud\Event\Subject;
 use Cake\Core\Configure;
