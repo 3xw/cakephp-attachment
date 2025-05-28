@@ -144,11 +144,15 @@ class AttachmentHelper extends Helper
   }
   public function fullPath($attachment)
   {
-    $baseUrl = Configure::read('Trois/Attachment.profiles.'.$attachment->profile.'.baseUrl');
-    $start = substr($baseUrl,0 , 4);
-    $baseUrl = ( $start == 'http' )? $baseUrl : Router::url($baseUrl, true);
-    return $baseUrl.$attachment->path;
+    $baseUrl = Configure::read('Trois/Attachment.profiles.' . $attachment->profile . '.baseUrl');
+    if (empty($baseUrl)) {
+      return Router::url('/source/' . $attachment->path, true);
+    }
+    $start = substr($baseUrl, 0, 4);
+    $baseUrl = ($start == 'http') ? $baseUrl : Router::url($baseUrl, true);
+    return $baseUrl . $attachment->path;
   }
+  
   public function image($params, $attributes = null )
   {
     // src

@@ -120,4 +120,25 @@ class AttachmentsController extends AppController
     return $this->Crud->execute();
   }
 
+  public function source($path)
+  {
+
+    $attachment = $this->Attachments->find()
+    ->where(['Attachments.path' => $path])
+    ->firstOrFail();
+
+    $sourceFilePath = WWW_ROOT . 'source' . DS . $attachment->path;
+    $profile = ProfileRegistry::retrieve($attachment->profile);
+    $content = $profile->read($attachment->path);
+
+    file_put_contents($sourceFilePath, $content);
+
+    $this->response = $this->response
+      ->withType($attachment->type . '/' . $attachment->subtype)
+      ->withStringBody($content);
+
+    return $this->response;
+
+  }
+
 }
