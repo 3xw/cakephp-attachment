@@ -5,8 +5,8 @@
   "require": {
     "php": ">=8.1",
     "cakephp/cakephp": "^5.0",
-    "friendsofcake/crud": "^6.0",
-    "friendsofcake/search": "^6.0",
+    "friendsofcake/crud": "^7.0",
+    "friendsofcake/search": "^7.0",
     "3xw/cakephp-utils":"^5.0",
     "league/flysystem-aws-s3-v3": "^1.0",
     "league/flysystem-ziparchive": "^1.0",
