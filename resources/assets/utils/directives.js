@@ -1,6 +1,8 @@
 /* DIRECTIVES
 *******************************/
-Vue.directive('sortable', function (el, binding) {
-  options = binding.value || {}
-  window.Sortable.create(el, options);
-});
+export function registerDirectives(Vue) {
+  Vue.directive('sortable', function (el, binding) {
+    var options = binding.value || {}
+    window.Sortable.create(el, options);
+  });
+}

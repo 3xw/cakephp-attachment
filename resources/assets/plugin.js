@@ -5,8 +5,8 @@ import './assets/scss/theme.scss'
 import Browse from './components/Browse.vue'
 
 // UTILS
-import './utils/directives'
-import './utils/filters'
+import { registerDirectives } from './utils/directives'
+import { registerFilters } from './utils/filters'
 import './utils/getCsrfToken'
 import './utils/utils'
 
@@ -15,6 +15,10 @@ const
 components = [Browse],
 install = function(Vue, { store })
 {
+  // register directives
+  registerDirectives(Vue)
+  // register filters
+  registerFilters(Vue)
   // add components
   components.forEach(component => Vue.component(component.name, component))
 }
