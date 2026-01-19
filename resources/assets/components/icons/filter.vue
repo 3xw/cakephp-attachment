@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <svg width="26px" height="18px" viewBox="0 0 26 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g>
       <polygon id="Path" points="26 4.9 0 4.9 0 3 26 2.9"></polygon>

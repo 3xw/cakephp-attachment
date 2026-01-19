@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <div class="block-attachment--archive">
     <div class="block-attachment--archive-box" >
       <div class="block-attachment__header">

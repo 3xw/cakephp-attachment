@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <section class="section-attachment--atags">
     <ul class="list-unstyled section-attachment__list" v-if="atagTypes">
       <li v-for="(filter, i) in filters" v-if="!upload && !visibility.hiddenValues.filters.includes(filter.slug)">

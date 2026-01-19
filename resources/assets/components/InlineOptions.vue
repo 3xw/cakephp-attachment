@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <div id="attachment-trumbowyg-options" class="modal-mask" v-if="show" transition="modal">
     <div class="modal-wrapper">
       <div class="modal-container container">

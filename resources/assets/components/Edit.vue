@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <section>
     <div v-if="loading == true" class=" text-center">
       <img src="https://static.wgr.ch/attachment/loading.gif" alt="">

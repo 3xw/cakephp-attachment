@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <svg width="24px" height="22px" viewBox="0 0 24 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g>
       <path d="M12,9 C9.82857143,9 8,10.8285714 8,13 C8,15.1714286 9.82857143,17 12,17 C14.1714286,17 16,15.1714286 16,13 C16,10.8285714 14.1714286,9 12,9 Z" id="Path" fill-rule="nonzero"></path>

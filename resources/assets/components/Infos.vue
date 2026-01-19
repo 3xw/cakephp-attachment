@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <div class="block-attachment--modal" v-if="open && attachment.id">
     <div @click="open = false" class="block-attachment__close">
       <i class="material-icons"> clear </i>
