@@ -22,7 +22,7 @@ class EmbedBehavior extends Behavior
   *
   * @var array
   */
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'embed_field' => 'embed',
     'file_field' => 'path'
   ];

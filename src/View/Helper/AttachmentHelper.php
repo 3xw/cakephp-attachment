@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Trois\Attachment\View\Helper;
 
 use Cake\View\Helper;
@@ -21,7 +23,7 @@ class AttachmentHelper extends Helper
   const USER_RESTRICTED = 'user_restricted';
   const USER_OR_NO_ONE_RESTRICTED = 'user_or_no_one_restricted';
 
-  public $helpers = ['Url','Html'];
+  public array $helpers = ['Url','Html'];
   private $_filesystems = [];
   private $_version = false;
 

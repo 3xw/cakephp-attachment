@@ -2,7 +2,7 @@
 namespace Trois\Attachment\Filesystem\Compressor;
 
 use Cake\Core\InstanceConfigTrait;
-use Cake\Datasource\ModelAwareTrait;
+use Cake\ORM\Locator\LocatorAwareTrait;
 use Trois\Attachment\Model\Entity\Aarchive;
 use Cake\Event\Event;
 use Cake\Http\Exception\NotFoundException;
@@ -11,13 +11,13 @@ use Cake\Http\Exception\BadRequestException;
 abstract class BaseCompressor
 {
   use InstanceConfigTrait;
-  use ModelAwareTrait;
+  use LocatorAwareTrait;
 
   public $Attachments;
   public $attachments = [];
   public $allowedTypes = [];
 
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'profile' => 'default',
     'maxInputSize' => 1000, // IN MB
     'maxFiles' => 40,
@@ -27,7 +27,7 @@ abstract class BaseCompressor
   public function __construct(array $config = [])
   {
     $this->setConfig($config);
-    $this->Attachments = $this->loadModel('Trois/Attachment.Attachments');
+    $this->Attachments = $this->fetchTable('Trois/Attachment.Attachments');
     $this->createAllowedTypes();
   }
 

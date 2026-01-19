@@ -5,6 +5,7 @@ namespace Trois\Attachment\Model\Table;
 
 use Trois\Attachment\Model\Entity\Attachment;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -60,10 +61,10 @@ class AttachmentsTable extends Table
     $this->addBehavior('Search.Search',['collectionClass' => 'Trois/Attachment.Attachment']);
   }
 
-  public function find(string $type = 'all', array $options = []): Query
+  public function find(string $type = 'all', mixed ...$args): SelectQuery
   {
     if ($type == 'all' && Configure::read('Trois/Attachment.translate')) $type = 'translations';
-    return parent::find($type, $options);
+    return parent::find($type, ...$args);
   }
 
   public function validationDefault(Validator $validator): Validator

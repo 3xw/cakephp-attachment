@@ -24,7 +24,7 @@ class AttachmentsAtag extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         '*' => true,
         'attachment_id' => false,
         'atag_id' => false

@@ -9,7 +9,7 @@ use Cake\Routing\Router;
 
 class UserIDBehavior extends Behavior
 {
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'user_id' => 'user_id'
   ];
 

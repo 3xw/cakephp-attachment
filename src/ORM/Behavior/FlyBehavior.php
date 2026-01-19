@@ -18,18 +18,18 @@ use Trois\Attachment\Filesystem\ProfileRegistry;
 class FlyBehavior extends Behavior
 {
 
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'file_field' => 'path',
     'sessionControl' => true
   ];
 
-  protected $_file = [];
+  protected ?object $_file = null;
 
-  protected $_fileToRemove = false;
+  protected bool $_fileToRemove = false;
 
-  protected $_uuid = '';
+  protected string $_uuid = '';
 
-  protected $_session = null;
+  protected ?object $_session = null;
 
   public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
   {

@@ -5,7 +5,7 @@ use Cake\Core\Configure;
 use Trois\Attachment\Filesystem\ProfileRegistry;
 class Attachment extends Entity
 {
-  protected $_accessible = [
+  protected array $_accessible = [
     '*' => true,
     'id' => false,
   ];

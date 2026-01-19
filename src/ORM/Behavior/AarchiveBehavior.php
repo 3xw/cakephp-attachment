@@ -9,7 +9,7 @@ use Cake\ORM\Behavior;
 class AarchiveBehavior extends Behavior
 {
 
-  protected $_defaultConfig = [];
+  protected array $_defaultConfig = [];
 
   public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options)
   {

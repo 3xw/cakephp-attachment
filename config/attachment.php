@@ -1,4 +1,5 @@
 <?php
+use function Cake\I18n\__;
 
 return [
   'Trois/Attachment' => [

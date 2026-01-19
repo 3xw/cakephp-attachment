@@ -13,13 +13,15 @@ use Cake\ORM\Table;
 
 use Cake\Log\Log;
 
-use Cake\ORM\TableRegistry;
+use Cake\ORM\Locator\LocatorAwareTrait;
 
 /**
 * Storage behavior
 */
 class ATagBehavior extends Behavior
 {
+  use LocatorAwareTrait;
+
   public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
   {
 
@@ -60,7 +62,7 @@ class ATagBehavior extends Behavior
     {
 
 
-      $atags = TableRegistry::get('Atags');//$this->_table->Atags;
+      $atags = $this->fetchTable('Trois/Attachment.Atags');
       $tags = [];
       foreach($data['atags'] as $tag)
       {

@@ -11,7 +11,7 @@ use Cake\Http\Exception\BadRequestException;
 
 class ZipCompressor extends BaseCompressor
 {
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'profile' => 'default',
     'maxInputSize' => 1000, // IN MB
     'maxFiles' => 40,

@@ -27,7 +27,7 @@ class AtagType extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'name' => true,
         'slug' => true,
         'exclusive' => true,
