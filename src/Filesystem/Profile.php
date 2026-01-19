@@ -14,7 +14,7 @@ class Profile
 
   public $name;
 
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'adapter' => null,
     'client' => null,
     'baseUrl' =>  null,

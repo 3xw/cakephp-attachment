@@ -5,7 +5,7 @@ use Cake\Event\Event;
 
 class ModifyTypeListener extends BaseListener
 {
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'type' => 'transit',
     'subtype' => 'youtube',
     'conditions' => [

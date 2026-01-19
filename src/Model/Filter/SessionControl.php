@@ -10,7 +10,7 @@ use Cake\Utility\Hash;
 
 class SessionControl extends Base
 {
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'tag_restricted' => 'atags',
     'tag_or_restricted' => 'atags',
     'types_restricted' => 'types'

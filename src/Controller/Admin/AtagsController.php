@@ -15,7 +15,7 @@ use Trois\Attachment\Controller\AppController;
 class AtagsController extends AppController
 {
 
-  public $paginate = [
+  public array $paginate = [
     'limit' => 200,
     'order' => [
       'Atags.atag_type_id' => 'ASC',

@@ -27,7 +27,7 @@ class GetSizeAction extends \Crud\Action\BaseAction
      *
      * @var array
      */
-    protected $_defaultConfig = [
+    protected array $_defaultConfig = [
         'enabled' => true,
         'scope' => 'table',
         'findMethod' => 'all',

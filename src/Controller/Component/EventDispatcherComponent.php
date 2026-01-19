@@ -13,7 +13,7 @@ class EventDispatcherComponent extends Component
 
   protected $_request = null;
   protected $_uuid = null;
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'events' => [
       'beforeFilter',
       'startup',

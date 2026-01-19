@@ -8,7 +8,7 @@ use Cake\Http\Exception\BadRequestException;
 
 class LambdaCompressor extends BaseCompressor
 {
-  protected $_defaultConfig = [
+  protected array $_defaultConfig = [
     'clientSettings' => [],
     'TopicArn' => 'arn:aws:sns:eu-central-1::myTopic',
     'data' => [],
