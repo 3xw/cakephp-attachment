@@ -9,7 +9,7 @@ class Attachment extends Entity
     '*' => true,
     'id' => false,
   ];
-  protected $_virtual = ['mime','url','thumb_params', 'filename'];
+  protected array $_virtual = ['mime','url','thumb_params', 'filename'];
   protected function _getUrl()
   {
     return ProfileRegistry::retrieve($this->profile)->getUrl($this->path);
