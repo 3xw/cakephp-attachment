@@ -12,7 +12,7 @@ class AarchivesController extends AppController
 {
   use \Crud\Controller\ControllerTrait;
 
-  public $paginate = [
+  public array $paginate = [
     'page' => 1,
     'limit' => 20,
     'order' => [

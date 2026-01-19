@@ -10,7 +10,7 @@ class AtagsController extends AppController
 {
   use \Crud\Controller\ControllerTrait;
 
-  public $paginate = [
+  public array $paginate = [
         'limit' => 100000,
         'order' => [
             'Atags.name' => 'ASC'

@@ -18,7 +18,7 @@ class AttachmentsController extends AppController
 
   use \Crud\Controller\ControllerTrait;
 
-  public $paginate = [
+  public array $paginate = [
     'page' => 1,
     'limit' => 60,
     'maxLimit' => 50000,
