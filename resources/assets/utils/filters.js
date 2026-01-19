@@ -32,7 +32,7 @@ export function registerFilters(Vue) {
 
   Vue.filter('icon', function (attachment)
   {
-
+    var input;
     if(!attachment.aarchive) input = attachment.type+'/'+attachment.subtype
     else
     {
