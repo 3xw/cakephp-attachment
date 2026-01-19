@@ -7,7 +7,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\BadRequestException;
 use Trois\Attachment\Filesystem\FilesystemRegistry;
-use Cake\Filesystem\Folder;
+// Cake\Filesystem\Folder removed in CakePHP 5 - using native PHP mkdir
 use Cake\Core\App;
 use Intervention\Image\ImageManagerStatic as Image;
 use Trois\Attachment\Filesystem\ProfileRegistry;
@@ -159,7 +159,9 @@ class ResizeController extends AppController
     // create folders
     $folder = $profile.DS.$dim.DS.substr($image, 0, strrpos($image, '/') );
     $folder = $this->getProfile($profile)->thumbProfile()->getFullPath($folder);
-    $folder = new Folder($folder, true, 0777);
+    if (!is_dir($folder)) {
+        mkdir($folder, 0777, true);
+    }
 
     // quality
     $quality = $quality? $quality: Configure::read('Trois/Attachment.thumbnails.compression.quality');
