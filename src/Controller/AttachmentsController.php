@@ -25,7 +25,7 @@ class AttachmentsController extends AppController
     'order' => [
       'Attachments.created' => 'DESC'
     ],
-    'sortWhitelist' => [
+    'sortableFields' => [
       'name', 'created', 'type', 'subtype', 'date'
     ]
   ];
