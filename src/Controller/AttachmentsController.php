@@ -121,6 +121,21 @@ class AttachmentsController extends AppController
     return $this->Crud->execute();
   }
 
+  /**
+   * Edit a single attachment
+   * Supports FormData with file replacement
+   *
+   * @param string|null $id Attachment id
+   * @return \Cake\Http\Response|null
+   */
+  public function edit($id = null)
+  {
+    $this->Crud->on('beforeFind', function(Event $event) {
+        $event->getSubject()->query->contain(['Atags']);
+    });
+    return $this->Crud->execute();
+  }
+
   public function source($path)
   {
 

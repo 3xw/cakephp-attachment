@@ -14,6 +14,27 @@ class Profile
 
   public $name;
 
+  /**
+   * Magic getter for profile configuration properties.
+   * Maps property names to their corresponding config keys.
+   *
+   * @param string $name Property name
+   * @return mixed|null Config value or null if not found
+   */
+  public function __get(string $name): mixed
+  {
+    $map = [
+      'replaceExisting' => 'replace',
+      'afterReplace' => 'afterReplace',
+    ];
+
+    if (isset($map[$name])) {
+      return $this->getConfig($map[$name]);
+    }
+
+    return null;
+  }
+
   protected array $_defaultConfig = [
     'adapter' => null,
     'client' => null,
