@@ -170,6 +170,87 @@ class Profile
     if(($force || $this->getConfig('delete'))) $this->filesystem()->delete($file);
   }
 
+  /**
+   * Delete all thumbnails for a given file path.
+   *
+   * @param string $filePath The original file path (e.g., "images/photo.jpg")
+   * @return array List of deleted thumbnail paths
+   */
+  public function deleteThumbnails(string $filePath): array
+  {
+    $thumbProfileName = $this->getConfig('thumbnails');
+    if (empty($thumbProfileName) || $thumbProfileName === false) {
+      return [];
+    }
+
+    $thumbProfile = $this->thumbProfile();
+    $deletedPaths = [];
+    $profileDir = $this->name;
+
+    try {
+      $contents = $thumbProfile->listContents($profileDir, true);
+
+      foreach ($contents as $item) {
+        if ($item['type'] !== 'file') {
+          continue;
+        }
+
+        if ($this->matchesThumbnailPath($item['path'], $filePath, $profileDir)) {
+          try {
+            $thumbProfile->delete($item['path'], true);
+            $deletedPaths[] = $item['path'];
+          } catch (\Exception $e) {
+            // Continue with other deletions
+          }
+        }
+      }
+    } catch (\Exception $e) {
+      // listContents might fail on some adapters (e.g., External)
+    }
+
+    return $deletedPaths;
+  }
+
+  /**
+   * Check if a thumbnail path corresponds to the given original file path.
+   *
+   * @param string $thumbnailPath Full thumbnail path
+   * @param string $originalPath Original file path
+   * @param string $profileName Profile name
+   * @return bool
+   */
+  protected function matchesThumbnailPath(string $thumbnailPath, string $originalPath, string $profileName): bool
+  {
+    $thumbnailPath = str_replace(['/', '\\'], DS, $thumbnailPath);
+    $originalPath = str_replace(['/', '\\'], DS, $originalPath);
+
+    if (strpos($thumbnailPath, $profileName . DS) !== 0) {
+      return false;
+    }
+
+    // Direct suffix match
+    if (substr($thumbnailPath, -strlen($originalPath)) === $originalPath) {
+      return true;
+    }
+
+    // WebP conversion match
+    $thumbExt = strtolower(pathinfo($thumbnailPath, PATHINFO_EXTENSION));
+    $origExt = strtolower(pathinfo($originalPath, PATHINFO_EXTENSION));
+
+    if ($thumbExt === 'webp' && in_array($origExt, ['jpg', 'jpeg', 'png'])) {
+      $originalWithoutExt = pathinfo($originalPath, PATHINFO_DIRNAME) . DS .
+                            pathinfo($originalPath, PATHINFO_FILENAME);
+      $thumbWithoutExt = pathinfo($thumbnailPath, PATHINFO_DIRNAME) . DS .
+                         pathinfo($thumbnailPath, PATHINFO_FILENAME);
+
+      if (substr($thumbWithoutExt, -strlen($originalWithoutExt)) === $originalWithoutExt) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public function readAndDelete($path)
   {
     return $this->filesystem()->readAndDelete($path);

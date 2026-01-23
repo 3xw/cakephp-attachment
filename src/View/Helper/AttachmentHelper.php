@@ -220,6 +220,14 @@ class AttachmentHelper extends Helper
     foreach($dims as $key => $value) if (!empty($params[$key])) $url .= $value.$params[$key];
     if (!empty($params['cropratio'])) $url .= 'c'.str_replace(':','-',$params['cropratio']);
     $url = $url.'/'.$params['image'];
-    return ProfileRegistry::retrieve($profile)->thumbProfile()->getUrl($url);
+    $fullUrl = ProfileRegistry::retrieve($profile)->thumbProfile()->getUrl($url);
+
+    // Add version query param for cache busting (use modified timestamp or md5)
+    if (!empty($params['version'])) {
+      $separator = strpos($fullUrl, '?') !== false ? '&' : '?';
+      $fullUrl .= $separator . 'v=' . $params['version'];
+    }
+
+    return $fullUrl;
   }
 }

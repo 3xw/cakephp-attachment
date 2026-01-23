@@ -133,6 +133,7 @@ class FlyBehavior extends Behavior
       if(!empty($orginalValues[$field]))
       {
         $oldProfile = ProfileRegistry::retrieve(empty($orginalValues['profile'])? $conf['profile']: $orginalValues['profile']);
+        $oldProfile->deleteThumbnails($orginalValues[$field]);
         $oldProfile->delete($orginalValues[$field]);
         $afterReplace = $oldProfile->afterReplace;
       }
@@ -177,7 +178,11 @@ class FlyBehavior extends Behavior
   {
     $settings = $this->getConfig();
     $field = $settings['file_field'];
-    if(!empty($entity->get($field))) ProfileRegistry::retrieve($entity->get('profile'))->delete($entity->get($field));
+    if(!empty($entity->get($field))) {
+      $profile = ProfileRegistry::retrieve($entity->get('profile'));
+      $profile->deleteThumbnails($entity->get($field));
+      $profile->delete($entity->get($field));
+    }
   }
 
 }
