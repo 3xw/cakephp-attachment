@@ -5,7 +5,7 @@
       Tous les fichiers ont bien été téléchargés!
     </div>
     <div class="section__header">
-      <attachment-search-bar :aid="aid"></attachment-search-bar>
+      <attachment-search-bar :aid="aid" :settings="settings"></attachment-search-bar>
       <div class="utils--spacer-semi"></div>
       <div class="d-flex flex-row justify-content-between align-items-center">
         <ul class="list-unstyled">

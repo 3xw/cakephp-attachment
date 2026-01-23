@@ -58,6 +58,11 @@ $colors: (
   }
 }
 
+.icon-white path,
+.icon-white g {
+  fill: map-get($colors, 'white') !important;
+}
+
 [data-aspect-ratio] {
     display: block; max-width: 100%; position: relative;
     &:before { content: ''; display: block; }

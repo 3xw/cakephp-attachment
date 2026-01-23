@@ -70,15 +70,6 @@
 
           <!-- Main content (full width when no sidebar) -->
           <div :class="settings.browse.show_sidebar !== false ? 'col-md-9 col-xl-10' : 'col-12'">
-            <!-- Upload button moved here when sidebar hidden -->
-            <div v-if="settings.browse.show_sidebar === false && settings.groupActions.indexOf('add') != -1"
-              class="mb-3">
-              <button type="button"
-                class="btn btn--blue color--white d-flex align-items-center"
-                @click="mode = 'upload';$forceUpdate();">
-                <icon-add></icon-add>&nbsp;&nbsp;Ajouter des fichiers
-              </button>
-            </div>
             <attachments :aid="aid" :settings="settings"></attachments>
           </div>
         </div>
@@ -171,12 +162,12 @@
               </div>
               <div class="utils--spacer-semi"></div>
               <div class="row">
-                <div class="col-12 col-md-3">
+                <div v-if="settings.browse.show_sidebar !== false" class="col-12 col-md-3">
                   <label>Tags</label>
                   <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters"
                     :options="settings.options"></attachment-atags>
                 </div>
-                <div class="col-12 col-md-9">
+                <div :class="settings.browse.show_sidebar !== false ? 'col-12 col-md-9' : 'col-12'">
                   <attachment-edit :aid="aid" :settings="settings"></attachment-edit>
                 </div>
               </div>

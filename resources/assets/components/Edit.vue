@@ -28,7 +28,7 @@
         <input type="file" ref="fileInput" @change="validateNewFile" style="display: none">
 
         <div v-if="!fileToUpload">
-          <button type="button" class="btn btn-outline-primary" @click="selectNewFile">
+          <button type="button" class="btn btn-primary" @click="selectNewFile">
             Changer le fichier
           </button>
         </div>
