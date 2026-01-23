@@ -48,7 +48,9 @@
       <section v-if="mode == 'browse'" class="section-attachment--browse">
         <div class="row no-gutters g-0">
           <div class="w-100"></div>
-          <div class="col-md-3 col-xl-2">
+
+          <!-- Sidebar (conditional) -->
+          <div v-if="settings.browse.show_sidebar !== false" class="col-md-3 col-xl-2">
             <div class="section__side">
               <div v-if="settings.groupActions.indexOf('add') != -1"
                 class="section__add section--blue-light color--blue-dark action pointer d-flex flex-row align-items-center"
@@ -65,7 +67,18 @@
               </div>
             </div>
           </div>
-          <div class="col-md-9 col-xl-10">
+
+          <!-- Main content (full width when no sidebar) -->
+          <div :class="settings.browse.show_sidebar !== false ? 'col-md-9 col-xl-10' : 'col-12'">
+            <!-- Upload button moved here when sidebar hidden -->
+            <div v-if="settings.browse.show_sidebar === false && settings.groupActions.indexOf('add') != -1"
+              class="mb-3">
+              <button type="button"
+                class="btn btn--blue color--white d-flex align-items-center"
+                @click="mode = 'upload';$forceUpdate();">
+                <icon-add></icon-add>&nbsp;&nbsp;Ajouter des fichiers
+              </button>
+            </div>
             <attachments :aid="aid" :settings="settings"></attachments>
           </div>
         </div>
@@ -94,12 +107,14 @@
               </div>
               <div class="utils--spacer-semi"></div>
               <div class="row">
-                <div class="col-12 col-md-3">
+                <!-- Tags column - only show if sidebar is enabled -->
+                <div v-if="settings.browse.show_sidebar !== false" class="col-12 col-md-3">
                   <label>Ajouter des tags</label>
                   <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters"
                     :options="settings.options"></attachment-atags>
                 </div>
-                <div class="col-12 col-md-9">
+                <!-- Upload area - full width when no sidebar -->
+                <div :class="settings.browse.show_sidebar !== false ? 'col-12 col-md-9' : 'col-12'">
                   <attachment-upload :aid="aid"></attachment-upload>
                 </div>
               </div>
@@ -129,12 +144,14 @@
               </div>
               <div class="utils--spacer-semi"></div>
               <div class="row">
-                <div class="col-12 col-md-3">
+                <!-- Tags column - only show if sidebar is enabled -->
+                <div v-if="settings.browse.show_sidebar !== false" class="col-12 col-md-3">
                   <label>Tags</label>
                   <attachment-atags :aid="aid" :upload="true" :filters="settings.browse.filters"
                     :options="settings.options"></attachment-atags>
                 </div>
-                <div class="col-12 col-md-9">
+                <!-- Embed area - full width when no sidebar -->
+                <div :class="settings.browse.show_sidebar !== false ? 'col-12 col-md-9' : 'col-12'">
                   <attachment-embed :aid="aid"></attachment-embed>
                 </div>
               </div>

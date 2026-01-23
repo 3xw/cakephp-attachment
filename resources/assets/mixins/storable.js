@@ -72,6 +72,12 @@ export default
     this.overlay = this.settings.overlay
     this.mode = this.settings.mode
     this.$store.set(this.aid + '/settings', this.settings)
+
+    // Pre-populate upload.atags from settings.atags if sidebar is hidden
+    if (this.settings.browse && this.settings.browse.show_sidebar === false && this.settings.atags && this.settings.atags.length > 0) {
+      this.$store.set(this.aid + '/upload', { atags: this.settings.atags, files: [], inputs: {} })
+    }
+
     if(this.mode == 'input' && this.settings.attachments.length > 0) this.$store.set(this.aid + '/selection.files', this.settings.attachments)
 
     // CRUD

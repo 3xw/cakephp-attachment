@@ -87,6 +87,7 @@ return [
     ],
 
     'browse' => [
+      'show_sidebar' => true, // Set to false to hide tags sidebar and auto-use atags from input config
       'search' => [
         'dateField' => 'Attachments.created'
       ],
