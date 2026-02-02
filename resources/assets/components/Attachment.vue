@@ -234,7 +234,7 @@ export default
       // Check if profile uses secure download
       if (profile && profile.secureDownload) {
         // Token-based secure download
-        client.post(this.settings.url + 'attachment/download/get-file-token.json', { file: attachment.id })
+        client.post(this.settings.url + 'attachment/download/get-file-token', { file: attachment.id })
         .then((response) => {
           const token = response.data.token
           return client.get(this.settings.url + 'attachment/download/file/' + token, {responseType: 'arraybuffer'})
