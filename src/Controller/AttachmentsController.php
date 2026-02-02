@@ -92,9 +92,9 @@ class AttachmentsController extends AppController
     if(empty($this->request->getQuery('uuid'))) throw new UnauthorizedException(__d('Trois/Attachment','Missing uuid'));
     $this->Crud->on('beforePaginate', function (Event $event) {
       if(!empty(Configure::read('Trois/Attachment.browse.user_filter_tag_types'))){
-        $this->loadModel('Users');
+        $usersTable = $this->fetchTable('Users');
         $id = $this->getRequest()->getSession()->read('Auth')->id;
-        $user = $this->Users->get($id, ['contain' => ['Atags']]);
+        $user = $usersTable->get($id, ['contain' => ['Atags']]);
         $tagsIds = [];
         if(!empty($user->atags))
         {
