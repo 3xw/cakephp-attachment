@@ -413,7 +413,7 @@ For files with `secureDownload: true` or when you need controlled access:
 **Get file token:**
 
 ```
-POST /attachment/download/get-file-token.json
+POST /attachment/download/get-file-token
 Body: { "file": "<attachment_id>" }
 Response: { "token": "<jwt_token>" }
 ```
@@ -433,7 +433,7 @@ GET /attachment/download/stream/<token>
 **Get ZIP token for multiple files:**
 
 ```
-POST /attachment/download/get-zip-token.json
+POST /attachment/download/get-zip-token
 Body: { "files": ["<id1>", "<id2>", ...] }
 Response: { "token": "<jwt_token>" }
 ```

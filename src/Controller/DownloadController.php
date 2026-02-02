@@ -14,6 +14,7 @@ class DownloadController extends AppController
     if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
     if(empty($this->getRequest()->getData('files'))) $this->set('token', '');
     else $this->set('token', (new Token)->encode(['files' => $this->getRequest()->getData('files')]));
+    $this->viewBuilder()->setClassName('Json');
     $this->viewBuilder()->setOption('serialize', ['token']);
   }
   // (new Token)->encode(['files' => [$attachment1->id, $attachment2->id]])
@@ -39,6 +40,7 @@ class DownloadController extends AppController
     if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
     if(empty($this->getRequest()->getData('file'))) $this->set('token', '');
     else $this->set('token', (new Token)->encode(['file' => $this->getRequest()->getData('file')]));
+    $this->viewBuilder()->setClassName('Json');
     $this->viewBuilder()->setOption('serialize', ['token']);
   }
   // (new Token)->encode(['file' => $attachment->id])
