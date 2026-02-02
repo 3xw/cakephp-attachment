@@ -39,6 +39,7 @@ class DownloadController extends AppController
     if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
     if(empty($this->getRequest()->getData('file'))) $this->set('token', '');
     else $this->set('token', (new Token)->encode(['file' => $this->getRequest()->getData('file')]));
+    $this->viewBuilder()->setOption('serialize', ['token']);
   }
   // (new Token)->encode(['file' => $attachment->id])
   public function file($token)
@@ -51,6 +52,24 @@ class DownloadController extends AppController
     $response = $this->response->withFile((new Downloader)->download($attachment));
     $response = $response->withHeader('Content-Type', $attachment->type.'/'.$attachment->subtype);
     $response = $response->withDownload($attachment->name);
+    return $response;
+  }
+
+  /**
+   * Stream file inline for preview (videos, PDFs)
+   * Unlike file() which forces download, this renders inline in browser
+   */
+  public function stream($token)
+  {
+    // get Attachment
+    $attachment = $this->loadModel('Trois/Attachment.Attachments')->find()
+    ->where(['id' => (new Token)->decode($token)->file])
+    ->firstOrFail();
+    // serve file inline (not as download)
+    $response = $this->response->withFile((new Downloader)->download($attachment));
+    $response = $response->withHeader('Content-Type', $attachment->type.'/'.$attachment->subtype);
+    // Inline disposition for browser preview
+    $response = $response->withHeader('Content-Disposition', 'inline; filename="' . $attachment->name . '"');
     return $response;
   }
 }

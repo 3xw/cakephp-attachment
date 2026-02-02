@@ -1,10 +1,19 @@
-# Attachment plugin for CakePHP 4.*
+# Attachment plugin for CakePHP 5.x
+
 Attachment plugin solves common problems with media, files and embed data.
-The goal is to store files where you want ( Dropbox, AWS S3, ... ) and keep a record of it in a table.
+The goal is to store files where you want (Dropbox, AWS S3, local, etc.) and keep a record of it in a database table.
 
 Attachment offers both storage layer and database layer as well as frontend and backend solutions for common needs.
 
-It uses [CakePHP 3](https://cakephp.org/), [Flysystem](https://flysystem.thephpleague.com/) and [Intervention Image](http://image.intervention.io/)
+It uses [CakePHP 5](https://cakephp.org/), [Flysystem](https://flysystem.thephpleague.com/) and [Intervention Image](http://image.intervention.io/)
+
+## Requirements
+
+- PHP >= 8.1
+- CakePHP ^5.0
+- friendsofcake/crud ^7.0
+- friendsofcake/search ^7.0
+- firebase/php-jwt ^7.0
 
 ## Installation
 
@@ -15,21 +24,22 @@ You can install this plugin into your CakePHP application using [composer](http:
 The recommended way to install composer packages is:
 
 ```bash
-composer require 3xw/attachment
+composer require 3xw/cakephp-attachment
 ```
 
 ### Installation.load
+
 In src/Application.php
 
 ```php
-$this->addPlugin(\ Attachment\Plugin::class, ['bootstrap' => true, 'routes' => true]);
+$this->addPlugin(\Trois\Attachment\Plugin::class, ['bootstrap' => true, 'routes' => true]);
 ```
 
 Alternatively you can overload with your own settings (config/attachment.php):
 
 ```php
-Configure::write('Trois\Attachment.config', ['attachment']);
-$this->addPlugin(\ Attachment\Plugin::class, ['bootstrap' => true, 'routes' => true]);
+Configure::write('Trois/Attachment.config', ['attachment']);
+$this->addPlugin(\Trois\Attachment\Plugin::class, ['bootstrap' => true, 'routes' => true]);
 ```
 
 ### Installation.db
@@ -38,33 +48,35 @@ $this->addPlugin(\ Attachment\Plugin::class, ['bootstrap' => true, 'routes' => t
 bin/cake migrations migrate -p Trois/Attachment
 ```
 
-a sql file can found at path:
+A SQL file can be found at:
 
 ```bash
 vendor/3xw/attachment/config/Schema/attachment.sql
 ```
 
 ### Installation.folders
-Create a thumbnails folder with appropriate chmod to enable php to write in it...
+
+Create a thumbnails folder with appropriate permissions:
 
 ```bash
 mkdir webroot/thumbnails
 chmod 777 webroot/thumbnails
 ```
 
-
-If you store your files locally, then create a folder according to default settings or your own. For default set as follow:
+If you store your files locally, create a folder according to default settings or your own:
 
 ```bash
 mkdir webroot/files
 chmod 777 webroot/files
 ```
 
-## BackendDependencies
+## Backend Dependencies
+
 ### BackendDependencies.libs
+
 In order to use backend tools you need to have following libs installed:
 
-javascript:
+JavaScript:
 
 ```bash
 jquery >= 1.x
@@ -72,493 +84,621 @@ vuejs = 2.x
 vue-resource = 1.x
 ```
 
-css:
+CSS:
 
 ```bash
 bootstrap = 4.x
 ```
 
 ### BackendDependencies.html
-Vuejs components are nested to a top parent you need to setup.
+
+Vue.js components are nested to a top parent you need to setup.
 It requires one extra block (template). Following is easy to achieve.
 
-in your layout.ctp:
+In your layout.php:
 
 ```php
 <head>
-	...
-	<!-- CSS -->
-	<?= $this->Html->css([
-	    'bootstrap.min.css',
-	    'app.css'
-  	]) ?>
-	<?= $this->fetch('css') ?>
-	...
+    ...
+    <!-- CSS -->
+    <?= $this->Html->css([
+        'bootstrap.min.css',
+        'app.css'
+    ]) ?>
+    <?= $this->fetch('css') ?>
+    ...
 </head>
 <body>
-	<div id="admin-app" class="wrapper">
-		...flash, content goes here...
-	</div>
+    <div id="admin-app" class="wrapper">
+        ...flash, content goes here...
+    </div>
 
-	<!-- TEMPLATES -->
-	<?= $this->fetch('template') ?>
+    <!-- TEMPLATES -->
+    <?= $this->fetch('template') ?>
 
-	<!-- SCRIPTS -->
-	<?= $this->Html->script([
-	    'jquery.min.js'
-	    'vue.min.js',
-	    'vue-resource.min.js',
-	    'app.js'
-	 ]) ?>
-	<?= $this->fetch('script') ?>
+    <!-- SCRIPTS -->
+    <?= $this->Html->script([
+        'jquery.min.js',
+        'vue.min.js',
+        'vue-resource.min.js',
+        'app.js'
+    ]) ?>
+    <?= $this->fetch('script') ?>
 
 </body>
 ```
 
 ### BackendDependencies.js
-in your app.js
+
+In your app.js
 
 ```js
 (function(scope, $, Vue){
-
-	// boostrap
-	$(document).ready(function(){ var adminApp = new Vue({el: "#admin-app"}) })
-
-
+    // bootstrap
+    $(document).ready(function(){ var adminApp = new Vue({el: "#admin-app"}) })
 })(window, jQuery, Vue)
 ```
 
 ## Settings
-Default settings are present at following path: vendor/3xw/attachment/config/attachment.php
 
-feel free to write your own at following path: config/attachment.php
+Default settings are present at: `vendor/3xw/attachment/config/attachment.php`
 
-Exemple of settings:
-
-```php
-return [
-  'Attachment' => [
-
-    // set profiles
-    'profiles' => [
-      's3' => [
-		'replace' => false,
-		'afterReplace' => null // null | callback fct($entity),
-		'delete' => true,
-		'adapter' => 'League\Flysystem\AwsS3v3\AwsS3Adapter',
-		'client' => new League\Flysystem\AwsS3v3\AwsS3Adapter(Aws\S3\S3Client::factory([
-			'credentials' => [
-				'key'    => '***',
-				'secret' => '***',
-			],
-			'region' => 'eu-central-1',
-			'version' => 'latest',
-		]),'s3.example.com',''),
-		'baseUrl' =>  's3.example.com'
-      ],
-    ],
-
-    // lsiteners
-    lsiteners => [],
-
-    // upload settings
-    'upload' => [
-      'maxsize' => 30, // 30MB
-      'types' =>['image/jpeg','image/png','image/gif'],
-      'atags' => [],
-      'atagsDisplay' => false, // false | 'select' | 'input'
-      'profile' => 's3',
-
-      // pagination setting in browse views
-      'pagination' => [
-        'offset' => 9, // = 10 pages
-        'start' => true,
-        'end' => true,
-      ],
-    ],
-
-    // thumbnails settings
-    'thumbnails' => [
-      'driver' => 'Imagick', // or Imagick if installed,
-      'compression' => [
-     		'jpegoptim' => '/usr/local/bin/jpegoptim', // path or false ( default /usr/local/bin/jpegoptim )
-    		'pngquant' => '/usr/local/bin/pngquant', // path or false ( default /usr/local/bin/pngquant )
-    		'quality' => 25 // encoding quality level from 0 to 100 ( default 25 )
-  		],
-  		'breakpoints' => [
-	        'lg' => '(min-width: 1200px)',
-	        'md' => '(max-width: 1199px)',
-	        'sm' => '(max-width: 991px)',
-	        'xs' => '(max-width: 767px)',
-      ],
-      'widths' => ['678','1200'],
-      'heights' => false,
-      'aligns' => false, // or some of following [0,1,2,3,4,5,6,7,8] with 0 center, 1 top, 4 left, 5 right top corner, 8 left top corner ....
-      'crops' => ['16:9','4:3','1:1']
-    ]
-]];
-```
+Feel free to write your own at: `config/attachment.php`
 
 ### Settings.profiles
-You can set up your profiles according to [Flysystem](https://flysystem.thephpleague.com/) doc just add baseUrl in order to retrieve full urls. Profiles are stored by name. So you can split your file in sevral systems.
 
-Attachment comes prepact with three default settings:
+You can set up your profiles according to [Flysystem](https://flysystem.thephpleague.com/) docs. Just add `baseUrl` to retrieve full URLs. Profiles are stored by name so you can split your files across several systems.
 
+Attachment comes with these default profiles:
 
-	default // Local file system stored in webroot/files
-	external // used for external urls
-	cache // for thumbs creations
+- `default` - Local file system stored in webroot/files
+- `external` - Used for external URLs
+- `thumbnails` - For thumbnail creation
+- `img` - Local file system stored in webroot/img
 
+#### Secure Download
 
-following is the default adptater for local storage:
+Profiles support a `secureDownload` option for token-based file access via the DownloadController. This is useful for private files that should not have direct URL access:
+
+```php
+'profiles' => [
+    'default' => [
+        'client' => new League\Flysystem\Adapter\Local(WWW_ROOT.'files'),
+        'baseUrl' => '/files/',
+        'secureDownload' => false, // Direct URL download (default)
+    ],
+    'private' => [
+        'client' => new League\Flysystem\Adapter\Local(ROOT.DS.'private_files'),
+        'baseUrl' => null,
+        'secureDownload' => true, // Token-based download via DownloadController
+    ],
+],
+```
+
+Following is the default adapter for local storage:
 
 ```php
 'default' => [
-	'adapter' => 'League\Flysystem\Adapter\Local',
-	'client' => new League\Flysystem\Adapter\Local('files'),
-	'baseUrl' =>  '/files/'
+    'client' => new League\Flysystem\Adapter\Local(WWW_ROOT.'files'),
+    'baseUrl' => '/files/',
+    'secureDownload' => false,
 ],
 ```
 
-So you can use your own or install new one with composer.
-
 ### Settings.upload
-The upload is made before saving a realted records. global settings are setup under Attachment.upload. You can set global behaviors and then override them local in add.ctp or edit.ctp. Sevral options are avaliable here:
+
+The upload is made before saving a related record. Global settings are setup under `Attachment.upload`. You can set global behaviors and then override them locally in add.php or edit.php:
 
 ```php
 'upload' => [
-  'maxsize' => 30, // 30MB
-  'types' =>['image/jpeg','embed/soundcloud',...], // mime types and embed/:service for embed stuff
-  'atags' => [], // atags are use to store attachemnts with
-  'relation' => 'belongsToMany', // model relation
-  'profile' => 'default', // profile to use (where you store files)
-  'visibility' => 'public', // public or private
-  'speech' => false, // french goody
-  'restrictions' => [] // or Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED
+    'dir' => false,
+    'maxsize' => 30, // 30MB
+    'maxquantity' => -1, // -1 = unlimited
+    'minwidth' => 0, // Minimum image width in px, 0 = no constraint
+    'types' => ['image/jpeg', 'image/png', 'embed/soundcloud', ...], // mime types and embed/:service
+    'atags' => [], // Tags to associate with uploads
+    'atagsDisplay' => false, // false | 'select' | 'input'
+    'restrictions' => [], // See Restriction Constants below
+    'cols' => 'col-12 col-md-6',
+    'relation' => 'belongsToMany', // Model relation type
+    'profile' => 'default', // Storage profile to use
+    'visibility' => 'public', // public or private
+    'speech' => false,
+    'mandatory_tag' => false, // true = at least one tag required on upload
+    'pagination' => [
+        'offset' => 9, // = 10 pages
+        'start' => true,
+        'end' => true,
+    ],
 ],
 ```
 
-Restrictions are behaviors used in backend to sort files.
+### Settings.browse
+
+Configure the file browser UI:
 
 ```php
-AttachmentHelper::TAG_RESTRICTED // enforce attachments to associted with given tags in save and retieve with a AND strategy
-AttachmentHelper::TAG_OR_RESTRICTED // enforce attachments to associted with given tags in save and retieve with a OR strategy
-AttachmentHelper::types_restricted // enforce attachments to saved and retrieve with a OR strategy according given mime types
+'browse' => [
+    'show_sidebar' => true, // Set to false to hide tags sidebar
+    'search' => [
+        'dateField' => 'Attachments.created'
+    ],
+    'download' => [
+        'filename' => [], // 'date' for date entered by user, 'created' for date added
+        'multiple' => false,
+        'client' => '',
+        'url' => '',
+        'token' => '',
+    ],
+    'filter_tags' => false, // true = only show tags that have files
+    'only_used_tags' => true,
+    'user_filter_tag_types' => [], // IDs of tag types to filter by user
+    'show_private_links' => false,
+    'types' => [
+        'all' => [
+            'label' => __('All'),
+            'mime' => ['']
+        ],
+        'image' => [
+            'label' => __('Images'),
+            'mime' => ['image/*']
+        ],
+        'video' => [
+            'label' => __('Videos'),
+            'mime' => ['video/*', 'embed/youtube', 'embed/vimeo']
+        ],
+        'pdf' => [
+            'label' => __('PDF'),
+            'mime' => ['application/pdf']
+        ],
+        'other' => [
+            'label' => __('Other'),
+            'mime' => ['!image/*', '!video/*', '!embed/youtube', '!embed/vimeo', '!application/pdf']
+        ]
+    ],
+    'filters' => [
+        [
+            'label' => __('Orientation'),
+            'slug' => 'orientation',
+            'options' => [
+                ['label' => __('Vertical'), 'slug' => 'vertical'],
+                ['label' => __('Horizontal'), 'slug' => 'horizontal'],
+                ['label' => __('Square'), 'slug' => 'square']
+            ]
+        ]
+    ]
+],
+```
+
+### Settings.thumbnails
+
+Configure thumbnail generation with Intervention Image:
+
+```php
+'thumbnails' => [
+    'driver' => 'Imagick', // or 'GD' if Imagick not installed
+    'compression' => [
+        'jpegoptim' => '/usr/local/bin/jpegoptim', // Path or false
+        'pngquant' => '/usr/local/bin/pngquant', // Path or false
+        'convert' => '/usr/local/bin/convert', // ImageMagick convert for WebP
+        'cwebp' => '/usr/local/bin/cwebp', // WebP encoder
+        'quality' => 25 // Default encoding quality 0-100
+    ],
+    'breakpoints' => [
+        'lg' => '(min-width: 1200px)',
+        'md' => '(max-width: 1199px)',
+        'sm' => '(max-width: 991px)',
+        'xs' => '(max-width: 767px)',
+    ],
+    'widths' => [600, 1200], // Allowed widths
+    'heights' => [], // Allowed heights
+    'aligns' => [], // Allowed alignments [0-8]: 0=center, 1=top, 2=right, 3=bottom, 4=left, 5=top-right, 6=bottom-right, 7=bottom-left, 8=top-left
+    'crops' => ['4:3', '16:9', '1:1'] // Allowed crop ratios
+]
 ```
 
 ### Settings.listeners
-Listeners are Events Handlers that are executed once their relative event is triggered. You can set handlers for a genral purpose in the attachment config file, or you can add the 'lsiteners' key to setting arrays of any Attachment Helper functions with CRUD ability.
+
+Listeners are Event Handlers executed when their relative event is triggered. You can set handlers globally in the config file, or add the `listeners` key to settings arrays of any Attachment Helper function with CRUD ability:
 
 ```php
 'listeners' => [
-  'beforePaginate' => [
-    'App\Listener\MyListener',
-    'App\Listener\MayOtherListener' => [
-      'momo' => 'toto'
-    ]
-  ],
-]
-```
-Events triggered list is:
-
-```bash
-beforeFilter
-startup
-beforeDelete
-afterDelete
-beforeFind
-afterFind
-beforeSave
-afterSave
-beforePaginate
-afterPaginate
-beforeRedirect
-beforeRender
-recordNotFound
-setFlash
+    'beforePaginate' => [
+        'App\Listener\MyListener',
+        'App\Listener\MyOtherListener' => [
+            'key' => 'value'
+        ]
+    ],
+],
 ```
 
-Listners should extend the BaseListener class:
+Events triggered:
+
+- `beforeFilter`, `startup`
+- `beforeDelete`, `afterDelete`
+- `beforeFind`, `afterFind`
+- `beforeSave`, `afterSave`
+- `beforePaginate`, `afterPaginate`
+- `beforeRedirect`, `beforeRender`
+- `recordNotFound`, `setFlash`
+
+Listeners should extend the BaseListener class:
 
 ```php
 namespace App\Listener;
 
 use Trois\Attachment\Listener\BaseListener;
-use Cake\Event\Event;
+use Cake\Event\EventInterface;
 
-class ExtranetMoveFileListener extends BaseListener
+class MyListener extends BaseListener
 {
-  // $event->getSubject() returns an object with minimum a request variable
-  // all model events are wrapped on top of:
-  // https://crud.readthedocs.io/en/latest/events.html#crud-beforesave
-  public function respond(Event $event)  
-  {
-
-  }
+    public function respond(EventInterface $event)
+    {
+        // $event->getSubject() returns an object with minimum a request variable
+        // All model events wrap: https://crud.readthedocs.io/en/latest/events.html
+    }
 }
 ```
 
-### Settings.thumbnails
-Attachment.thumbnails is the settings for thumbs generation.
+### Settings.other
 
 ```php
-'thumbnails' => [
-  'driver' => 'Imagick', // or Imagick if installed,
-  'widths' => [600, 1200],
-  'heights' => [],
-  'aligns' => [], // or some of following [0,1,2,3,4,5,6,7,8] with 0 center, 1 top, 4 left, 5 right top corner, 8 left top corner ....
-  'crops' => ['4:3','16:9']
-]
+// Enforce unique files by MD5 hash
+'md5Unique' => true,
+
+// Enable i18n for title/description fields
+'translate' => false,
 ```
 
-This settings are global and restirct local changes in order to keep logic of thumb in one file and limit extra formats.
-each table are possibility you allow. So only 600px and 1200px thumbs are allowed. Only crop of 4:3 and 16:9 are allowed.
+## Restriction Constants
 
-## Usage
-### Usage.model
-Attachment is two tables: Attachments and Atags. So you can bind any of your models with, all relations types are supported.
+Use these constants to filter and restrict attachments:
+
+```php
+use Trois\Attachment\View\Helper\AttachmentHelper;
+
+AttachmentHelper::OPEN                    // No restrictions
+AttachmentHelper::TAG_RESTRICTED          // Filter by tags with AND strategy
+AttachmentHelper::TAG_OR_RESTRICTED       // Filter by tags with OR strategy
+AttachmentHelper::TYPES_RESTRICTED        // Filter by mime types with OR strategy
+AttachmentHelper::USER_RESTRICTED         // Filter by current user only
+AttachmentHelper::USER_OR_NO_ONE_RESTRICTED // Filter by current user or unassigned
+AttachmentHelper::PROFILE_RESTRICTED      // Filter by storage profile
+```
+
+## CLI Commands
+
+### Profile Testing
+
+Test a storage profile by uploading and deleting a file:
 
 ```bash
+bin/cake at_profile <profile> <localPath> <path> <mime>
+```
+
+Example:
+
+```bash
+bin/cake at_profile default /tmp/test.jpg uploads/test.jpg image/jpeg
+```
+
+### Extract Image Dimensions
+
+Retrieve and store width/height for all images:
+
+```bash
+bin/cake at_get_image_sizes
+```
+
+### Create Missing Translations
+
+Create missing i18n translations for specified locales:
+
+```bash
+bin/cake at_create_missing_translations <locale1> <locale2> ...
+```
+
+Example:
+
+```bash
+bin/cake at_create_missing_translations en_GB de_CH fr_FR
+```
+
+## Controllers & Endpoints
+
+### DownloadController (Secure Downloads)
+
+For files with `secureDownload: true` or when you need controlled access:
+
+**Get file token:**
+
+```
+POST /attachment/download/get-file-token.json
+Body: { "file": "<attachment_id>" }
+Response: { "token": "<jwt_token>" }
+```
+
+**Download file (forces download):**
+
+```
+GET /attachment/download/file/<token>
+```
+
+**Stream file inline (for video/PDF preview):**
+
+```
+GET /attachment/download/stream/<token>
+```
+
+**Get ZIP token for multiple files:**
+
+```
+POST /attachment/download/get-zip-token.json
+Body: { "files": ["<id1>", "<id2>", ...] }
+Response: { "token": "<jwt_token>" }
+```
+
+**Download ZIP archive:**
+
+```
+POST /attachment/download/files
+Body: { "token": "<jwt_token>" }
+```
+
+### ResizeController (Thumbnails)
+
+Thumbnails are generated on-demand via the `/thumbnails/*` route.
+
+**URL Format:**
+
+```
+GET /thumbnails/{profile}/{params}/{path}
+```
+
+**Parameters:**
+
+- `w{width}` - Width in pixels
+- `h{height}` - Height in pixels
+- `c{crop}` - Crop ratio (e.g., `c16-9` for 16:9)
+- `a{align}` - Alignment (0-8)
+- `q{quality}` - Quality 0-100
+
+**Examples:**
+
+```
+/thumbnails/default/w600h400c16-9/uploads/image.jpg
+/thumbnails/default/w1200q90/photos/landscape.jpg
+/thumbnails/default/w600h600c1-1a0/avatars/user.png
+```
+
+**WebP Support:**
+
+Request `.webp` extension and the controller will convert from the original format:
+
+```
+/thumbnails/default/w600/uploads/image.webp
+```
+
+Requires `cwebp` and `convert` (ImageMagick) to be configured.
+
+### AttachmentsController
+
+CRUD API using FriendsOfCake/Crud with JSON responses:
+
+```
+GET    /attachment/attachments.json       # List attachments
+GET    /attachment/attachments/:id.json   # View attachment
+POST   /attachment/attachments.json       # Create attachment
+PUT    /attachment/attachments/:id.json   # Update attachment
+DELETE /attachment/attachments/:id.json   # Delete attachment
+```
+
+## Behaviors
+
+The AttachmentsTable uses these behaviors in sequence:
+
+| Behavior | Description |
+|----------|-------------|
+| **UserIDBehavior** | Associates uploads with the authenticated user from session |
+| **ExternalBehavior** | Handles external URL attachments (non-uploaded files) |
+| **EmbedBehavior** | Processes embedded content from YouTube, Vimeo, Soundcloud |
+| **AarchiveBehavior** | Manages ZIP archive operations (runs before FlyBehavior) |
+| **FlyBehavior** | Core file upload/storage handling via Flysystem |
+| **ATagBehavior** | Manages attachment tag associations |
+
+## Usage
+
+### Usage.model
+
+Attachment is two tables: Attachments and Atags. You can bind any of your models with them; all relation types are supported:
+
+```php
+// In your Table class
 $this->belongsToMany('Attachments', [
-  'foreignKey' => 'post_id',
-  'targetForeignKey' => 'attachment_id',
-  'joinTable' => 'attachments_posts'
+    'foreignKey' => 'post_id',
+    'targetForeignKey' => 'attachment_id',
+    'joinTable' => 'attachments_posts',
+    'className' => 'Trois/Attachment.Attachments'
 ]);
 
 // OR
 
 $this->belongsTo('Attachments', [
-  'foreignKey' => 'attachment_id',
-  'joinType' => 'INNER' // OR LEFT ...
+    'foreignKey' => 'attachment_id',
+    'joinType' => 'LEFT',
+    'className' => 'Trois/Attachment.Attachments'
 ]);
 ```
 
-Attachment handles an 'order' field as well. So feel free to add such a field in your HABTM join tables...
+Attachment handles an `order` field. Feel free to add such a field in your HABTM join tables.
 
 ### Usage.controller
-Simply use contain or any join you need...
+
+Simply use contain or any join you need:
 
 ```php
 public function index()
 {
-	$this->paginate = [
-	  'contain' => ['Attachments' /* => ['sort' => 'order'] */ ] // if HABTM with an order field
-	];
-	$posts = $this->paginate($this->Posts);
-	$this->set(compact('posts'));
-	$this->set('_serialize', ['posts']);
+    $this->paginate = [
+        'contain' => ['Attachments'] // Add 'sort' => 'order' if using order field
+    ];
+    $posts = $this->paginate($this->Posts);
+    $this->set(compact('posts'));
 }
 ```
 
 ### Usage.view
-All skills are in the Helper Attachment. So first of All add it into your AppView.
 
-in src/View/AppView.php
+All functionality is in the AttachmentHelper. Add it to your AppView:
+
+In src/View/AppView.php
 
 ```php
-public function initialize()
+public function initialize(): void
 {
-	$this->loadHelper('Trois/Attachment.Attachment');
+    $this->loadHelper('Trois/Attachment.Attachment');
 }
 ```
 
 #### Usage.view.backend
-In add.ctp
+
+**File picker input (add.php):**
 
 ```php
-<!-- Attachment -->
-<?= $this->Attachment->input('Attachments', // if Attachments => HABTM else if !Attachments => belongsTo
-  	[
-	  	'label' => 'Image',
-	  	'types' =>['image/jpeg','image/png'],
-	  	'atags' => ['Restricted Tag 1', 'Restricted Tag 2'],
-	  	'profile' => 's3', // optional as it was set in config/attachment.php
-	  	'cols' => 'col-xs-6 col-md-6 col-lg-4', // optional as it was set in config/attachment.php,
-	  	'maxquantity' => -1,
-	  	'restrictions' => [
-	    	Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
-	    	Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
-	  	],
-	  	'attachments' => [] // array of exisiting Attachment entities ( HABTM ) or [entity] ( belongsTo )
-	]
-) ?>
-```
-
-In edit.ctp
-
-```php
-<!-- Attachment -->
-<?= $this->Attachment->input('Attachments', // if Attachments => HABTM else if !Attachments => belongsTo
-  	[
-	  	'label' => 'Image',
-	  	'types' =>['image/jpeg','image/png'],
-	  	'atags' => ['Restricted Tag 1', 'Restricted Tag 2'],
-	  	'profile' => 's3', // optional as it was set in config/attachment.php
-	  	'cols' => 'col-xs-6 col-md-6 col-lg-4', // optional as it was set in config/attachment.php,
-	  	'maxquantity' => -1,
-	  	'restrictions' => [
-	    	Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
-	    	Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
-	  	],
-	  	'attachments' => $posts->attachments // array of exisiting Attachment entities ( HABTM ) or entity ( belongsTo )
-	]
-) ?>
-```
-
-##### Global Attachments index :
-
-```php
-<!-- Attachments element -->
-<?= $this->Attachment->buildIndex([
-  'actions' => ['add','edit','delete','view','download'],
-  'types' =>['image/jpeg','image/png','embed/youtube','embed/vimeo'],
-  'atags' => ['Restricted Tag 1', 'Restricted Tag 2'],
-		'listStyle' => true,
-		'profile' => 's3', // optional as it was set in config/attachment.php
-  'restrictions' => [
-    Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
-    Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
-  ]
+<?= $this->Attachment->input('Attachments', [ // 'Attachments' = HABTM, singular = belongsTo
+    'label' => 'Image',
+    'types' => ['image/jpeg', 'image/png'],
+    'atags' => ['Restricted Tag 1', 'Restricted Tag 2'],
+    'profile' => 's3',
+    'cols' => 'col-xs-6 col-md-6 col-lg-4',
+    'maxquantity' => -1,
+    'restrictions' => [
+        Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
+        Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
+    ],
+    'attachments' => [] // Array of existing Attachment entities
 ]) ?>
 ```
 
-##### TinyMCE Plugin
-Attachment comes with a TinyMCE plugin. Working with package [cakephp-tinymce](https://github.com/3xw/cakephp-tinymce)
+**File picker input (edit.php):**
 
 ```php
-echo $this->element('Trois/Tinymce.tinymce',[
-  'field' => 'content',
-  'value' => $post->content,
-  'init' => [
-    'external_plugins' => [
-      'attachment' => $this->Url->build('/attachment/js/Plugins/tinymce/plugin.min.js', true),
-    ],
-    'attachment_settings' => $this->Attachment->jsSetup('content',[
-
-      // overrides config/attachment.php settings
-      'types' => [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'image/jpeg',
-        'image/png',
-        'embed/youtube',
-        'embed/vimeo'
-      ],
-			'thumbBaseUrl' => '', //IF NOT $this->Url->build('/')
-      'atags' => [],
-      'restrictions' => [
-        Trois\Attachment\View\Helper\AttachmentHelper::TAG_OR_RESTRICTED,
+<?= $this->Attachment->input('Attachments', [
+    'label' => 'Image',
+    'types' => ['image/jpeg', 'image/png'],
+    'atags' => ['Restricted Tag 1', 'Restricted Tag 2'],
+    'profile' => 's3',
+    'cols' => 'col-xs-6 col-md-6 col-lg-4',
+    'maxquantity' => -1,
+    'restrictions' => [
+        Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
         Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
-      ],
-    ])
-  ]
-]);
+    ],
+    'attachments' => $post->attachments // Existing attachments
+]) ?>
 ```
 
-This will let you insert image right into trumbowyg textarea !!! heepee!
-
-Exemple in locale.ctp:
+**Global attachments browser:**
 
 ```php
-$this->element('locale',['fields' => ['meta',
-	'header' => [
-		'Trois/Tinymce.tinymce' => [
-			'value' => $post,
-			'init' => []
-		]
-	],
-	'body' => [
-		'Trois/Tinymce.tinymce' => [
-			'value' => $post,
-			'init' => [
-				'external_plugins' => [
-					'attachment' => $this->Url->build('/attachment/js/Plugins/tinymce/plugin.min.js', true),
-				],
-				'attachment_settings' => [
-					'types' => [
-						'application/pdf',
-						'application/msword',
-						'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-						'application/vnd.ms-excel',
-						'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-						'image/jpeg',
-						'image/png',
-						'embed/youtube',
-						'embed/vimeo'
-					],
-					'atags' => [],
-					'restrictions' => [
-						Trois\Attachment\View\Helper\AttachmentHelper::TAG_OR_RESTRICTED,
-						Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
-					],
-				]
-			]
-		]
-	]
-], 'labels' => ['meta (description google, facebook)', 'lead', 'text']]);
+<?= $this->Attachment->index([
+    'actions' => ['add', 'edit', 'delete', 'view', 'download'],
+    'types' => ['image/jpeg', 'image/png', 'embed/youtube', 'embed/vimeo'],
+    'atags' => ['Restricted Tag 1', 'Restricted Tag 2'],
+    'listStyle' => true,
+    'profile' => 's3',
+    'restrictions' => [
+        Trois\Attachment\View\Helper\AttachmentHelper::TAG_RESTRICTED,
+        Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
+    ]
+]) ?>
 ```
 
 #### Usage.view.frontend
-in file
+
+**Display a responsive image with srcset and WebP:**
 
 ```php
-<!-- Display a 16:9 croped image  -->
 <?= $this->Attachment->image([
-	'image' => $post->attachments[0]->path,
-	'profile' => $post->attachments[0]->profile,
-	'width' => '600',
-	'cropratio' => '16:9,
-	'quality' => 50, // from 0 to 100 ( default 25 in plugin's config file attachment.php )
-	'srcset' => [
-      'lg' => [360,720],
-      'md' => [293, 586],
-      'sm' => [283, 566],
-      'xs' => [767,1534],
+    'image' => $post->attachments[0]->path,
+    'profile' => $post->attachments[0]->profile,
+    'width' => '600',
+    'cropratio' => '16:9',
+    'quality' => 50,
+    'version' => $post->attachments[0]->modified->getTimestamp(), // Cache busting
+    'srcset' => [
+        'lg' => [360, 720],
+        'md' => [293, 586],
+        'sm' => [283, 566],
+        'xs' => [767, 1534],
     ]
-],['class' => 'img-responsive']) ?>
+], ['class' => 'img-fluid']) ?>
+```
 
-<!-- Display an embed video  -->
+This generates a `<picture>` element with WebP sources and fallback.
+
+**Display an embed video:**
+
+```php
 <?= $post->attachments[0]->embed ?>
 ```
 
-Url Only
+**Get thumbnail URL only:**
 
 ```php
 <?= $this->Attachment->thumbSrc([
-	'image' => $post->attachments[0]->path,
-	'profile' => $post->attachments[0]->profile,
-	'width' => '600',
-	'cropratio' => '16:9,
-	'quality' => 50, // from 0 to 100 ( default 25 in plugin's config file attachment.php )
-	'srcset' => [
-      'lg' => [360,720],
-      'md' => [293, 586],
-      'sm' => [283, 566],
-      'xs' => [767,1534],
-    ]
+    'image' => $post->attachments[0]->path,
+    'profile' => $post->attachments[0]->profile,
+    'width' => '600',
+    'cropratio' => '16:9',
+    'quality' => 50,
+    'version' => $post->attachments[0]->modified->getTimestamp() // Cache busting
 ]) ?>
 ```
 
-
-#### Usage.view.download
+**Get full path URL:**
 
 ```php
-echo $this->Attachment->downloadLink($attachment ); // Attachment $attachment
-// return the full download url for THIS SESSION ONLY
+<?= $this->Attachment->fullPath($attachment) ?>
 ```
 
-#### Usage.shell
-1) Attachment plugin provides a usefull shell script to retrieve width and height of images
+This handles `secureDownload` profiles by returning the appropriate URL.
 
-```bash
-bin/cake Attachment.GetImageSizes
+### TinyMCE Plugin
+
+Attachment comes with a TinyMCE plugin. Works with [cakephp-tinymce](https://github.com/3xw/cakephp-tinymce):
+
+```php
+echo $this->element('Trois/Tinymce.tinymce', [
+    'field' => 'content',
+    'value' => $post->content,
+    'init' => [
+        'external_plugins' => [
+            'attachment' => $this->Url->build('/attachment/js/Plugins/tinymce/plugin.min.js', true),
+        ],
+        'attachment_settings' => $this->Attachment->jsSetup('content', [
+            'types' => [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'image/jpeg',
+                'image/png',
+                'embed/youtube',
+                'embed/vimeo'
+            ],
+            'thumbBaseUrl' => '', // If not $this->Url->build('/')
+            'atags' => [],
+            'restrictions' => [
+                Trois\Attachment\View\Helper\AttachmentHelper::TAG_OR_RESTRICTED,
+                Trois\Attachment\View\Helper\AttachmentHelper::TYPES_RESTRICTED
+            ],
+        ])
+    ]
+]);
 ```
 
-2) CReate missing attachment transaltions for loacle:
+## License
 
-```bash
-bin/cake CreateMissingTranslations en_GB de_CH ...
-```
+MIT License

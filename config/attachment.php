@@ -7,20 +7,25 @@ return [
     'listeners' => [],
 
     // set profiles
+    // Each profile can have 'secureDownload' => true to use token-based download via DownloadController
+    // instead of direct URL download. Useful for private files without public URL access.
     'profiles' => [
 
       // packed profiles
       'default' => [
     		'client' => new League\Flysystem\Adapter\Local(WWW_ROOT.'files'),
-        'baseUrl' =>  '/files/'
+        'baseUrl' =>  '/files/',
+        'secureDownload' => false, // default: direct URL download
     	],
       'img' => [
     		'client' => new League\Flysystem\Adapter\Local(WWW_ROOT.'img'),
-        'baseUrl' =>  '/img/'
+        'baseUrl' =>  '/img/',
+        'secureDownload' => false,
     	],
       'external' => [
     		'client' => new Trois\Attachment\Filesystem\Adapter\External(),
         'baseUrl' =>  null,
+        'secureDownload' => false, // external profiles must use direct download
     	],
       'thumbnails' => [
     		'client' => new League\Flysystem\Adapter\Local(WWW_ROOT.'thumbnails'),

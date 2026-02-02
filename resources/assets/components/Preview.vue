@@ -10,9 +10,9 @@
         <div class="attachment-preview-image" v-if="attachment.type == 'image'">
           <img :src="thumbBaseUrl(`w${(attachment.width < 1200) ? attachment.width : 1200}q95`,attachment)" class="img-fluid" :key="attachment.id">
         </div>
-        <video v-else-if="attachment.type == 'video'" :src="attachment.url" controls class="img-fluid"></video>
+        <video v-else-if="attachment.type == 'video'" :src="getPreviewUrl(attachment)" controls class="img-fluid"></video>
         <div v-else-if="attachment.type == 'embed'">{{attachment.embed}}</div>
-        <iframe frameborder="0" v-else-if="attachment.subtype == 'pdf'" :src="attachment.url" class="w-100"></iframe>
+        <iframe frameborder="0" v-else-if="attachment.subtype == 'pdf'" :src="getPreviewUrl(attachment)" class="w-100"></iframe>
         <div v-if="attachment.type != 'application'" class="info-display" style="color: white;">
           <strong v-if="attachment.title">
             Titre : {{attachment.title}} <br>
@@ -84,6 +84,7 @@ export default {
     return {
       open: false,
       slideCounter: 1,
+      previewTokens: {}, // Cache tokens by attachment ID
     }
   },
   computed:
@@ -98,8 +99,15 @@ export default {
   },
   watch:
   {
-    attachment: function(){
-      this.open = true
+    attachment: {
+      handler: function(newAttachment){
+        this.open = true
+        // Fetch token for secure profiles
+        if (newAttachment && newAttachment.id) {
+          this.fetchPreviewToken(newAttachment)
+        }
+      },
+      immediate: false
     }
   },
   created(){
@@ -116,11 +124,56 @@ export default {
       this.$store.set(this.aid + '/infos', {})
     },
     downloadFile(attachment) {
-      client.get(attachment.url, { responseType: 'arraybuffer' })
+      const profile = this.$store.get(this.aid + '/settings.profiles.' + attachment.profile)
+
+      // Check if profile uses secure download
+      if (profile && profile.secureDownload) {
+        // Token-based secure download
+        client.post(this.settings.url + 'attachment/download/get-file-token.json', { file: attachment.id })
+        .then((response) => {
+          const token = response.data.token
+          return client.get(this.settings.url + 'attachment/download/file/' + token, {responseType: 'arraybuffer'})
+        })
+        .then((response) => {
+          this.forceFileDownload(response, attachment)
+        })
+        .catch((error) => console.error('Download failed:', error))
+      } else {
+        // Direct URL download (default behavior)
+        client.get(attachment.url, { responseType: 'arraybuffer' })
         .then(response => {
           this.forceFileDownload(response, attachment)
         })
-        .catch((response) => console.log(response))
+        .catch((error) => console.error('Download failed:', error))
+      }
+    },
+    fetchPreviewToken(attachment) {
+      // Return if already cached
+      if (this.previewTokens[attachment.id]) {
+        return
+      }
+
+      const profile = this.$store.get(this.aid + '/settings.profiles.' + attachment.profile)
+      if (!profile || !profile.secureDownload) {
+        return // Use direct URL
+      }
+
+      // Fetch token for video/PDF preview
+      if (attachment.type === 'video' || attachment.subtype === 'pdf') {
+        client.post(this.settings.url + 'attachment/download/get-file-token.json', { file: attachment.id })
+        .then((response) => {
+          this.$set(this.previewTokens, attachment.id, response.data.token)
+        })
+        .catch((error) => console.error('Failed to get preview token:', error))
+      }
+    },
+    getPreviewUrl(attachment) {
+      const profile = this.$store.get(this.aid + '/settings.profiles.' + attachment.profile)
+
+      if (profile && profile.secureDownload && this.previewTokens[attachment.id]) {
+        return this.settings.url + 'attachment/download/stream/' + this.previewTokens[attachment.id]
+      }
+      return attachment.url
     },
     forceFileDownload(response, attachment) {
       if (navigator.appVersion.toString().indexOf('.NET') > 0) {

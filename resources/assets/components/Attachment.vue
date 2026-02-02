@@ -229,12 +229,36 @@ export default
     },
     downloadFile(attachment){
       this.$parent.downloading = true
-      client.get(attachment.url, {responseType: 'arraybuffer'})
-      .then(async (response) => {
-        await this.forceFileDownload(response, attachment)
-        this.$parent.downloading = false
-      })
-      .catch((response) => console.log(response))
+      const profile = this.$store.get(this.aid + '/settings.profiles.' + attachment.profile)
+
+      // Check if profile uses secure download
+      if (profile && profile.secureDownload) {
+        // Token-based secure download
+        client.post(this.settings.url + 'attachment/download/get-file-token.json', { file: attachment.id })
+        .then((response) => {
+          const token = response.data.token
+          return client.get(this.settings.url + 'attachment/download/file/' + token, {responseType: 'arraybuffer'})
+        })
+        .then(async (response) => {
+          await this.forceFileDownload(response, attachment)
+          this.$parent.downloading = false
+        })
+        .catch((error) => {
+          console.error('Download failed:', error)
+          this.$parent.downloading = false
+        })
+      } else {
+        // Direct URL download (default behavior)
+        client.get(attachment.url, {responseType: 'arraybuffer'})
+        .then(async (response) => {
+          await this.forceFileDownload(response, attachment)
+          this.$parent.downloading = false
+        })
+        .catch((error) => {
+          console.error('Download failed:', error)
+          this.$parent.downloading = false
+        })
+      }
     },
     previewThumb(event, attachment) {
       if (event.target.tagName !== 'DIV') {
