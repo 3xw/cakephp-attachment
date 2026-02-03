@@ -421,13 +421,13 @@ Response: { "token": "<jwt_token>" }
 **Download file (forces download):**
 
 ```
-GET /attachment/download/file/<token>
+GET /attachment/download/file/{token}
 ```
 
 **Stream file inline (for video/PDF preview):**
 
 ```
-GET /attachment/download/stream/<token>
+GET /attachment/download/stream/{token}
 ```
 
 **Get ZIP token for multiple files:**
