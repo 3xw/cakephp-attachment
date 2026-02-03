@@ -237,7 +237,7 @@ export default
         client.post(this.settings.url + 'attachment/download/get-file-token', { file: attachment.id })
         .then((response) => {
           const token = response.data.token
-          return client.get(this.settings.url + 'attachment/download/file/' + token, {responseType: 'arraybuffer'})
+          return client.get(this.settings.url + 'attachment/download/file?token=' + token, {responseType: 'arraybuffer'})
         })
         .then(async (response) => {
           await this.forceFileDownload(response, attachment)

@@ -44,8 +44,10 @@ class DownloadController extends AppController
     $this->viewBuilder()->setOption('serialize', ['token']);
   }
   // (new Token)->encode(['file' => $attachment->id])
-  public function file($token)
+  public function file()
   {
+    $token = $this->getRequest()->getQuery('token');
+    if (empty($token)) throw new BadRequestException('Token required');
     // get Attachment
     $attachment = $this->fetchTable('Trois/Attachment.Attachments')->find()
     ->where(['id' => (new Token)->decode($token)->file])
@@ -61,8 +63,10 @@ class DownloadController extends AppController
    * Stream file inline for preview (videos, PDFs)
    * Unlike file() which forces download, this renders inline in browser
    */
-  public function stream($token)
+  public function stream()
   {
+    $token = $this->getRequest()->getQuery('token');
+    if (empty($token)) throw new BadRequestException('Token required');
     // get Attachment
     $attachment = $this->fetchTable('Trois/Attachment.Attachments')->find()
     ->where(['id' => (new Token)->decode($token)->file])

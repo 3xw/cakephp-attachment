@@ -129,10 +129,10 @@ export default {
       // Check if profile uses secure download
       if (profile && profile.secureDownload) {
         // Token-based secure download
-        client.post(this.settings.url + 'attachment/download/get-file-token.json', { file: attachment.id })
+        client.post(this.settings.url + 'attachment/download/get-file-token', { file: attachment.id })
         .then((response) => {
           const token = response.data.token
-          return client.get(this.settings.url + 'attachment/download/file/' + token, {responseType: 'arraybuffer'})
+          return client.get(this.settings.url + 'attachment/download/file?token=' + token, {responseType: 'arraybuffer'})
         })
         .then((response) => {
           this.forceFileDownload(response, attachment)
@@ -160,7 +160,7 @@ export default {
 
       // Fetch token for video/PDF preview
       if (attachment.type === 'video' || attachment.subtype === 'pdf') {
-        client.post(this.settings.url + 'attachment/download/get-file-token.json', { file: attachment.id })
+        client.post(this.settings.url + 'attachment/download/get-file-token', { file: attachment.id })
         .then((response) => {
           this.$set(this.previewTokens, attachment.id, response.data.token)
         })
@@ -171,7 +171,7 @@ export default {
       const profile = this.$store.get(this.aid + '/settings.profiles.' + attachment.profile)
 
       if (profile && profile.secureDownload && this.previewTokens[attachment.id]) {
-        return this.settings.url + 'attachment/download/stream/' + this.previewTokens[attachment.id]
+        return this.settings.url + 'attachment/download/stream?token=' + this.previewTokens[attachment.id]
       }
       return attachment.url
     },

@@ -30,9 +30,9 @@ return function (RouteBuilder $routes): void {
         'Trois/Attachment',
         ['path' => '/attachment'],
         function (RouteBuilder $builder): void {
-            // Download routes - must be before setExtensions to avoid JWT token parsing issues
-            $builder->connect('/download/file/{token}', ['controller' => 'Download', 'action' => 'file'], ['pass' => ['token']]);
-            $builder->connect('/download/stream/{token}', ['controller' => 'Download', 'action' => 'stream'], ['pass' => ['token']]);
+            // Download routes - token passed as query param to avoid JWT parsing issues
+            $builder->connect('/download/file', ['controller' => 'Download', 'action' => 'file']);
+            $builder->connect('/download/stream', ['controller' => 'Download', 'action' => 'stream']);
             $builder->connect('/download/get-file-token', ['controller' => 'Download', 'action' => 'getFileToken']);
             $builder->connect('/download/get-zip-token', ['controller' => 'Download', 'action' => 'getZipToken']);
             $builder->connect('/download/files', ['controller' => 'Download', 'action' => 'files']);
