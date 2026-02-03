@@ -298,7 +298,7 @@ export default
         }
         let formData = new FormData()
         for(let i = 0;i < this.selectedFiles.length;i++) formData.append('id['+i+']', this.selectedFiles[i].id)
-        client.post(this.settings.url+'attachment/attachments/deleteAll.json', formData, params)
+        client.post(this.settings.url+'attachment/attachments/deleteAll', formData, params)
         .then(this.deleteSuccess, this.deleteError)
       }
     },

@@ -228,7 +228,7 @@ export default
         onUploadProgress: this.progressHandler
       }
       if (this.firstUploadTime === 0) this.firstUploadTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      client.post(this.settings.url+'attachment/attachments/add.json', formData, params)
+      client.post(this.settings.url+'attachment/attachments/add', formData, params)
       .then(this.uploadSuccessCb, this.errorUploadCb)
     },
     progressHandler: function(e)

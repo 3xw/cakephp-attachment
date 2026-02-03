@@ -327,7 +327,7 @@ export default {
       }
 
       client.post(
-        `${this.settings.url}attachment/attachments/edit/${attachment.id}.json`,
+        `${this.settings.url}attachment/attachments/edit/${attachment.id}`,
         formData,
         params
       )
@@ -366,7 +366,7 @@ export default {
       let params = {
         headers: {'Accept': 'application/json', 'Content-Type': 'multipart/form-data'},
       }
-      client.post(this.settings.url+'attachment/attachments/edit-all.json', this.selectedFiles, params)
+      client.post(this.settings.url+'attachment/attachments/edit-all', this.selectedFiles, params)
       .then(this.editSuccess, this.editError)
     },
     editSuccess(){

@@ -116,7 +116,7 @@ export default
         progress: this.progressHandler
       }
 
-      client.post(this.settings.url+'attachment/attachments/add.json', formData, params)
+      client.post(this.settings.url+'attachment/attachments/add', formData, params)
       .then(this.uploadSuccessCb, this.errorUploadCb)
     },
     progressHandler: function(e)
