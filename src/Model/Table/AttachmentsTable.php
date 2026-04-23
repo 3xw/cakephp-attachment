@@ -191,4 +191,42 @@ class AttachmentsTable extends Table
     return true;
   }
 
+  /**
+   * Bulk unlink atags from attachments.
+   *
+   * Removes rows matching (attachment_id, atag_id) from the `attachments_atags`
+   * pivot in a single transactional DELETE. Returns the affected (attachment,
+   * atag) pairs so the caller can build an undo / 207 response.
+   *
+   * @param int[] $attachmentIds
+   * @param int[] $atagIds
+   * @return array<int, array{attachment_id:int, atag_id:int}>
+   */
+  public function unlinkAtags(array $attachmentIds, array $atagIds): array
+  {
+    $attachmentIds = array_values(array_unique(array_map('intval', $attachmentIds)));
+    $atagIds = array_values(array_unique(array_map('intval', $atagIds)));
+    if (empty($attachmentIds) || empty($atagIds)) return [];
+
+    $pivot = $this->getAssociation('Atags')->junction();
+
+    $affected = $pivot->find()
+      ->select(['attachment_id', 'atag_id'])
+      ->where([
+        'attachment_id IN' => $attachmentIds,
+        'atag_id IN' => $atagIds,
+      ])
+      ->disableHydration()
+      ->toArray();
+
+    if (empty($affected)) return [];
+
+    $pivot->deleteAll([
+      'attachment_id IN' => $attachmentIds,
+      'atag_id IN' => $atagIds,
+    ]);
+
+    return $affected;
+  }
+
 }

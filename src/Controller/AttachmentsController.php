@@ -157,4 +157,43 @@ class AttachmentsController extends AppController
 
   }
 
+  /**
+   * Bulk unlink atags from a list of attachments.
+   *
+   * Body : { "attachment_ids": int[], "atag_ids": int[] }
+   * Returns : JSON { removed: [{attachment_id, atag_id}], requested: {...} }
+   *
+   * Authorisation : left to the host app's policy layer — this endpoint only
+   * touches the pivot, never the Attachment entities themselves. Wrap with an
+   * RBAC rule in `config/permissions.php` if scoped access is required.
+   */
+  public function deleteAtags()
+  {
+    $request = $this->getRequest();
+    if (!in_array($request->getMethod(), ['DELETE', 'POST'], true)) {
+      throw new \Cake\Http\Exception\MethodNotAllowedException();
+    }
+
+    $data = $request->getParsedBody() ?: [];
+    $attachmentIds = $data['attachment_ids'] ?? [];
+    $atagIds = $data['atag_ids'] ?? [];
+
+    if (!is_array($attachmentIds) || !is_array($atagIds)) {
+      throw new \Cake\Http\Exception\BadRequestException('attachment_ids and atag_ids must be arrays');
+    }
+
+    $removed = $this->fetchTable('Trois/Attachment.Attachments')
+      ->unlinkAtags($attachmentIds, $atagIds);
+
+    $this->set([
+      'removed' => $removed,
+      'requested' => [
+        'attachment_ids' => array_values(array_map('intval', $attachmentIds)),
+        'atag_ids' => array_values(array_map('intval', $atagIds)),
+      ],
+    ]);
+    $this->viewBuilder()->setClassName('Json');
+    $this->viewBuilder()->setOption('serialize', ['removed', 'requested']);
+  }
+
 }
