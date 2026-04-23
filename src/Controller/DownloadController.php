@@ -4,16 +4,39 @@ namespace Trois\Attachment\Controller;
 use Trois\Attachment\Controller\AppController;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\BadRequestException;
+use Cake\Core\Configure;
+use Firebase\JWT\JWT;
 use Trois\Attachment\Utility\Token;
 use Trois\Attachment\Filesystem\Downloader;
 use Cake\Event\EventInterface;
 class DownloadController extends AppController
 {
+  /**
+   * Issue a JWT for the Rust `zipper` microservice (cf. #11 / WGRC-419).
+   *
+   * Payload : { files: string[], filename: string, exp: int }.
+   * Signed with JWT_ZIPPER_SECRET (NOT the app SECURITY_SALT) so the zipper
+   * can verify it without knowing anything else about the app.
+   */
   public function getZipToken()
   {
     if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
-    if(empty($this->getRequest()->getData('files'))) $this->set('token', '');
-    else $this->set('token', (new Token)->encode(['files' => $this->getRequest()->getData('files')]));
+    $files = $this->getRequest()->getData('files');
+
+    if (empty($files)) {
+      $token = '';
+    } else {
+      $secret = (string)env('JWT_ZIPPER_SECRET', Configure::read('Zipper.secret', ''));
+      if ($secret === '') throw new \RuntimeException('JWT_ZIPPER_SECRET not configured');
+      $ttl = (int)env('ZIPPER_TOKEN_TTL', 3600);
+      $filename = (string)($this->getRequest()->getData('filename') ?: 'download.zip');
+      $token = JWT::encode([
+        'files' => array_values($files),
+        'filename' => $filename,
+        'exp' => time() + $ttl,
+      ], $secret, 'HS256');
+    }
+    $this->set('token', $token);
     $this->viewBuilder()->setClassName('Json');
     $this->viewBuilder()->setOption('serialize', ['token']);
   }
