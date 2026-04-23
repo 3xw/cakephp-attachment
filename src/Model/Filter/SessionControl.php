@@ -18,10 +18,14 @@ class SessionControl extends Base
 
   public function process():bool
   {
-    // security first
-    $uuid = $this->getArgs()[$this->getConfig('name')];
+    $uuid = $this->getArgs()[$this->getConfig('name')] ?? null;
     if(empty($uuid)) throw new UnauthorizedException(__d('Trois/Attachment','Missing uuid'));
-    if(!$s = (new Session())->read('Trois/Attachment.'.$uuid)) throw new UnauthorizedException(__d('Trois/Attachment','Uuid is not matching any session settings'));
+
+    // Stateless API (v6) : no server session → no restrictions to apply,
+    // authorization is handled upstream by the host app's policy layer.
+    // Keep the legacy behaviour whenever a session entry does exist.
+    $s = (new Session())->read('Trois/Attachment.'.$uuid);
+    if (empty($s)) return true;
 
     if(!empty($s['restrictions']))
     {
