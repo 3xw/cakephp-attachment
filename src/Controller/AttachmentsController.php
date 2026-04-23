@@ -88,8 +88,7 @@ class AttachmentsController extends AppController
 
   public function index()
   {
-    // security first !! be sure to restrict index with coresonding session settings!
-    if(empty($this->request->getQuery('uuid'))) throw new UnauthorizedException(__d('Trois/Attachment','Missing uuid'));
+    // uuid is the legacy session-control handle — optional in stateless API.
     $this->Crud->on('beforePaginate', function (Event $event) {
       if(!empty(Configure::read('Trois/Attachment.browse.user_filter_tag_types'))){
         $usersTable = $this->fetchTable('Users');

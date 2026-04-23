@@ -5,6 +5,7 @@ use Trois\Attachment\Controller\AppController;
 use Cake\Event\Event;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
+use Cake\Http\Exception\UnauthorizedException;
 
 class AtagsController extends AppController
 {
@@ -35,9 +36,7 @@ class AtagsController extends AppController
 
   public function index()
   {
-    // security first !!
-    if(empty($this->request->getQuery('uuid'))) throw new UnauthorizedException(__d('Trois/Attachment','Missing uuid'));
-
+    // uuid is the legacy session-control handle — optional in stateless API.
     $this->Crud->on('beforePaginate', function(Event $event)
     {
       $query = $event->getSubject()->query->contain(['AtagTypes']);
