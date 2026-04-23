@@ -1,20 +1,22 @@
 {
   "name": "3xw/cakephp-attachment",
-  "description": "New Attachment plugin for CakePHP",
+  "description": "Attachment plugin for CakePHP — API-only (v6)",
   "type": "cakephp-plugin",
+  "version": "6.0.0-dev",
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.2",
     "cakephp/cakephp": "^5.0",
+    "cakephp/migrations": "^5.0",
     "friendsofcake/crud": "^7.0",
     "friendsofcake/search": "^7.0",
-    "3xw/cakephp-utils":"^5.0",
+    "3xw/cakephp-utils": "^5.0",
+    "league/flysystem": "^1.0",
     "league/flysystem-aws-s3-v3": "^1.0",
-    "league/flysystem-ziparchive": "^1.0",
     "intervention/image": "^2.3",
     "firebase/php-jwt": "^7.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "*"
+    "phpunit/phpunit": "^10.5"
   },
   "autoload": {
     "psr-4": {
@@ -25,7 +27,6 @@
     "psr-4": {
       "Trois\\Attachment\\Test\\": "tests",
       "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
-
     }
   },
   "minimum-stability": "dev"

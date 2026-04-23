@@ -1,7 +1,9 @@
 <?php
-use Migrations\AbstractMigration;
+declare(strict_types=1);
 
-class Attachment extends AbstractMigration
+use Migrations\BaseMigration;
+
+class Attachment extends BaseMigration
 {
     public function up()
     {

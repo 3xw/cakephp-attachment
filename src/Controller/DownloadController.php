@@ -17,24 +17,9 @@ class DownloadController extends AppController
     $this->viewBuilder()->setClassName('Json');
     $this->viewBuilder()->setOption('serialize', ['token']);
   }
-  // (new Token)->encode(['files' => [$attachment1->id, $attachment2->id]])
-  public function files()
-  {
-    //check
-    if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
-    if(!$token = $this->getRequest()->getData('token')) throw new BadRequestException('Url Form: pair token filed/value needed');
-    // get Attachment
-    $attachments = $this->fetchTable('Trois/Attachment.Attachments')->find()
-    ->where(['id IN' => (new Token)->decode($token)->files])
-    ->toArray();
-    // not found if empty
-    if(empty($attachments)) throw new NotFoundException('Files not found');
-    // serve
-    $response = $this->response->withFile((new Downloader)->downloadZip($attachments));
-    $response = $response->withHeader('Content-Type', 'application/zip');
-    $response = $response->withDownload('archive.zip');
-    return $response;
-  }
+  // files() (zip multi-fichiers in-PHP) supprimé en v6.
+  // Le zip est désormais produit par le microservice Rust `zipper` (cf. #11 / WGRC-419).
+  // Le front consume `getZipToken` puis redirige vers /download/zip (nginx → zipper).
   public function getFileToken()
   {
     if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
