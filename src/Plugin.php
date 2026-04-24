@@ -29,7 +29,8 @@ class Plugin extends BasePlugin
       ->add('at_profile', \Trois\Attachment\Command\ProfileCommand::class)
       ->add('at_get_image_sizes', \Trois\Attachment\Command\GetImageSizesCommand::class)
       ->add('at_create_missing_translations', \Trois\Attachment\Command\CreateMissingTranslationsCommand::class)
-      ->add('at_migrate_storage', \Trois\Attachment\Command\MigrateStorageCommand::class);
+      ->add('at_migrate_storage', \Trois\Attachment\Command\MigrateStorageCommand::class)
+      ->add('at_thumbnailer_backfill', \Trois\Attachment\Command\ThumbnailerBackfillCommand::class);
   }
 
 
