@@ -14,27 +14,55 @@ class DownloadController extends AppController
   /**
    * Issue a JWT for the Rust `zipper` microservice (cf. #11 / WGRC-419).
    *
-   * Payload : { files: string[], filename: string, exp: int }.
-   * Signed with JWT_ZIPPER_SECRET (NOT the app SECURITY_SALT) so the zipper
-   * can verify it without knowing anything else about the app.
+   * Resolves the incoming attachment UUIDs to:
+   *   - the full S3 key (prefix + stored path)
+   *   - the user-facing original filename (`attachments.name`) which becomes
+   *     the entry name inside the zip
+   *
+   * Payload : { files: [{key, name}], filename, exp }. Signed with
+   * JWT_ZIPPER_SECRET (not the app SECURITY_SALT) so the zipper can verify
+   * without knowing anything else about the app.
    */
   public function getZipToken()
   {
     if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
-    $files = $this->getRequest()->getData('files');
+    $ids = $this->getRequest()->getData('files');
+    if (!is_array($ids)) $ids = [];
+    $ids = array_values(array_filter($ids, 'is_string'));
 
-    if (empty($files)) {
+    if (empty($ids)) {
       $token = '';
     } else {
-      $secret = (string)env('JWT_ZIPPER_SECRET', Configure::read('Zipper.secret', ''));
-      if ($secret === '') throw new \RuntimeException('JWT_ZIPPER_SECRET not configured');
-      $ttl = (int)env('ZIPPER_TOKEN_TTL', 3600);
-      $filename = (string)($this->getRequest()->getData('filename') ?: 'download.zip');
-      $token = JWT::encode([
-        'files' => array_values($files),
-        'filename' => $filename,
-        'exp' => time() + $ttl,
-      ], $secret, 'HS256');
+      $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
+      $rows = $Attachments->find()
+        ->where(['Attachments.id IN' => $ids])
+        ->select(['id', 'path', 'name'])
+        ->all()
+        ->toList();
+
+      $prefix = (string)env('ATTACHMENT_S3_PREFIX', '');
+      $files = [];
+      foreach ($rows as $r) {
+        if (empty($r->path)) continue;
+        $files[] = [
+          'key' => $prefix . $r->path,
+          'name' => (string)($r->name ?: basename((string)$r->path)),
+        ];
+      }
+
+      if (empty($files)) {
+        $token = '';
+      } else {
+        $secret = (string)env('JWT_ZIPPER_SECRET', Configure::read('Zipper.secret', ''));
+        if ($secret === '') throw new \RuntimeException('JWT_ZIPPER_SECRET not configured');
+        $ttl = (int)env('ZIPPER_TOKEN_TTL', 3600);
+        $filename = (string)($this->getRequest()->getData('filename') ?: 'download.zip');
+        $token = JWT::encode([
+          'files' => $files,
+          'filename' => $filename,
+          'exp' => time() + $ttl,
+        ], $secret, 'HS256');
+      }
     }
     $this->set('token', $token);
     $this->viewBuilder()->setClassName('Json');
