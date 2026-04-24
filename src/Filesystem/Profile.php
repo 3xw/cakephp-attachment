@@ -245,14 +245,16 @@ class Profile
     $s3Prefix = (string)env('ATTACHMENT_S3_PREFIX', '');
     $subpath = rtrim((string)env('THUMBNAILER_SUBPATH', 'thumbnails/'), '/') . '/';
     $scanPrefix = $s3Prefix . $subpath . $this->name . '/';
-    $suffix = '/' . ltrim($filePath, '/') . '.webp';
+    // Match both legacy .webp (if any) and current .avif sidecar output —
+    // keeps delete correct across the format bump.
+    $suffixes = ['/' . ltrim($filePath, '/') . '.avif', '/' . ltrim($filePath, '/') . '.webp'];
 
     $client = $adapter->getClient();
     $deleted = [];
     $toDelete = [];
 
     if (getenv('DEBUG_THUMB_DELETE') === '1') {
-      fwrite(STDERR, "[deleteS3SidecarThumbnails] bucket={$bucket} prefix={$scanPrefix} suffix={$suffix}\n");
+      fwrite(STDERR, "[deleteS3SidecarThumbnails] bucket={$bucket} prefix={$scanPrefix} suffixes=" . implode(',', $suffixes) . "\n");
     }
 
     $paginator = $client->getPaginator('ListObjectsV2', [
@@ -264,9 +266,15 @@ class Profile
       foreach ($page['Contents'] ?? [] as $obj) {
         $scanned++;
         $key = $obj['Key'] ?? null;
-        if ($key !== null && str_ends_with($key, $suffix)) {
-          $toDelete[] = ['Key' => $key];
-          $deleted[] = $key;
+        if ($key === null) {
+          continue;
+        }
+        foreach ($suffixes as $suffix) {
+          if (str_ends_with($key, $suffix)) {
+            $toDelete[] = ['Key' => $key];
+            $deleted[] = $key;
+            break;
+          }
         }
       }
     }
