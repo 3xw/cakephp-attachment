@@ -159,7 +159,7 @@ class FlyBehavior extends Behavior
       // set entity
       $entity->{$field} = $dir? $dir.DS.$name: $name;
 
-      // excute callback fct if needed
+      // callback fct if needed
       if(is_callable($afterReplace) && !empty($orginalValues[$field]) && $profile->replaceExisting) $afterReplace($entity);
     }
   }
@@ -172,6 +172,48 @@ class FlyBehavior extends Behavior
       [DS,$this->_session->read('Auth.User.role'),$this->_session->read('Auth.User.username'),date("Y"),date("m"),$type,$subtype],
       $dir
     );
+  }
+
+  /**
+   * After an attachment entity is successfully persisted, ask the Rust
+   * thumbnailer sidecar to pre-generate the default dims (list / card /
+   * lightbox). Fire-and-forget: tight curl timeouts so the upload response
+   * isn't held up by thumbnailer latency. If the sidecar is down or busy,
+   * we simply fall back to on-demand generation next time a thumb is read.
+   */
+  public function afterSave(Event $event, EntityInterface $entity, ArrayObject $options)
+  {
+    $settings = $this->getConfig();
+    $field = $settings['file_field'];
+    $path = (string)$entity->get($field);
+    if ($path === '') return;
+
+    $dims = Configure::read('Trois/Attachment.thumbnailer.default_dims', []);
+    if (empty($dims)) return;
+
+    $url = (string)env(
+      'THUMBNAILER_INTERNAL_URL',
+      (string)Configure::read('Trois/Attachment.thumbnailer.internal_url', 'http://thumbnailer:8081')
+    );
+    $payload = json_encode([
+      'path' => $path,
+      'dims' => array_values($dims),
+      'profile' => (string)($entity->get('profile') ?: 'default'),
+    ]);
+
+    $ch = curl_init($url . '/warm');
+    if ($ch === false) return;
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    // Sidecar responds 202 as soon as it spawns tasks — tight timeouts keep
+    // the upload response fast even if the sidecar is down.
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 200);
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 800);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_NOSIGNAL, true);
+    @curl_exec($ch);
+    curl_close($ch);
   }
 
   public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options)
