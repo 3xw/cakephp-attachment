@@ -88,8 +88,20 @@ class AttachmentsController extends AppController
 
   public function index()
   {
-    // uuid is the legacy session-control handle — optional in stateless API.
-    $this->Crud->on('beforePaginate', function (Event $event) {
+    // Optional `?ids=a,b,c` filter — lets the frontend fetch a specific
+    // selection across pages (used by the edit drawer and "Voir la
+    // sélection" feature). Bounded by the bulk-edit cap upstream.
+    $idsParam = (string)$this->getRequest()->getQuery('ids', '');
+    $idsFilter = array_values(array_filter(
+      array_map('trim', explode(',', $idsParam)),
+      fn($v) => $v !== ''
+    ));
+
+    $this->Crud->on('beforePaginate', function (Event $event) use ($idsFilter) {
+      if (!empty($idsFilter)) {
+        $event->getSubject()->query->where(['Attachments.id IN' => $idsFilter]);
+      }
+
       if(!empty(Configure::read('Trois/Attachment.browse.user_filter_tag_types'))){
         $usersTable = $this->fetchTable('Users');
         $id = $this->getRequest()->getSession()->read('Auth')->id;
