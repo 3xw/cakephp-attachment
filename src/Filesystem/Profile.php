@@ -173,42 +173,122 @@ class Profile
   /**
    * Delete all thumbnails for a given file path.
    *
+   * Runs two passes:
+   *   1. The legacy `thumbProfile` filesystem (local disk cache used by the
+   *      PHP `ResizeController` fallback).
+   *   2. The S3 sidecar namespace (`ATTACHMENT_S3_PREFIX`/`THUMBNAILER_SUBPATH`)
+   *      where the Rust `thumbnailer` stores generated WebPs.
+   *
    * @param string $filePath The original file path (e.g., "images/photo.jpg")
-   * @return array List of deleted thumbnail paths
+   * @return array List of deleted thumbnail paths (union of both passes)
    */
   public function deleteThumbnails(string $filePath): array
   {
-    $thumbProfileName = $this->getConfig('thumbnails');
-    if (empty($thumbProfileName) || $thumbProfileName === false) {
-      return [];
-    }
-
-    $thumbProfile = $this->thumbProfile();
     $deletedPaths = [];
-    $profileDir = $this->name;
+    $thumbProfileName = $this->getConfig('thumbnails');
+    if (!empty($thumbProfileName) && $thumbProfileName !== false) {
+      $thumbProfile = $this->thumbProfile();
+      $profileDir = $this->name;
 
-    try {
-      $contents = $thumbProfile->listContents($profileDir, true);
+      try {
+        $contents = $thumbProfile->listContents($profileDir, true);
 
-      foreach ($contents as $item) {
-        if ($item['type'] !== 'file') {
-          continue;
-        }
+        foreach ($contents as $item) {
+          if ($item['type'] !== 'file') {
+            continue;
+          }
 
-        if ($this->matchesThumbnailPath($item['path'], $filePath, $profileDir)) {
-          try {
-            $thumbProfile->delete($item['path'], true);
-            $deletedPaths[] = $item['path'];
-          } catch (\Exception $e) {
-            // Continue with other deletions
+          if ($this->matchesThumbnailPath($item['path'], $filePath, $profileDir)) {
+            try {
+              $thumbProfile->delete($item['path'], true);
+              $deletedPaths[] = $item['path'];
+            } catch (\Exception $e) {
+              // Continue with other deletions
+            }
           }
         }
+      } catch (\Exception $e) {
+        // listContents might fail on some adapters (e.g., External)
       }
+    }
+
+    // Rust sidecar S3 namespace — harmless no-op on non-S3 profiles.
+    try {
+      $deletedPaths = array_merge($deletedPaths, $this->deleteS3SidecarThumbnails($filePath));
     } catch (\Exception $e) {
-      // listContents might fail on some adapters (e.g., External)
+      // Never block a delete on cleanup failure.
     }
 
     return $deletedPaths;
+  }
+
+  /**
+   * Delete every thumbnail written by the Rust sidecar for the given original
+   * path. Scoped to this profile's namespace; no-op if the profile isn't
+   * S3-backed.
+   *
+   * Key layout:   `{ATTACHMENT_S3_PREFIX}{THUMBNAILER_SUBPATH}{profile}/{dim}/{path}.webp`
+   * Scan prefix:  `{ATTACHMENT_S3_PREFIX}{THUMBNAILER_SUBPATH}{profile}/`
+   * Match rule:   key ends with `/{filePath}.webp`
+   *
+   * @param string $filePath Original file path stored in DB (no S3 prefix).
+   * @return array List of deleted S3 keys.
+   */
+  public function deleteS3SidecarThumbnails(string $filePath): array
+  {
+    $adapter = $this->filesystem()->getAdapter();
+    if (!$adapter instanceof \League\Flysystem\AwsS3v3\AwsS3Adapter) {
+      return [];
+    }
+
+    $bucket = $adapter->getBucket();
+    $s3Prefix = (string)env('ATTACHMENT_S3_PREFIX', '');
+    $subpath = rtrim((string)env('THUMBNAILER_SUBPATH', 'thumbnails/'), '/') . '/';
+    $scanPrefix = $s3Prefix . $subpath . $this->name . '/';
+    $suffix = '/' . ltrim($filePath, '/') . '.webp';
+
+    $client = $adapter->getClient();
+    $deleted = [];
+    $toDelete = [];
+
+    if (getenv('DEBUG_THUMB_DELETE') === '1') {
+      fwrite(STDERR, "[deleteS3SidecarThumbnails] bucket={$bucket} prefix={$scanPrefix} suffix={$suffix}\n");
+    }
+
+    $paginator = $client->getPaginator('ListObjectsV2', [
+      'Bucket' => $bucket,
+      'Prefix' => $scanPrefix,
+    ]);
+    $scanned = 0;
+    foreach ($paginator as $page) {
+      foreach ($page['Contents'] ?? [] as $obj) {
+        $scanned++;
+        $key = $obj['Key'] ?? null;
+        if ($key !== null && str_ends_with($key, $suffix)) {
+          $toDelete[] = ['Key' => $key];
+          $deleted[] = $key;
+        }
+      }
+    }
+    if (getenv('DEBUG_THUMB_DELETE') === '1') {
+      fwrite(STDERR, "[deleteS3SidecarThumbnails] scanned={$scanned} matched=" . count($deleted) . "\n");
+    }
+
+    // One-by-one deletion: Infomaniak S3 (OpenStack Swift gateway) rejects
+    // the batch DeleteObjects API (requires Content-MD5 which aws-sdk-php
+    // doesn't add by default). Single-object deletes are uniformly supported.
+    foreach ($toDelete as $obj) {
+      try {
+        $client->deleteObject(['Bucket' => $bucket, 'Key' => $obj['Key']]);
+      } catch (\Exception $e) {
+        if (getenv('DEBUG_THUMB_DELETE') === '1') {
+          fwrite(STDERR, "[deleteS3SidecarThumbnails] delete failed for {$obj['Key']}: " . $e->getMessage() . "\n");
+        }
+        // Best-effort; don't block caller.
+      }
+    }
+
+    return $deleted;
   }
 
   /**
