@@ -36,12 +36,17 @@ return function (RouteBuilder $routes): void {
             $builder->connect('/download/get-file-token', ['controller' => 'Download', 'action' => 'getFileToken']);
             $builder->connect('/download/get-zip-token', ['controller' => 'Download', 'action' => 'getZipToken']);
 
-            // Custom bulk route — must come before resources() so it doesn't
-            // collide with the DELETE /attachments/:id pattern.
+            // Custom bulk routes — must come before resources() so they
+            // don't collide with the /attachments/:id patterns.
             $builder->connect(
                 '/attachments/atags',
                 ['controller' => 'Attachments', 'action' => 'deleteAtags'],
                 ['_method' => ['DELETE', 'POST']]
+            );
+            $builder->connect(
+                '/attachments/bulk',
+                ['controller' => 'Attachments', 'action' => 'bulkEdit'],
+                ['_method' => ['PATCH', 'POST']]
             );
 
             $builder->resources('Aarchives');

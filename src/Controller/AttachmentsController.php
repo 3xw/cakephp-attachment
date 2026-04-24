@@ -195,4 +195,84 @@ class AttachmentsController extends AppController
     $this->viewBuilder()->setOption('serialize', ['removed', 'requested']);
   }
 
+  /**
+   * Bulk edit: update props and/or add/remove tag links on 1..N attachments
+   * in a single request.
+   *
+   * Body:
+   *   {
+   *     "ids": [uuid, uuid, ...],
+   *     "set": { "title": "...", "description": "...", "author": "...",
+   *              "copyright": "...", "date": "2026-04-24" },  // optional, partial
+   *     "tags_add": [atag_id, atag_id, ...],     // optional
+   *     "tags_remove": [atag_id, atag_id, ...]   // optional
+   *   }
+   *
+   * Only fields explicitly present in `set` are updated — omitted props stay
+   * untouched (so tri-state "leave as-is" on the UI never triggers a silent
+   * overwrite). Tag operations are symmetric: `tags_add` is INSERT IGNORE,
+   * `tags_remove` is a straight DELETE on the pivot.
+   */
+  public function bulkEdit()
+  {
+    $request = $this->getRequest();
+    if (!in_array($request->getMethod(), ['PATCH', 'POST'], true)) {
+      throw new \Cake\Http\Exception\MethodNotAllowedException();
+    }
+
+    $data = $request->getParsedBody() ?: [];
+    $ids = $data['ids'] ?? [];
+    if (!is_array($ids) || empty($ids)) {
+      throw new \Cake\Http\Exception\BadRequestException('ids must be a non-empty array');
+    }
+    $ids = array_values(array_filter($ids, 'is_string'));
+    if (empty($ids)) {
+      throw new \Cake\Http\Exception\BadRequestException('no valid ids');
+    }
+
+    // Whitelist of props that can be bulk-edited. Never expose `path`,
+    // `md5`, `size`, `profile`, `user_id` etc. — those are owned by the
+    // upload pipeline.
+    $allowed = ['title', 'description', 'author', 'copyright', 'date'];
+    $set = [];
+    foreach ($allowed as $k) {
+      if (array_key_exists($k, (array)($data['set'] ?? []))) {
+        $v = $data['set'][$k];
+        // Normalise date: frontend sends "YYYY-MM-DD", store at midnight.
+        if ($k === 'date' && $v !== null && $v !== '') {
+          $v = (string)$v . ' 00:00:00';
+        }
+        $set[$k] = $v;
+      }
+    }
+
+    $tagsAdd    = array_values(array_map('intval', (array)($data['tags_add']    ?? [])));
+    $tagsRemove = array_values(array_map('intval', (array)($data['tags_remove'] ?? [])));
+
+    $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
+
+    $updatedProps = 0;
+    if (!empty($set)) {
+      $set['modified'] = date('Y-m-d H:i:s');
+      $updatedProps = $Attachments->updateAll($set, ['id IN' => $ids]);
+    }
+
+    $linksAdded = 0;
+    if (!empty($tagsAdd)) {
+      $linksAdded = $Attachments->linkAtags($ids, $tagsAdd);
+    }
+    $linksRemoved = [];
+    if (!empty($tagsRemove)) {
+      $linksRemoved = $Attachments->unlinkAtags($ids, $tagsRemove);
+    }
+
+    $this->set([
+      'updated' => $updatedProps,
+      'linked' => $linksAdded,
+      'unlinked' => $linksRemoved,
+    ]);
+    $this->viewBuilder()->setClassName('Json');
+    $this->viewBuilder()->setOption('serialize', ['updated', 'linked', 'unlinked']);
+  }
+
 }

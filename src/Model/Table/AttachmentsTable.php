@@ -204,7 +204,8 @@ class AttachmentsTable extends Table
    */
   public function unlinkAtags(array $attachmentIds, array $atagIds): array
   {
-    $attachmentIds = array_values(array_unique(array_map('intval', $attachmentIds)));
+    // attachments.id is CHAR(36) (UUID) → never intval() it.
+    $attachmentIds = array_values(array_unique(array_filter($attachmentIds, 'is_string')));
     $atagIds = array_values(array_unique(array_map('intval', $atagIds)));
     if (empty($attachmentIds) || empty($atagIds)) return [];
 
@@ -227,6 +228,55 @@ class AttachmentsTable extends Table
     ]);
 
     return $affected;
+  }
+
+  /**
+   * Bulk-insert every missing (attachment_id, atag_id) pair on the pivot.
+   * Skips existing pairs so calling this with a partially-linked selection
+   * is idempotent. Returns the number of rows actually created.
+   *
+   * @param string[] $attachmentIds UUIDs from attachments.id
+   * @param int[]    $atagIds       atag ids
+   * @return int rows added
+   */
+  public function linkAtags(array $attachmentIds, array $atagIds): int
+  {
+    $attachmentIds = array_values(array_unique(array_filter($attachmentIds, 'is_string')));
+    $atagIds = array_values(array_unique(array_map('intval', $atagIds)));
+    if (empty($attachmentIds) || empty($atagIds)) return 0;
+
+    $pivot = $this->getAssociation('Atags')->junction();
+    $table = $pivot->getTable();
+
+    $existing = $pivot->find()
+      ->select(['attachment_id', 'atag_id'])
+      ->where(['attachment_id IN' => $attachmentIds, 'atag_id IN' => $atagIds])
+      ->disableHydration()
+      ->all()
+      ->toArray();
+
+    $seen = [];
+    foreach ($existing as $row) {
+      $seen[$row['attachment_id'] . ':' . $row['atag_id']] = true;
+    }
+
+    $toInsert = [];
+    foreach ($attachmentIds as $aid) {
+      foreach ($atagIds as $tid) {
+        if (!isset($seen[$aid . ':' . $tid])) {
+          $toInsert[] = ['attachment_id' => $aid, 'atag_id' => $tid];
+        }
+      }
+    }
+    if (empty($toInsert)) return 0;
+
+    $conn = $pivot->getConnection();
+    $q = $conn->insertQuery()->insert(['attachment_id', 'atag_id'])->into($table);
+    foreach ($toInsert as $row) {
+      $q->values($row);
+    }
+    $q->execute();
+    return count($toInsert);
   }
 
 }
