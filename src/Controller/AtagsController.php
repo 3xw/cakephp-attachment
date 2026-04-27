@@ -45,12 +45,42 @@ class AtagsController extends AppController
     ]);
   }
 
+  /**
+   * Return the user-id of the caller, read from the Authentication
+   * middleware identity attribute. Null on stateless / unauthenticated
+   * requests (which then can't see anyone's personal atags).
+   */
+  protected function currentUserId(): ?string
+  {
+    $identity = $this->getRequest()->getAttribute('identity');
+    if ($identity === null) return null;
+    $id = method_exists($identity, 'getIdentifier') ? $identity->getIdentifier() : null;
+    if ($id === null) {
+      $arr = is_array($identity) ? $identity : (method_exists($identity, 'toArray') ? $identity->toArray() : []);
+      $id = $arr['id'] ?? null;
+    }
+    return $id ? (string)$id : null;
+  }
+
   public function index()
   {
+    $userId = $this->currentUserId();
     // uuid is the legacy session-control handle — optional in stateless API.
-    $this->Crud->on('beforePaginate', function(Event $event)
+    $this->Crud->on('beforePaginate', function(Event $event) use ($userId)
     {
       $query = $event->getSubject()->query->contain(['AtagTypes']);
+
+      // Personal atag visibility: each row is either public (user_id IS NULL)
+      // or owned by the current caller. Owners' personal atags (used for
+      // "Favoris" / per-user selections) stay private to them.
+      if ($userId !== null) {
+        $query->where(['OR' => [
+          'Atags.user_id IS' => null,
+          'Atags.user_id'     => $userId,
+        ]]);
+      } else {
+        $query->where(['Atags.user_id IS' => null]);
+      }
 
       // if(Configure::read('Trois/Attachment.browse.filter_tags')){
       //   $type = $this->request->getQuery('type') == '' ? 'all' : explode('/',$this->request->getQuery('type'))[0];
@@ -176,6 +206,21 @@ class AtagsController extends AppController
       )
       ->groupBy('AttachmentsAtags.atag_id');
 
+    // Hide other users' personal atags from the counts payload too — the
+    // sidebar already filters them out client-side, this just removes them
+    // from the response so payload size stays minimal.
+    $userId = $this->currentUserId();
+    if ($userId !== null) {
+      $base->innerJoin(['AtagsFlt' => 'atags'], ['AtagsFlt.id = AttachmentsAtags.atag_id'])
+        ->where(['OR' => [
+          'AtagsFlt.user_id IS' => null,
+          'AtagsFlt.user_id'    => $userId,
+        ]]);
+    } else {
+      $base->innerJoin(['AtagsFlt' => 'atags'], ['AtagsFlt.id = AttachmentsAtags.atag_id'])
+        ->where(['AtagsFlt.user_id IS' => null]);
+    }
+
     if ($type !== '' && $type !== 'all') {
       $base->where(['Attachments.type' => $type]);
     }
@@ -247,5 +292,120 @@ class AtagsController extends AppController
     $this->set(['counts' => $counts]);
     $this->viewBuilder()->setClassName('Json');
     $this->viewBuilder()->setOption('serialize', ['counts']);
+  }
+
+  // ---------------------------------------------------------------------
+  // Per-user favourites
+  //
+  // Each user owns one personal atag in the "Sélection" type. The pair
+  // (atag_id, attachment_id) in `attachments_atags` is the persisted
+  // favourite. Lazy-creates the user's atag on first call so there's no
+  // signup migration to run.
+  // ---------------------------------------------------------------------
+
+  protected const FAVORITES_TYPE_SLUG = 'selection';
+
+  /**
+   * Lookup or create the calling user's personal favourites atag.
+   * @throws \Cake\Http\Exception\UnauthorizedException
+   */
+  protected function ensureUserFavoritesAtag(): \Cake\Datasource\EntityInterface
+  {
+    $userId = $this->currentUserId();
+    if ($userId === null) {
+      throw new \Cake\Http\Exception\UnauthorizedException();
+    }
+    $existing = $this->Atags->find()
+      ->where([
+        'Atags.user_id' => $userId,
+        'Atags.atag_type_id IN' => $this->Atags->AtagTypes->find()
+          ->select(['id'])
+          ->where(['AtagTypes.slug' => self::FAVORITES_TYPE_SLUG]),
+      ])
+      ->first();
+    if ($existing !== null) {
+      return $existing;
+    }
+    $type = $this->Atags->AtagTypes->find()
+      ->where(['AtagTypes.slug' => self::FAVORITES_TYPE_SLUG])
+      ->first();
+    if ($type === null) {
+      throw new \RuntimeException('Atag type "' . self::FAVORITES_TYPE_SLUG . '" not configured.');
+    }
+    // user_id-suffixed slug keeps the column unique while staying readable.
+    $shortId = substr(str_replace('-', '', $userId), 0, 8);
+    $entity = $this->Atags->newEntity([
+      'name' => 'Favoris',
+      'slug' => 'favoris-' . $shortId,
+      'atag_type_id' => $type->id,
+      'user_id' => $userId,
+    ]);
+    if (!$this->Atags->save($entity)) {
+      throw new \RuntimeException('Could not create favourites atag: ' . json_encode($entity->getErrors()));
+    }
+    return $entity;
+  }
+
+  /**
+   * GET /attachment/favorites/me — return the caller's favourites state.
+   * Lazy-creates the underlying atag on first call.
+   *
+   * Response: { atag_id, attachment_ids, count }
+   */
+  public function myFavorites()
+  {
+    $atag = $this->ensureUserFavoritesAtag();
+    $junction = $this->Atags->getAssociation('Attachments')->junction();
+    $rows = $junction->find()
+      ->select(['attachment_id'])
+      ->where(['atag_id' => $atag->id])
+      ->disableHydration()
+      ->all()
+      ->toList();
+    $ids = array_column($rows, 'attachment_id');
+    $this->set([
+      'atag_id'        => $atag->id,
+      'attachment_ids' => $ids,
+      'count'          => count($ids),
+    ]);
+    $this->viewBuilder()->setClassName('Json');
+    $this->viewBuilder()->setOption('serialize', ['atag_id', 'attachment_ids', 'count']);
+  }
+
+  /**
+   * POST /attachment/favorites/toggle — add or remove an attachment from
+   * the caller's favourites. Body: { attachment_id }.
+   * Response: { favorited: bool, count }
+   */
+  public function toggleFavorite()
+  {
+    if (!$this->getRequest()->is('post')) {
+      throw new \Cake\Http\Exception\MethodNotAllowedException();
+    }
+    $atag = $this->ensureUserFavoritesAtag();
+    $aid = (string)$this->getRequest()->getData('attachment_id', '');
+    if ($aid === '') {
+      throw new \Cake\Http\Exception\BadRequestException('attachment_id required');
+    }
+    $junction = $this->Atags->getAssociation('Attachments')->junction();
+    $existing = $junction->find()
+      ->where(['atag_id' => $atag->id, 'attachment_id' => $aid])
+      ->first();
+    if ($existing) {
+      $junction->delete($existing);
+      $favorited = false;
+    } else {
+      $row = $junction->newEntity(['atag_id' => $atag->id, 'attachment_id' => $aid]);
+      $junction->save($row);
+      $favorited = true;
+    }
+    $count = $junction->find()->where(['atag_id' => $atag->id])->count();
+    $this->set([
+      'favorited' => $favorited,
+      'count'     => $count,
+      'atag_id'   => $atag->id,
+    ]);
+    $this->viewBuilder()->setClassName('Json');
+    $this->viewBuilder()->setOption('serialize', ['favorited', 'count', 'atag_id']);
   }
 }

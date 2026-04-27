@@ -53,6 +53,16 @@ return function (RouteBuilder $routes): void {
                 ['controller' => 'Atags', 'action' => 'counts'],
                 ['_method' => ['GET']]
             );
+            $builder->connect(
+                '/favorites/me',
+                ['controller' => 'Atags', 'action' => 'myFavorites'],
+                ['_method' => ['GET']]
+            );
+            $builder->connect(
+                '/favorites/toggle',
+                ['controller' => 'Atags', 'action' => 'toggleFavorite'],
+                ['_method' => ['POST']]
+            );
 
             $builder->resources('Aarchives');
             $builder->resources('Atags');
