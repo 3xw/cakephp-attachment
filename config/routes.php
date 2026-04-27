@@ -49,6 +49,11 @@ return function (RouteBuilder $routes): void {
                 ['_method' => ['PATCH', 'POST']]
             );
             $builder->connect(
+                '/attachments/bulk-delete',
+                ['controller' => 'Attachments', 'action' => 'bulkDelete'],
+                ['_method' => ['DELETE', 'POST']]
+            );
+            $builder->connect(
                 '/atags/counts',
                 ['controller' => 'Atags', 'action' => 'counts'],
                 ['_method' => ['GET']]

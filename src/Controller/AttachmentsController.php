@@ -287,4 +287,48 @@ class AttachmentsController extends AppController
     $this->viewBuilder()->setOption('serialize', ['updated', 'linked', 'unlinked']);
   }
 
+  /**
+   * Bulk delete: delete N attachments in one request. Goes through
+   * Table::delete() per entity so FlyBehavior/AarchiveBehavior fire and the
+   * S3 originals + thumbnails get cleaned up.
+   *
+   * Body: { "ids": [uuid, uuid, ...] }
+   * Returns: { deleted: int, failed: [uuid, ...] }
+   */
+  public function bulkDelete()
+  {
+    $request = $this->getRequest();
+    if (!in_array($request->getMethod(), ['DELETE', 'POST'], true)) {
+      throw new \Cake\Http\Exception\MethodNotAllowedException();
+    }
+
+    $data = $request->getParsedBody() ?: [];
+    $ids = $data['ids'] ?? [];
+    if (!is_array($ids) || empty($ids)) {
+      throw new \Cake\Http\Exception\BadRequestException('ids must be a non-empty array');
+    }
+    $ids = array_values(array_filter($ids, 'is_string'));
+    if (empty($ids)) {
+      throw new \Cake\Http\Exception\BadRequestException('no valid ids');
+    }
+
+    $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
+    $entities = $Attachments->find()->where(['id IN' => $ids])->all();
+
+    $deleted = 0;
+    $failed = [];
+    foreach ($entities as $entity) {
+      try {
+        if ($Attachments->delete($entity)) $deleted++;
+        else $failed[] = $entity->id;
+      } catch (\Throwable $e) {
+        $failed[] = $entity->id;
+      }
+    }
+
+    $this->set(compact('deleted', 'failed'));
+    $this->viewBuilder()->setClassName('Json');
+    $this->viewBuilder()->setOption('serialize', ['deleted', 'failed']);
+  }
+
 }
