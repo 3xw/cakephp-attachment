@@ -70,25 +70,19 @@ class AtagsController extends AppController
     {
       $query = $event->getSubject()->query->contain(['AtagTypes']);
 
-      // Personal-atag visibility. An atag is "personal" iff it lives in
-      // the Sélection type (slug = self::FAVORITES_TYPE_SLUG) AND has a
-      // user_id. Tags from other types may also carry a user_id for legacy
-      // historical reasons (= creator) and must stay public.
-      $selectionTypeId = $this->Atags->AtagTypes->find()
-        ->select(['id'])
-        ->where(['AtagTypes.slug' => self::FAVORITES_TYPE_SLUG])
-        ->first()?->id;
-      if ($selectionTypeId !== null) {
+      // Personal-atag visibility. We use a slug convention rather than the
+      // legacy `user_id` column (which is auto-filled by UserIDBehavior on
+      // every atag save and just tracks the creator). Atags whose slug
+      // starts with `favoris-` are per-user; only the matching user sees
+      // theirs. Everything else is public regardless of user_id.
+      if ($userId !== null) {
+        $shortId = substr(str_replace('-', '', $userId), 0, 8);
         $query->where(['OR' => [
-          // Anything not in the Sélection type → public
-          'Atags.atag_type_id !=' => $selectionTypeId,
-          'Atags.atag_type_id IS' => null,
-          // Sélection-type atags w/o owner → public selections (e.g. "Mes
-          // favoris partagés agence")
-          'Atags.user_id IS' => null,
-          // Sélection-type atags owned by the caller → keep
-          'Atags.user_id' => $userId,
+          'Atags.slug NOT LIKE' => 'favoris-%',
+          'Atags.slug'          => 'favoris-' . $shortId,
         ]]);
+      } else {
+        $query->where(['Atags.slug NOT LIKE' => 'favoris-%']);
       }
 
       // if(Configure::read('Trois/Attachment.browse.filter_tags')){
@@ -215,22 +209,18 @@ class AtagsController extends AppController
       )
       ->groupBy('AttachmentsAtags.atag_id');
 
-    // Hide *other users'* personal atags from the counts payload — they
-    // were already filtered out of /atags.json so leaving them in counts
-    // would just produce orphan keys. Same Sélection-only rule as index().
+    // Hide *other users'* personal atags from the counts payload too.
+    // Same `favoris-{userId8}` slug convention as index().
     $userId = $this->currentUserId();
-    $selectionTypeId = $this->Atags->AtagTypes->find()
-      ->select(['id'])
-      ->where(['AtagTypes.slug' => self::FAVORITES_TYPE_SLUG])
-      ->first()?->id;
-    if ($selectionTypeId !== null) {
-      $base->innerJoin(['AtagsFlt' => 'atags'], ['AtagsFlt.id = AttachmentsAtags.atag_id'])
-        ->where(['OR' => [
-          'AtagsFlt.atag_type_id !=' => $selectionTypeId,
-          'AtagsFlt.atag_type_id IS' => null,
-          'AtagsFlt.user_id IS'      => null,
-          'AtagsFlt.user_id'         => $userId,
-        ]]);
+    $base->innerJoin(['AtagsFlt' => 'atags'], ['AtagsFlt.id = AttachmentsAtags.atag_id']);
+    if ($userId !== null) {
+      $shortId = substr(str_replace('-', '', $userId), 0, 8);
+      $base->where(['OR' => [
+        'AtagsFlt.slug NOT LIKE' => 'favoris-%',
+        'AtagsFlt.slug'          => 'favoris-' . $shortId,
+      ]]);
+    } else {
+      $base->where(['AtagsFlt.slug NOT LIKE' => 'favoris-%']);
     }
 
     if ($type !== '' && $type !== 'all') {
@@ -319,6 +309,10 @@ class AtagsController extends AppController
 
   /**
    * Lookup or create the calling user's personal favourites atag.
+   * Matched by a deterministic slug (`favoris-{userId8}`) so the user can
+   * own *other* atags in the Sélection type (shared selections, projects)
+   * without colliding with their built-in Favoris row.
+   *
    * @throws \Cake\Http\Exception\UnauthorizedException
    */
   protected function ensureUserFavoritesAtag(): \Cake\Datasource\EntityInterface
@@ -327,13 +321,11 @@ class AtagsController extends AppController
     if ($userId === null) {
       throw new \Cake\Http\Exception\UnauthorizedException();
     }
+    $shortId = substr(str_replace('-', '', $userId), 0, 8);
+    $favSlug = 'favoris-' . $shortId;
+
     $existing = $this->Atags->find()
-      ->where([
-        'Atags.user_id' => $userId,
-        'Atags.atag_type_id IN' => $this->Atags->AtagTypes->find()
-          ->select(['id'])
-          ->where(['AtagTypes.slug' => self::FAVORITES_TYPE_SLUG]),
-      ])
+      ->where(['Atags.slug' => $favSlug])
       ->first();
     if ($existing !== null) {
       return $existing;
@@ -344,11 +336,9 @@ class AtagsController extends AppController
     if ($type === null) {
       throw new \RuntimeException('Atag type "' . self::FAVORITES_TYPE_SLUG . '" not configured.');
     }
-    // user_id-suffixed slug keeps the column unique while staying readable.
-    $shortId = substr(str_replace('-', '', $userId), 0, 8);
     $entity = $this->Atags->newEntity([
       'name' => 'Favoris',
-      'slug' => 'favoris-' . $shortId,
+      'slug' => $favSlug,
       'atag_type_id' => $type->id,
       'user_id' => $userId,
     ]);
