@@ -196,8 +196,11 @@ class AtagsController extends AppController
         $base->where(['Attachments.date >=' => $parts[0] . ' 00:00:00']);
       }
     }
-    // If atags are already active, restrict to attachments having ALL of them.
-    // We resolve the slugs to IDs first (cheap; bounded by selection size).
+    // If atags are already active, restrict to attachments having ALL of
+    // them. We compute the matching attachment_ids first (single query on
+    // the pivot, GROUP BY + HAVING for the AND-of-tags rule), then inject
+    // the list as a WHERE IN. Avoids the brittle subquery-via-Cake-Query
+    // pattern that cross-joined when feeding a Query as a WHERE value.
     $activeSlugs = array_values(array_filter(array_map('trim', explode(',', $atagsCsv)), fn($s) => $s !== ''));
     if (!empty($activeSlugs)) {
       $activeIds = $this->Atags->find()
@@ -206,17 +209,29 @@ class AtagsController extends AppController
         ->all()
         ->extract('id')
         ->toList();
-      if (!empty($activeIds)) {
-        $base->where(['Attachments.id IN' => $this->Atags->find()
-          ->select(['attachment_id' => 'AA.attachment_id'])
-          ->from(['AA' => 'attachments_atags'])
-          ->where(['AA.atag_id IN' => $activeIds])
-          ->groupBy(['AA.attachment_id'])
-          ->having(['COUNT(DISTINCT AA.atag_id) =' => count($activeIds)]),
-        ]);
-      } else {
+      if (empty($activeIds)) {
         // unknown slugs → empty result
         $base->where(['1 =' => 0]);
+      } else {
+        $junction = $this->Atags->getAssociation('Attachments')->junction();
+        $junctionQ = $junction->find();
+        // count(activeIds) is computed in PHP (int) so safe to inline; the
+        // alternative `having([... = :n], ...)` triggers QueryExpression
+        // edge cases on this CakePHP version.
+        $n = count($activeIds);
+        $matchingIds = $junctionQ
+          ->select(['attachment_id'])
+          ->where(['atag_id IN' => $activeIds])
+          ->groupBy(['attachment_id'])
+          ->having($junctionQ->newExpr("COUNT(DISTINCT atag_id) = {$n}"))
+          ->all()
+          ->extract('attachment_id')
+          ->toList();
+        if (empty($matchingIds)) {
+          $base->where(['1 =' => 0]);
+        } else {
+          $base->where(['Attachments.id IN' => $matchingIds]);
+        }
       }
     }
 
