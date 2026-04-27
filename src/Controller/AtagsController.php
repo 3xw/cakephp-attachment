@@ -12,15 +12,18 @@ class AtagsController extends AppController
   use \Crud\Controller\ControllerTrait;
 
   public array $paginate = [
-        'limit' => 100000,
+        // CakePHP 5 defaults `maxLimit` to 100; bump both so the sidebar
+        // gets the full atag list in one shot.
+        'limit'    => 100000,
+        'maxLimit' => 100000,
         // Respect AtagTypes.order first, fall back on alpha-sorted Atags.name
         // so the sidebar groups in the same order as the admin-defined types.
+        // (AtagTypes contain is added by beforePaginate so the sort works.)
         'order' => [
             'AtagTypes.order' => 'ASC',
             'AtagTypes.name'  => 'ASC',
             'Atags.name'      => 'ASC',
         ],
-        'contain' => ['AtagTypes'],
     ];
 
   public function initialize(): void
