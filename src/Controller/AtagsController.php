@@ -13,9 +13,14 @@ class AtagsController extends AppController
 
   public array $paginate = [
         'limit' => 100000,
+        // Respect AtagTypes.order first, fall back on alpha-sorted Atags.name
+        // so the sidebar groups in the same order as the admin-defined types.
         'order' => [
-            'Atags.name' => 'ASC'
-        ]
+            'AtagTypes.order' => 'ASC',
+            'AtagTypes.name'  => 'ASC',
+            'Atags.name'      => 'ASC',
+        ],
+        'contain' => ['AtagTypes'],
     ];
 
   public function initialize(): void
@@ -120,5 +125,106 @@ class AtagsController extends AppController
     });
 
     return $this->Crud->execute();
+  }
+
+  /**
+   * Faceted-filter helper: for each atag, return the number of attachments
+   * that would match the **current** filter set (search, type, date, the
+   * already-active atag selection). The frontend uses these counts to render
+   * the sidebar with live numbers and to grey out (or hide) tags that are
+   * unreachable from the current context.
+   *
+   * Querystring (all optional):
+   *   q         search term (matches Search behaviour on Attachments)
+   *   type      attachment type (image|video|application|…)
+   *   date      "YYYY-MM-DD" or "YYYY-MM-DD,YYYY-MM-DD"
+   *   atags     CSV of atag slugs already active (intersection)
+   *
+   * Returns: { counts: { atag_id: int } }
+   *
+   * Implementation: a single GROUP BY over the pivot, joined to attachments
+   * and filtered by the same WHERE clauses the index uses.
+   */
+  public function counts()
+  {
+    $req = $this->getRequest();
+    $q       = (string)$req->getQuery('q', '');
+    $type    = (string)$req->getQuery('type', '');
+    $date    = (string)$req->getQuery('date', '');
+    $atagsCsv = (string)$req->getQuery('atags', '');
+
+    $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
+
+    // Start from attachments matching the *non-tag* filters, then GROUP BY
+    // tag through the pivot. This way selecting tag X gives us counts for
+    // every other tag intersected with X (classic faceted intersection).
+    $base = $Attachments->find();
+    $base
+      ->select([
+        'atag_id' => 'AttachmentsAtags.atag_id',
+        'count'   => $base->func()->count($base->newExpr('DISTINCT Attachments.id')),
+      ])
+      ->innerJoin(
+        ['AttachmentsAtags' => 'attachments_atags'],
+        ['AttachmentsAtags.attachment_id = Attachments.id']
+      )
+      ->groupBy('AttachmentsAtags.atag_id');
+
+    if ($type !== '' && $type !== 'all') {
+      $base->where(['Attachments.type' => $type]);
+    }
+    if ($q !== '') {
+      $base->where([
+        'OR' => [
+          'Attachments.name LIKE'        => '%' . $q . '%',
+          'Attachments.title LIKE'       => '%' . $q . '%',
+          'Attachments.description LIKE' => '%' . $q . '%',
+        ],
+      ]);
+    }
+    if ($date !== '') {
+      $parts = array_map('trim', explode(',', $date));
+      if (count($parts) === 2) {
+        $base->where([
+          'Attachments.date >=' => $parts[0] . ' 00:00:00',
+          'Attachments.date <=' => $parts[1] . ' 23:59:59',
+        ]);
+      } elseif (count($parts) === 1) {
+        $base->where(['Attachments.date >=' => $parts[0] . ' 00:00:00']);
+      }
+    }
+    // If atags are already active, restrict to attachments having ALL of them.
+    // We resolve the slugs to IDs first (cheap; bounded by selection size).
+    $activeSlugs = array_values(array_filter(array_map('trim', explode(',', $atagsCsv)), fn($s) => $s !== ''));
+    if (!empty($activeSlugs)) {
+      $activeIds = $this->Atags->find()
+        ->select(['id'])
+        ->where(['Atags.slug IN' => $activeSlugs])
+        ->all()
+        ->extract('id')
+        ->toList();
+      if (!empty($activeIds)) {
+        $base->where(['Attachments.id IN' => $this->Atags->find()
+          ->select(['attachment_id' => 'AA.attachment_id'])
+          ->from(['AA' => 'attachments_atags'])
+          ->where(['AA.atag_id IN' => $activeIds])
+          ->groupBy(['AA.attachment_id'])
+          ->having(['COUNT(DISTINCT AA.atag_id) =' => count($activeIds)]),
+        ]);
+      } else {
+        // unknown slugs → empty result
+        $base->where(['1 =' => 0]);
+      }
+    }
+
+    $rows = $base->disableHydration()->all()->toList();
+    $counts = [];
+    foreach ($rows as $r) {
+      $counts[(int)$r['atag_id']] = (int)$r['count'];
+    }
+
+    $this->set(['counts' => $counts]);
+    $this->viewBuilder()->setClassName('Json');
+    $this->viewBuilder()->setOption('serialize', ['counts']);
   }
 }

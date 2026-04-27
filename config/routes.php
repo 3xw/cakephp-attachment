@@ -48,6 +48,11 @@ return function (RouteBuilder $routes): void {
                 ['controller' => 'Attachments', 'action' => 'bulkEdit'],
                 ['_method' => ['PATCH', 'POST']]
             );
+            $builder->connect(
+                '/atags/counts',
+                ['controller' => 'Atags', 'action' => 'counts'],
+                ['_method' => ['GET']]
+            );
 
             $builder->resources('Aarchives');
             $builder->resources('Atags');
