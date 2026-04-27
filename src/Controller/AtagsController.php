@@ -31,14 +31,17 @@ class AtagsController extends AppController
     parent::initialize();
 
     $this->loadComponent('Crud.Crud', [
-      'actions' => ['Crud.Index'],
+      'actions' => [
+        'index'  => ['className' => 'Crud.Index'],
+        'view'   => ['className' => 'Crud.View'],
+        'add'    => ['className' => 'Crud.Add'],
+        'edit'   => ['className' => 'Crud.Edit'],
+        'delete' => ['className' => 'Crud.Delete'],
+      ],
       'listeners' => [
-        //'CrudCache',
         'Crud.Api',
-        //'Crud.ApiPagination',
         'Crud.ApiQueryLog',
-        //'Crud.Search'
-      ]
+      ],
     ]);
   }
 
