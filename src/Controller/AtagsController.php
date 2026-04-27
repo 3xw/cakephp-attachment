@@ -70,16 +70,25 @@ class AtagsController extends AppController
     {
       $query = $event->getSubject()->query->contain(['AtagTypes']);
 
-      // Personal atag visibility: each row is either public (user_id IS NULL)
-      // or owned by the current caller. Owners' personal atags (used for
-      // "Favoris" / per-user selections) stay private to them.
-      if ($userId !== null) {
+      // Personal-atag visibility. An atag is "personal" iff it lives in
+      // the Sélection type (slug = self::FAVORITES_TYPE_SLUG) AND has a
+      // user_id. Tags from other types may also carry a user_id for legacy
+      // historical reasons (= creator) and must stay public.
+      $selectionTypeId = $this->Atags->AtagTypes->find()
+        ->select(['id'])
+        ->where(['AtagTypes.slug' => self::FAVORITES_TYPE_SLUG])
+        ->first()?->id;
+      if ($selectionTypeId !== null) {
         $query->where(['OR' => [
+          // Anything not in the Sélection type → public
+          'Atags.atag_type_id !=' => $selectionTypeId,
+          'Atags.atag_type_id IS' => null,
+          // Sélection-type atags w/o owner → public selections (e.g. "Mes
+          // favoris partagés agence")
           'Atags.user_id IS' => null,
-          'Atags.user_id'     => $userId,
+          // Sélection-type atags owned by the caller → keep
+          'Atags.user_id' => $userId,
         ]]);
-      } else {
-        $query->where(['Atags.user_id IS' => null]);
       }
 
       // if(Configure::read('Trois/Attachment.browse.filter_tags')){
@@ -206,19 +215,22 @@ class AtagsController extends AppController
       )
       ->groupBy('AttachmentsAtags.atag_id');
 
-    // Hide other users' personal atags from the counts payload too — the
-    // sidebar already filters them out client-side, this just removes them
-    // from the response so payload size stays minimal.
+    // Hide *other users'* personal atags from the counts payload — they
+    // were already filtered out of /atags.json so leaving them in counts
+    // would just produce orphan keys. Same Sélection-only rule as index().
     $userId = $this->currentUserId();
-    if ($userId !== null) {
+    $selectionTypeId = $this->Atags->AtagTypes->find()
+      ->select(['id'])
+      ->where(['AtagTypes.slug' => self::FAVORITES_TYPE_SLUG])
+      ->first()?->id;
+    if ($selectionTypeId !== null) {
       $base->innerJoin(['AtagsFlt' => 'atags'], ['AtagsFlt.id = AttachmentsAtags.atag_id'])
         ->where(['OR' => [
-          'AtagsFlt.user_id IS' => null,
-          'AtagsFlt.user_id'    => $userId,
+          'AtagsFlt.atag_type_id !=' => $selectionTypeId,
+          'AtagsFlt.atag_type_id IS' => null,
+          'AtagsFlt.user_id IS'      => null,
+          'AtagsFlt.user_id'         => $userId,
         ]]);
-    } else {
-      $base->innerJoin(['AtagsFlt' => 'atags'], ['AtagsFlt.id = AttachmentsAtags.atag_id'])
-        ->where(['AtagsFlt.user_id IS' => null]);
     }
 
     if ($type !== '' && $type !== 'all') {
