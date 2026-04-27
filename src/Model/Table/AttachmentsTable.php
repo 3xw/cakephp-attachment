@@ -53,7 +53,12 @@ class AttachmentsTable extends Table
     $this->addBehavior('Trois\Attachment\ORM\Behavior\ExternalBehavior');
     $this->addBehavior('Trois\Attachment\ORM\Behavior\EmbedBehavior');
     $this->addBehavior('Trois\Attachment\ORM\Behavior\AarchiveBehavior'); // must be before Fly for deletion if it crash the file remain...
-    $this->addBehavior('Trois\Attachment\ORM\Behavior\FlyBehavior');
+    // Stateless API: session-control off by default. The legacy admin UI
+    // pushed upload settings into session before each POST; the new Nuxt
+    // front sends the file directly so we read settings from Configure.
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\FlyBehavior', [
+      'sessionControl' => (bool)Configure::read('Trois/Attachment.fly.sessionControl', false),
+    ]);
     $this->addBehavior('Trois\Attachment\ORM\Behavior\ATagBehavior');
     if(Configure::read('Trois/Attachment.translate')) $this->addBehavior('Trois\Utils\ORM\Behavior\TranslateBehavior', ['fields' => ['title','description']]);
 
