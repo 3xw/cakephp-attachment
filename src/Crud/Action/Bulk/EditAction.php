@@ -24,13 +24,13 @@ class EditAction extends BaseJsonRestAction
       //   $date = new Time($this->subject->data[$pk]['date']);
       //   $this->subject->data[$pk]['date'] = $date->format('Y-m-d H:i:s');
       // }
-      $patched[] = $this->_table()->patchEntity(
+      $patched[] = $this->_model()->patchEntity(
         $entity,
         $this->subject->data[$pk],
         ['associated' => $associated ]
       );
     }
     // save
-    return (bool) $this->_table()->saveMany($patched, ['associated' => $associated ]);
+    return (bool) $this->_model()->saveMany($patched, ['associated' => $associated ]);
   }
 }

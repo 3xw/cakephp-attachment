@@ -1,18 +1,14 @@
 <?php
+declare(strict_types=1);
+
 namespace Trois\Attachment\Crud\Action;
 
-use \Crud\Event\Subject;
-use \Cake\Http\Response;
+use Cake\Http\Response;
+use Crud\Event\Subject;
 
 class DeleteAction extends \Crud\Action\DeleteAction
 {
-  /**
-  * HTTP POST handler
-  *
-  * @param string $id Record id
-  * @return \Cake\Network\Response
-  */
-  protected function _post($id = null):Response
+  protected function _post(string|int|null $id = null): ?Response
   {
     $subject = $this->_subject();
     $subject->set(['id' => $id]);
@@ -24,26 +20,22 @@ class DeleteAction extends \Crud\Action\DeleteAction
       return $this->_stopped($subject);
     }
 
-    try
-    {
-      if ($this->_table()->delete($entity)) {
+    try {
+      if ($this->_model()->delete($entity)) {
         $this->_success($subject);
       } else {
         $this->_error($subject);
       }
-    }
-    catch (\PDOException $e)
-    {
-      $viewVars = ['success', 'data'];
-      $this->_controller->set('success', false);
-      $this->_controller->set('data',[
+    } catch (\PDOException $e) {
+      $this->_controller()->set('success', false);
+      $this->_controller()->set('data', [
         'id' => $id,
         'status' => false,
         'code' => 400,
         'exception' => $e,
-        'message' => __d('Trois/Attachment','unable to delete this Attachment. This attachment looks beeing used by an other record. Please detatch the attachment to related record an then try to delete it again.')
+        'message' => __d('Trois/Attachment', 'unable to delete this Attachment. This attachment looks beeing used by an other record. Please detatch the attachment to related record an then try to delete it again.'),
       ]);
-      $this->_controller->set('_serialize', $viewVars);
+      $this->_controller()->viewBuilder()->setOption('serialize', ['success', 'data']);
       $this->_error($subject);
     }
 

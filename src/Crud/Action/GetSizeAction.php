@@ -54,7 +54,7 @@ class GetSizeAction extends \Crud\Action\BaseAction
       $total = 0;
 
       [$finder, $options] = $this->_extractFinder();
-      $items = $this->_table()->find('search', ['search' => $this->_request()->getQuery()])->toArray();
+      $items = $this->_model()->find('search', ['search' => $this->_request()->getQuery()])->toArray();
 
       foreach($items as $item) $total += $item->size;
 

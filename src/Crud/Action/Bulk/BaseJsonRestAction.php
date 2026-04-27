@@ -19,7 +19,7 @@ abstract class BaseJsonRestAction extends BaseAction
     $arrayOfData = $this->_controller()->getRequest()->input('json_decode', true) ?? $this->_controller()->getRequest()->getData();
     $ids = [];
     $data = [];
-    $pk = $this->_table()->getPrimaryKey();
+    $pk = $this->_model()->getPrimaryKey();
     foreach ((array) $arrayOfData as $jsonDecodedEntity)
     {
       $ids[] = $key = $jsonDecodedEntity[$pk];
