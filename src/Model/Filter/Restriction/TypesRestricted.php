@@ -1,7 +1,7 @@
 <?php
 namespace Trois\Attachment\Model\Filter\Restriction;
 
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery as Query;
 
 class TypesRestricted extends BaseRestriction
 {
