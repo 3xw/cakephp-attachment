@@ -12,6 +12,7 @@ class AtagsController extends AppController
 
   public $paginate = [
         'limit' => 100000,
+        'maxLimit' => 100000,
         'order' => [
             'Atags.name' => 'ASC'
         ]
