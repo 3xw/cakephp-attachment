@@ -88,10 +88,12 @@ class DownloadController extends AppController
     $attachment = $this->fetchTable('Trois/Attachment.Attachments')->find()
     ->where(['id' => (new Token)->decode($token)->file])
     ->firstOrFail();
-    // serve
+    // serve. Use basename(path) so the saved filename is the canonical
+    // storage name (preserves original casing + extension as stored), not
+    // the user-supplied `name` which may have been edited.
     $response = $this->response->withFile((new Downloader)->download($attachment));
     $response = $response->withHeader('Content-Type', $attachment->type.'/'.$attachment->subtype);
-    $response = $response->withDownload($attachment->name);
+    $response = $response->withDownload(basename((string)$attachment->path));
     return $response;
   }
 
