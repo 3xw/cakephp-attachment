@@ -107,17 +107,21 @@ class AtagsController extends AppController
           return $this->Atags->find('all')->where(['name' => str_replace('+', ' ', $tag)])->first()->id;
         }, $selectedTags);
 
-        // si user filter tags ajout des tags de l'utilisateur
-        if(!empty(Configure::read('Trois/Attachment.browse.user_filter_tag_types'))){
-          $usersTable = $this->fetchTable('Users');
-          $id = $this->getRequest()->getSession()->read('Auth')->id;
-          $user = $usersTable->get($id, ['contain' => ['Atags']]);
-          $tagsIds = [];
-          if(!empty($user->atags))
-          {
-            foreach($user->atags as $tag) $tagsIds[] = $tag['id'];
+        // If scoped browsing is on, fold the caller's scope atags into the
+        // selected-tags set so the "only used tags" aggregation stays in
+        // sync with what they're actually allowed to see. Identity comes
+        // from the JWT now, not the legacy session. (WGRC-803)
+        $scopedTypeIds = (array)Configure::read('Trois/Attachment.browse.user_filter_tag_types');
+        $scopedTypeIds = array_values(array_filter($scopedTypeIds, fn ($v) => $v !== null && $v !== ''));
+        if (!empty($scopedTypeIds) && $userId !== null) {
+          $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
+          $scopeBehavior = $Attachments->behaviors()->get('ScopedBrowsing');
+          if ($scopeBehavior !== null) {
+            $userTagIds = $scopeBehavior->resolveScopeForUser($userId, $scopedTypeIds);
+            if (!empty($userTagIds)) {
+              $selectedTags = array_merge($selectedTags, $userTagIds);
+            }
           }
-          $selectedTags = array_merge($selectedTags, $tagsIds);
         }
 
         $connection = ConnectionManager::get('default');

@@ -5,7 +5,6 @@ use Trois\Attachment\Controller\AppController;
 use Trois\Attachment\Filesystem\ProfileRegistry;
 use Cake\Event\Event;
 use Crud\Event\Subject;
-use Cake\Core\Configure;
 use Cake\Http\Exception\UnauthorizedException;
 
 /**
@@ -86,6 +85,30 @@ class AttachmentsController extends AppController
     $this->loadComponent('Trois/Attachment.EventDispatcher');
   }
 
+  /**
+   * Identity of the caller, read from the Authentication middleware. Null on
+   * unauthenticated requests (which are typically blocked upstream by RBAC
+   * but we don't want to assume it here).
+   */
+  protected function _identity(): mixed
+  {
+    return $this->getRequest()->getAttribute('identity');
+  }
+
+  /**
+   * Pipe the identity through `applyOptions` so the `ScopedBrowsingBehavior`
+   * on AttachmentsTable can apply the per-user atag filter on every query
+   * that originates from this controller. Use everywhere we hit the
+   * Attachments table — `index`, `view`, `edit`, `bulkEdit`, `bulkDelete`.
+   *
+   * Centralising this avoids the legacy bug where one action forgot the
+   * filter and exposed the full library.
+   */
+  protected function _applyScope(\Cake\ORM\Query\SelectQuery $query): \Cake\ORM\Query\SelectQuery
+  {
+    return $query->applyOptions(['identity' => $this->_identity()]);
+  }
+
   public function index()
   {
     // Optional `?ids=a,b,c` filter — lets the frontend fetch a specific
@@ -97,28 +120,16 @@ class AttachmentsController extends AppController
       fn($v) => $v !== ''
     ));
 
-    $this->Crud->on('beforePaginate', function (Event $event) use ($idsFilter) {
+    $identity = $this->_identity();
+    $this->Crud->on('beforePaginate', function (Event $event) use ($idsFilter, $identity) {
+      $query = $event->getSubject()->query;
       if (!empty($idsFilter)) {
-        $event->getSubject()->query->where(['Attachments.id IN' => $idsFilter]);
+        $query->where(['Attachments.id IN' => $idsFilter]);
       }
-
-      if(!empty(Configure::read('Trois/Attachment.browse.user_filter_tag_types'))){
-        $usersTable = $this->fetchTable('Users');
-        $id = $this->getRequest()->getSession()->read('Auth')->id;
-        $user = $usersTable->get($id, ['contain' => ['Atags']]);
-        $tagsIds = [];
-        if(!empty($user->atags))
-        {
-          foreach($user->atags as $tag) $tagsIds[] = $tag['id'];
-        }
-        if(!empty($tagsIds)){
-          $event->getSubject()->query
-            ->contain(['Atags'])
-            ->matching('Atags', function ($q) use ($tagsIds) {
-              return $q->where(['Atags.id IN' => $tagsIds]);
-          });
-        }
-      }
+      // Pass identity to the ScopedBrowsingBehavior. The behavior handles
+      // the no-op cases (no identity, admin/superuser, feature off, user
+      // has no scope atag) so we don't need to branch here. (WGRC-803)
+      $query->applyOptions(['identity' => $identity]);
     });
 
     return $this->Crud->execute();
@@ -126,8 +137,11 @@ class AttachmentsController extends AppController
 
   public function view($id)
   {
-    $this->Crud->on('beforeFind', function(\Cake\Event\Event $event) {
-        $event->getSubject()->query->contain(['Aarchives']);
+    $identity = $this->_identity();
+    $this->Crud->on('beforeFind', function (Event $event) use ($identity) {
+        $event->getSubject()->query
+          ->contain(['Aarchives'])
+          ->applyOptions(['identity' => $identity]);
     });
     return $this->Crud->execute();
   }
@@ -141,8 +155,11 @@ class AttachmentsController extends AppController
    */
   public function edit($id = null)
   {
-    $this->Crud->on('beforeFind', function(Event $event) {
-        $event->getSubject()->query->contain(['Atags']);
+    $identity = $this->_identity();
+    $this->Crud->on('beforeFind', function (Event $event) use ($identity) {
+        $event->getSubject()->query
+          ->contain(['Atags'])
+          ->applyOptions(['identity' => $identity]);
     });
     return $this->Crud->execute();
   }
@@ -193,8 +210,20 @@ class AttachmentsController extends AppController
       throw new \Cake\Http\Exception\BadRequestException('attachment_ids and atag_ids must be arrays');
     }
 
-    $removed = $this->fetchTable('Trois/Attachment.Attachments')
-      ->unlinkAtags($attachmentIds, $atagIds);
+    $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
+    // Narrow to attachments the caller can actually browse (WGRC-803).
+    $attachmentIds = array_values(array_filter($attachmentIds, 'is_string'));
+    if (!empty($attachmentIds)) {
+      $attachmentIds = $this->_applyScope($Attachments->find())
+        ->select(['Attachments.id'])
+        ->where(['Attachments.id IN' => $attachmentIds])
+        ->disableHydration()
+        ->all()
+        ->extract('id')
+        ->toList();
+    }
+
+    $removed = $Attachments->unlinkAtags($attachmentIds, $atagIds);
 
     $this->set([
       'removed' => $removed,
@@ -263,6 +292,24 @@ class AttachmentsController extends AppController
 
     $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
 
+    // Narrow `$ids` to what the caller is actually allowed to see, so a
+    // scoped user can never bulk-mutate rows outside their atag scope
+    // (defence-in-depth on top of frontend filtering). (WGRC-803)
+    $scopedIds = $this->_applyScope($Attachments->find())
+      ->select(['Attachments.id'])
+      ->where(['Attachments.id IN' => $ids])
+      ->disableHydration()
+      ->all()
+      ->extract('id')
+      ->toList();
+    $ids = array_values(array_unique($scopedIds));
+    if (empty($ids)) {
+      $this->set(['updated' => 0, 'linked' => 0, 'unlinked' => []]);
+      $this->viewBuilder()->setClassName('Json');
+      $this->viewBuilder()->setOption('serialize', ['updated', 'linked', 'unlinked']);
+      return;
+    }
+
     $updatedProps = 0;
     if (!empty($set)) {
       $set['modified'] = date('Y-m-d H:i:s');
@@ -313,7 +360,11 @@ class AttachmentsController extends AppController
     }
 
     $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
-    $entities = $Attachments->find()->where(['id IN' => $ids])->all();
+    // Defence-in-depth: a scoped user can only delete the rows they're
+    // allowed to see. Behavior is a no-op for admin/superuser. (WGRC-803)
+    $entities = $this->_applyScope($Attachments->find())
+      ->where(['Attachments.id IN' => $ids])
+      ->all();
 
     $deleted = 0;
     $failed = [];
