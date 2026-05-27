@@ -4,11 +4,9 @@ declare(strict_types=1);
 namespace Trois\Attachment;
 
 use Cake\Core\BasePlugin;
-use Cake\Datasource\FactoryLocator;
 use Cake\Routing\RouteBuilder;
 use Cake\Console\CommandCollection;
 use Cake\Core\PluginApplicationInterface;
-use Cake\Core\Configure;
 
 class Plugin extends BasePlugin
 {
@@ -16,11 +14,10 @@ class Plugin extends BasePlugin
   {
     parent::bootstrap($app);
 
-    if (!empty(Configure::read('Trois/Attachment.browse.user_filter_tag_types'))) {
-      $tableLocator = FactoryLocator::get('Table');
-      $usersTable = $tableLocator->get('Users');
-      $usersTable->addBehavior('Trois/Attachment.UserATags');
-    }
+    // WGRC-803 — scope filtering moved out of UserATagsBehavior (which only
+    // ever did `$query->contain(['Atags'])` and never actually filtered) into
+    // `ScopedBrowsingBehavior`, attached directly on AttachmentsTable. The
+    // host app wires `Users.belongsToMany('Atags')` so the lookup works.
   }
 
   public function console(CommandCollection $commands): CommandCollection

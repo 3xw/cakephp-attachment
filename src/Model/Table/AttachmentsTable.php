@@ -60,6 +60,12 @@ class AttachmentsTable extends Table
       'sessionControl' => (bool)Configure::read('Trois/Attachment.fly.sessionControl', false),
     ]);
     $this->addBehavior('Trois\Attachment\ORM\Behavior\ATagBehavior');
+    // Per-user atag scope (WGRC-803). Filters Attachments queries to the
+    // subset the caller is allowed to browse, based on
+    // `Trois/Attachment.browse.user_filter_tag_types`. Callers must opt in
+    // by passing `identity` to `find()` options; queries without an identity
+    // pass through untouched (CLI, internal jobs, public unauthenticated).
+    $this->addBehavior('Trois\Attachment\ORM\Behavior\ScopedBrowsingBehavior');
     if(Configure::read('Trois/Attachment.translate')) $this->addBehavior('Trois\Utils\ORM\Behavior\TranslateBehavior', ['fields' => ['title','description']]);
 
     // third party behaviors
