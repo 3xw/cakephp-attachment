@@ -4,6 +4,7 @@ namespace Trois\Attachment\Controller;
 use Trois\Attachment\Controller\AppController;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Exception\BadRequestException;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\Core\Configure;
 use Firebase\JWT\JWT;
 use Trois\Attachment\Utility\Token;
@@ -33,12 +34,27 @@ class DownloadController extends AppController
     if (empty($ids)) {
       $token = '';
     } else {
+      // Scope guard (WGRC-804 C3): ScopedBrowsingBehavior drops rows the
+      // caller can't see, so any id silently disappears here rather than
+      // ending up in a zip the user shouldn't have. We compare row count
+      // to id count to surface the rejection rather than minting a
+      // partial token.
+      $identity = $this->getRequest()->getAttribute('identity');
       $Attachments = $this->fetchTable('Trois/Attachment.Attachments');
       $rows = $Attachments->find()
+        ->applyOptions(['identity' => $identity])
         ->where(['Attachments.id IN' => $ids])
         ->select(['id', 'path', 'name'])
         ->all()
         ->toList();
+
+      $foundIds = array_map(fn($r) => $r->id, $rows);
+      $missing = array_values(array_diff($ids, $foundIds));
+      if (!empty($missing)) {
+        throw new ForbiddenException(
+          'Attachments out of scope: ' . implode(', ', $missing)
+        );
+      }
 
       $prefix = (string)env('ATTACHMENT_S3_PREFIX', '');
       $files = [];
@@ -74,8 +90,25 @@ class DownloadController extends AppController
   public function getFileToken()
   {
     if (!$this->getRequest()->is('post')) throw new BadRequestException('Post Needed');
-    if(empty($this->getRequest()->getData('file'))) $this->set('token', '');
-    else $this->set('token', (new Token)->encode(['file' => $this->getRequest()->getData('file')]));
+    $fileId = $this->getRequest()->getData('file');
+    if (empty($fileId)) {
+      $this->set('token', '');
+    } else {
+      // Scope guard (WGRC-804 C2): refuse to mint a download token for
+      // an attachment the caller cannot see. ScopedBrowsingBehavior
+      // filters by user_atag scope; if the row drops out, 403 rather
+      // than silently issuing a token that file() would have served.
+      $identity = $this->getRequest()->getAttribute('identity');
+      $found = $this->fetchTable('Trois/Attachment.Attachments')->find()
+        ->applyOptions(['identity' => $identity])
+        ->where(['id' => $fileId])
+        ->select(['id'])
+        ->first();
+      if (!$found) {
+        throw new ForbiddenException('Attachment out of scope');
+      }
+      $this->set('token', (new Token)->encode(['file' => $fileId]));
+    }
     $this->viewBuilder()->setClassName('Json');
     $this->viewBuilder()->setOption('serialize', ['token']);
   }
