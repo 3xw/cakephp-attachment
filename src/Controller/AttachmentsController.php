@@ -3,6 +3,8 @@ namespace Trois\Attachment\Controller;
 
 use Trois\Attachment\Controller\AppController;
 use Trois\Attachment\Filesystem\ProfileRegistry;
+use App\Service\ThumbnailSigner;
+use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Crud\Event\Subject;
 use Cake\Http\Exception\UnauthorizedException;
@@ -109,6 +111,41 @@ class AttachmentsController extends AppController
     return $query->applyOptions(['identity' => $this->_identity()]);
   }
 
+  /**
+   * Inject signed thumbnail URLs into an attachment entity so the frontend
+   * can render <img> tags that pass nginx's HMAC gate without an extra API
+   * round-trip. Three dims because the UI uses three:
+   *   - list_thumb_*  → w80h60   (table view)
+   *   - thumb_*       → w400h300 (grid)
+   *   - preview_*     → w1200    (lightbox / video poster)
+   * One MD5 each, negligible cost. (WGRC-805)
+   *
+   * Mutates the entity in place. Returns it for chaining convenience.
+   */
+  protected function _attachThumbUrls(EntityInterface $entity): EntityInterface
+  {
+    $profile = (string)($entity->profile ?? 'default');
+    $path = (string)($entity->path ?? '');
+    if ($path === '') {
+      return $entity;
+    }
+    $signer = ThumbnailSigner::fromEnv();
+    $list = $signer->sign($profile, 'w80h60', $path);
+    $thumb = $signer->sign($profile, 'w400h300', $path);
+    $preview = $signer->sign($profile, 'w1200', $path);
+    $entity->set('list_thumb_url', $list['url'], ['guard' => false]);
+    $entity->set('list_thumb_sig', $list['sig'], ['guard' => false]);
+    $entity->set('list_thumb_exp', $list['exp'], ['guard' => false]);
+    $entity->set('thumb_url', $thumb['url'], ['guard' => false]);
+    $entity->set('thumb_sig', $thumb['sig'], ['guard' => false]);
+    $entity->set('thumb_exp', $thumb['exp'], ['guard' => false]);
+    $entity->set('preview_url', $preview['url'], ['guard' => false]);
+    $entity->set('preview_sig', $preview['sig'], ['guard' => false]);
+    $entity->set('preview_exp', $preview['exp'], ['guard' => false]);
+
+    return $entity;
+  }
+
   public function index()
   {
     // Optional `?ids=a,b,c` filter — lets the frontend fetch a specific
@@ -132,6 +169,21 @@ class AttachmentsController extends AppController
       $query->applyOptions(['identity' => $identity]);
     });
 
+    // Decorate every paginated entity with the signed thumbnail URLs the
+    // frontend needs. Runs on `afterPaginate` so the signed fields land
+    // in the iteration the Crud Api listener serialises. (WGRC-805)
+    $this->Crud->on('afterPaginate', function (Event $event) {
+      $entities = $event->getSubject()->entities ?? null;
+      if ($entities === null) {
+        return;
+      }
+      foreach ($entities as $entity) {
+        if ($entity instanceof EntityInterface) {
+          $this->_attachThumbUrls($entity);
+        }
+      }
+    });
+
     return $this->Crud->execute();
   }
 
@@ -142,6 +194,12 @@ class AttachmentsController extends AppController
         $event->getSubject()->query
           ->contain(['Aarchives'])
           ->applyOptions(['identity' => $identity]);
+    });
+    $this->Crud->on('afterFind', function (Event $event) {
+      $entity = $event->getSubject()->entity ?? null;
+      if ($entity instanceof EntityInterface) {
+        $this->_attachThumbUrls($entity);
+      }
     });
     return $this->Crud->execute();
   }
