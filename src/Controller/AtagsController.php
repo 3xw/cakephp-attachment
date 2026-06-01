@@ -225,6 +225,13 @@ class AtagsController extends AppController
         $userTagIds = $scopeBehavior !== null
           ? $scopeBehavior->resolveScopeForUser($scopeUserId, $scopedTypeIds)
           : [];
+        \Cake\Log\Log::debug(sprintf(
+          '[counts-scope] user=%s role=%s typeIds=%s tagIds=%s',
+          $scopeUserId,
+          (string)$scopeRole,
+          json_encode($scopedTypeIds),
+          json_encode($userTagIds)
+        ));
         if (!empty($userTagIds)) {
           $junction = $this->Atags->getAssociation('Attachments')->junction();
           $sub = $junction->find()
@@ -234,6 +241,7 @@ class AtagsController extends AppController
         }
       }
     }
+    \Cake\Log\Log::debug('[counts-scope] final SQL: ' . $base->sql());
     $base
       ->select([
         'atag_id' => 'AttachmentsAtags.atag_id',
