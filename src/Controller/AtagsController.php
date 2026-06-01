@@ -225,7 +225,7 @@ class AtagsController extends AppController
         $userTagIds = $scopeBehavior !== null
           ? $scopeBehavior->resolveScopeForUser($scopeUserId, $scopedTypeIds)
           : [];
-        \Cake\Log\Log::debug(sprintf(
+        error_log(sprintf(
           '[counts-scope] user=%s role=%s typeIds=%s tagIds=%s',
           $scopeUserId,
           (string)$scopeRole,
@@ -241,7 +241,7 @@ class AtagsController extends AppController
         }
       }
     }
-    \Cake\Log\Log::debug('[counts-scope] final SQL: ' . $base->sql());
+    error_log('[counts-scope] final SQL: ' . $base->sql());
     $base
       ->select([
         'atag_id' => 'AttachmentsAtags.atag_id',
