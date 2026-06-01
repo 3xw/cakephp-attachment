@@ -341,7 +341,12 @@ class AtagsController extends AppController
       throw new \RuntimeException('Atag type "' . self::FAVORITES_TYPE_SLUG . '" not configured.');
     }
     $entity = $this->Atags->newEntity([
-      'name' => 'Favoris',
+      // Name must be unique across the atags table (both validator + rules
+      // checker enforce it). Suffix with the user-derived shortId so each
+      // user gets their own row. UI re-labels these to "Favoris" anyway
+      // via the slug pattern (`isFavoritesAtag`), the stored name is just
+      // bookkeeping.
+      'name' => 'Favoris-' . $shortId,
       'slug' => $favSlug,
       'atag_type_id' => $type->id,
       'user_id' => $userId,
