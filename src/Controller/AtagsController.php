@@ -226,13 +226,11 @@ class AtagsController extends AppController
           ? $scopeBehavior->resolveScopeForUser($scopeUserId, $scopedTypeIds)
           : [];
         if (!empty($userTagIds)) {
-          $base->where(function ($exp, $q) use ($userTagIds) {
-            $sub = $q->getConnection()->selectQuery()
-              ->select(['attachment_id'])
-              ->from(['scope_aa' => 'attachments_atags'])
-              ->where(['scope_aa.atag_id IN' => $userTagIds]);
-            return $exp->in('Attachments.id', $sub);
-          });
+          $junction = $this->Atags->getAssociation('Attachments')->junction();
+          $sub = $junction->find()
+            ->select(['attachment_id'])
+            ->where(['atag_id IN' => $userTagIds]);
+          $base->where(['Attachments.id IN' => $sub]);
         }
       }
     }
