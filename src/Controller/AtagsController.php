@@ -201,7 +201,14 @@ class AtagsController extends AppController
     // Start from attachments matching the *non-tag* filters, then GROUP BY
     // tag through the pivot. This way selecting tag X gives us counts for
     // every other tag intersected with X (classic faceted intersection).
-    $base = $Attachments->find();
+    //
+    // Pass the identity so ScopedBrowsingBehavior's beforeFind kicks in:
+    // without it, counts are unscoped while the grid is scoped, and the
+    // sidebar shows misleadingly-large totals for tags the user can't
+    // actually reach.
+    $base = $Attachments->find()->applyOptions([
+      'identity' => $this->getRequest()->getAttribute('identity'),
+    ]);
     $base
       ->select([
         'atag_id' => 'AttachmentsAtags.atag_id',
