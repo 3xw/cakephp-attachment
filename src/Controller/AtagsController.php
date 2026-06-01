@@ -221,17 +221,25 @@ class AtagsController extends AppController
       $scopedTypeIds = (array)Configure::read('Trois/Attachment.browse.user_filter_tag_types');
       $scopedTypeIds = array_values(array_filter($scopedTypeIds, fn ($v) => $v !== null && $v !== ''));
       if (!empty($scopedTypeIds)) {
-        $scopeBehavior = $Attachments->behaviors()->get('ScopedBrowsing');
-        $userTagIds = $scopeBehavior !== null
-          ? $scopeBehavior->resolveScopeForUser($scopeUserId, $scopedTypeIds)
-          : [];
-        error_log(sprintf(
-          '[counts-scope] user=%s role=%s typeIds=%s tagIds=%s',
-          $scopeUserId,
-          (string)$scopeRole,
-          json_encode($scopedTypeIds),
-          json_encode($userTagIds)
-        ));
+        // Resolve the caller's scope atag ids directly via the users_atags
+        // pivot — avoids depending on the ScopedBrowsing behavior being
+        // attached at this point in the request lifecycle (the behavior
+        // resolver throws "Unknown object" when accessed before the table's
+        // first hydration in some flows).
+        $UsersAtags = $this->fetchTable('UsersAtags');
+        $userTagIds = $UsersAtags->find()
+          ->select(['atag_id' => 'UsersAtags.atag_id'])
+          ->innerJoin(['Atags' => 'atags'], ['Atags.id = UsersAtags.atag_id'])
+          ->where([
+            'UsersAtags.user_id' => $scopeUserId,
+            'Atags.atag_type_id IN' => $scopedTypeIds,
+          ])
+          ->disableHydration()
+          ->all()
+          ->extract('atag_id')
+          ->toList();
+        $userTagIds = array_values(array_unique(array_map('intval', $userTagIds)));
+
         if (!empty($userTagIds)) {
           $junction = $this->Atags->getAssociation('Attachments')->junction();
           $sub = $junction->find()
@@ -241,7 +249,6 @@ class AtagsController extends AppController
         }
       }
     }
-    error_log('[counts-scope] final SQL: ' . $base->sql());
     $base
       ->select([
         'atag_id' => 'AttachmentsAtags.atag_id',
