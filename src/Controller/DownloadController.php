@@ -99,10 +99,13 @@ class DownloadController extends AppController
       // filters by user_atag scope; if the row drops out, 403 rather
       // than silently issuing a token that file() would have served.
       $identity = $this->getRequest()->getAttribute('identity');
+      // Qualify `Attachments.id` — ScopedBrowsingBehavior adds an INNER
+      // JOIN on Atags (also has an `id` column), so the bare `id` in WHERE
+      // is ambiguous as soon as scoping is active.
       $found = $this->fetchTable('Trois/Attachment.Attachments')->find()
         ->applyOptions(['identity' => $identity])
-        ->where(['id' => $fileId])
-        ->select(['id'])
+        ->where(['Attachments.id' => $fileId])
+        ->select(['Attachments.id'])
         ->first();
       if (!$found) {
         throw new ForbiddenException('Attachment out of scope');
