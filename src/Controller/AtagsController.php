@@ -202,13 +202,40 @@ class AtagsController extends AppController
     // tag through the pivot. This way selecting tag X gives us counts for
     // every other tag intersected with X (classic faceted intersection).
     //
-    // Pass the identity so ScopedBrowsingBehavior's beforeFind kicks in:
-    // without it, counts are unscoped while the grid is scoped, and the
-    // sidebar shows misleadingly-large totals for tags the user can't
-    // actually reach.
-    $base = $Attachments->find()->applyOptions([
-      'identity' => $this->getRequest()->getAttribute('identity'),
-    ]);
+    // Scope: we do NOT pipe the identity into ScopedBrowsingBehavior here
+    // because its `matching('Atags', …)` join interferes with our explicit
+    // GROUP BY on AttachmentsAtags.atag_id (CakePHP rewrites the SELECT and
+    // collapses the counts to 0 for non-matching atags). Instead, resolve
+    // the user's scope atag ids manually and add a WHERE IN subquery on
+    // attachments_atags — single source of truth via resolveScopeForUser.
+    $base = $Attachments->find();
+    $identity = $this->getRequest()->getAttribute('identity');
+    $scopeUserId = is_object($identity) && method_exists($identity, 'getIdentifier')
+      ? (string)$identity->getIdentifier()
+      : null;
+    $scopeRole = null;
+    if (is_object($identity)) {
+      $scopeRole = method_exists($identity, 'get') ? $identity->get('role') : ($identity->role ?? null);
+    }
+    if ($scopeUserId !== null && !in_array((string)$scopeRole, ['admin', 'superuser'], true)) {
+      $scopedTypeIds = (array)Configure::read('Trois/Attachment.browse.user_filter_tag_types');
+      $scopedTypeIds = array_values(array_filter($scopedTypeIds, fn ($v) => $v !== null && $v !== ''));
+      if (!empty($scopedTypeIds)) {
+        $scopeBehavior = $Attachments->behaviors()->get('ScopedBrowsing');
+        $userTagIds = $scopeBehavior !== null
+          ? $scopeBehavior->resolveScopeForUser($scopeUserId, $scopedTypeIds)
+          : [];
+        if (!empty($userTagIds)) {
+          $base->where(function ($exp, $q) use ($userTagIds) {
+            $sub = $q->getConnection()->selectQuery()
+              ->select(['attachment_id'])
+              ->from(['scope_aa' => 'attachments_atags'])
+              ->where(['scope_aa.atag_id IN' => $userTagIds]);
+            return $exp->in('Attachments.id', $sub);
+          });
+        }
+      }
+    }
     $base
       ->select([
         'atag_id' => 'AttachmentsAtags.atag_id',
