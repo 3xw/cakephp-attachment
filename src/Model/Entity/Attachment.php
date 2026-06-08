@@ -30,23 +30,43 @@ class Attachment extends Entity
 
   protected function _getFilename()
   {
-    $nameFields = Configure::read('Trois/Attachment.browse.download.filename');
+    $base = basename((string)($this->_fields['path'] ?? ''));
+    $nameFields = (array) Configure::read('Trois/Attachment.browse.download.filename');
+    if (count($nameFields) === 0) return $base;
 
-    if(count($nameFields) === 0) return $this->_fields['path'];
-
-    $filename = '';
+    $parts = [];
     foreach ($nameFields as $field) {
-      if(isset($this->_fields[$field]) && !empty($this->_fields[$field])){
-        if(is_object($this->_fields[$field]) && $this->_fields[$field] instanceof \Cake\I18n\FrozenTime){
-          $filename .= $this->_fields[$field]->format('Y-m-d') . '_';
-        } elseif(is_string($this->_fields[$field])) {
-          $filename .= $this->_fields[$field] . '_';
-        }
+      $value = $this->_fields[$field] ?? null;
+      if (empty($value)) continue;
+      if ($value instanceof \DateTimeInterface) {
+        $parts[] = $value->format('Y-m-d');
+      } elseif (is_object($value) && method_exists($value, 'format')) {
+        // Cake\I18n\Date / ChronosDate (not a DateTimeInterface under Chronos 3).
+        $parts[] = $value->format('Y-m-d');
+      } elseif (is_string($value)) {
+        $parts[] = $value;
       }
     }
 
-    $filename .= $this->_fields['path'];
+    // No usable metadata → keep the canonical storage name (WGRC-744 behavior).
+    if (count($parts) === 0) return $base;
 
-    return $filename;
+    $name = $this->_sanitizeFilename(implode('_', $parts));
+    if ($name === '') return $base;
+    // Append the storage basename (keeps the extension, stays unique → no zip
+    // entry collisions when two files share the same title + date).
+    return $name . '_' . $base;
+  }
+
+  /**
+   * Make a metadata-derived string safe as a Content-Disposition filename:
+   * strip path separators + characters illegal on common filesystems, collapse
+   * whitespace, trim. Accents and single spaces are preserved on purpose.
+   */
+  protected function _sanitizeFilename(string $value): string
+  {
+    $value = preg_replace('#[/\\\\:*?"<>|\x00-\x1F]#', '', $value);
+    $value = preg_replace('/\s+/u', ' ', $value);
+    return trim($value, " .\t");
   }
 }

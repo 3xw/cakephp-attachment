@@ -44,7 +44,7 @@ class DownloadController extends AppController
       $rows = $Attachments->find()
         ->applyOptions(['identity' => $identity])
         ->where(['Attachments.id IN' => $ids])
-        ->select(['id', 'path', 'name'])
+        ->select(['id', 'path', 'name', 'title', 'date'])
         ->all()
         ->toList();
 
@@ -62,7 +62,7 @@ class DownloadController extends AppController
         if (empty($r->path)) continue;
         $files[] = [
           'key' => $prefix . $r->path,
-          'name' => (string)($r->name ?: basename((string)$r->path)),
+          'name' => (string)$r->filename,
         ];
       }
 
@@ -124,12 +124,12 @@ class DownloadController extends AppController
     $attachment = $this->fetchTable('Trois/Attachment.Attachments')->find()
     ->where(['id' => (new Token)->decode($token)->file])
     ->firstOrFail();
-    // serve. Use basename(path) so the saved filename is the canonical
-    // storage name (preserves original casing + extension as stored), not
-    // the user-supplied `name` which may have been edited.
+    // Saved filename is built from configured metadata (title + date) via the
+    // entity's `filename` virtual prop, falling back to the canonical storage
+    // basename when no metadata is set (see Attachment::_getFilename).
     $response = $this->response->withFile((new Downloader)->download($attachment));
     $response = $response->withHeader('Content-Type', $attachment->type.'/'.$attachment->subtype);
-    $response = $response->withDownload(basename((string)$attachment->path));
+    $response = $response->withDownload((string)$attachment->filename);
     return $response;
   }
 
