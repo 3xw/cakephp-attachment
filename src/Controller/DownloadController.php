@@ -126,10 +126,17 @@ class DownloadController extends AppController
     ->firstOrFail();
     // Saved filename is built from configured metadata (title + date) via the
     // entity's `filename` virtual prop, falling back to the canonical storage
-    // basename when no metadata is set (see Attachment::_getFilename).
+    // basename when no metadata is set (see Attachment::_getFilename). Emit an
+    // ASCII filename plus RFC 5987 filename*=UTF-8'' so accents survive — raw
+    // UTF-8 in filename="" gets mojibake'd (the header is latin1).
+    $filename = (string)$attachment->filename;
+    $ascii = preg_replace('/[^\x20-\x7E]/', '_', str_replace('"', '_', $filename));
     $response = $this->response->withFile((new Downloader)->download($attachment));
     $response = $response->withHeader('Content-Type', $attachment->type.'/'.$attachment->subtype);
-    $response = $response->withDownload((string)$attachment->filename);
+    $response = $response->withHeader(
+      'Content-Disposition',
+      'attachment; filename="' . $ascii . '"' . "; filename*=UTF-8''" . rawurlencode($filename)
+    );
     return $response;
   }
 
