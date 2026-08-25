@@ -26,7 +26,7 @@ use Cake\ORM\TableRegistry;
  *   - role ∈ {admin, superuser}              → no-op (privileged bypass).
  *   - `user_filter_tag_types` empty          → no-op (feature off).
  *   - User has zero atags of a scoped type   → no-op (full access).
- *   - Otherwise                              → matching('Atags' IN userTagIds).
+ *   - Otherwise                              → id IN (pivot ⨝ userTagIds) subquery.
  *
  * The per-user lookup is cached for 60 s under the `scope` Cache config so
  * authenticated browsing doesn't hit the DB on every request.
@@ -75,7 +75,18 @@ class ScopedBrowsingBehavior extends Behavior
             return;
         }
 
-        $query->matching('Atags', fn ($q) => $q->where(['Atags.id IN' => $tagsIds]));
+        // Subquery on the pivot instead of matching('Atags'): the browse
+        // filters (Search, TagOrRestricted) manually join `atags` under the
+        // same `Atags` alias, and CakePHP keys joins by alias — matching()
+        // would overwrite their join in place and produce an ON clause that
+        // references the junction table before it is declared (SQL error
+        // 1054). A subquery composes with any caller-side join.
+        $alias = $this->table()->getAlias();
+        $junction = $this->table()->getAssociation('Atags')->junction();
+        $subquery = $junction->find()
+            ->select([$junction->getAlias() . '.attachment_id'])
+            ->where([$junction->getAlias() . '.atag_id IN' => $tagsIds]);
+        $query->where([$alias . '.id IN' => $subquery]);
     }
 
     /**
