@@ -213,7 +213,12 @@ class AttachmentHelper extends Helper
   }
   public function thumbSrc($params)
   {
-    if (substr($params['image'],0 , 4) == 'http' ) $profile = 'external';
+    // Une piece jointe peut exister sans chemin - le profil « external » range
+    // son URL dans embed et laisse path a NULL. PHP 8 refuse substr(null) la ou
+    // PHP 7.4 l acceptait, ce qui faisait echouer toute page affichant une telle
+    // pièce jointe. On tolere l absence de valeur ici plutot que dans chacun des
+    // appelants.
+    if (substr((string)($params['image'] ?? ''), 0, 4) == 'http' ) $profile = 'external';
     else $profile = empty($params['profile'])? 'external' : $params['profile'];
     $url = $profile . '/';
     $dims = ['height' => 'h','width' => 'w','align' => 'a', 'quality' => 'q'];
