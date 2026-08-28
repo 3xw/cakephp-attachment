@@ -13,6 +13,8 @@ use Cake\ORM\Behavior;
 use Cake\ORM\Table;
 use Trois\Attachment\Filesystem\Profile;
 use Trois\Attachment\Filesystem\UploadedFile;
+use League\Flysystem\FileNotFoundException;
+use Cake\Log\Log;
 use Trois\Attachment\Filesystem\ProfileRegistry;
 
 class FlyBehavior extends Behavior
@@ -180,8 +182,25 @@ class FlyBehavior extends Behavior
     $field = $settings['file_field'];
     if(!empty($entity->get($field))) {
       $profile = ProfileRegistry::retrieve($entity->get('profile'));
-      $profile->deleteThumbnails($entity->get($field));
-      $profile->delete($entity->get($field));
+
+      // Un fichier deja absent du stockage n'est pas une erreur : l'etat
+      // recherche est atteint. Sans ce filet, Flysystem levait une exception
+      // apres la suppression de l'enregistrement, qui restait donc en base -
+      // et la piece jointe devenait impossible a retirer de la bibliotheque.
+      try {
+        $profile->deleteThumbnails($entity->get($field));
+      } catch (FileNotFoundException $e) {
+        // Les vignettes sont regenerables : leur absence ne dit rien d'anormal.
+      }
+
+      try {
+        $profile->delete($entity->get($field));
+      } catch (FileNotFoundException $e) {
+        Log::info(sprintf(
+          'Piece jointe %s supprimee : son fichier avait deja disparu du stockage.',
+          (string)$entity->get($field)
+        ));
+      }
     }
   }
 
