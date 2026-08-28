@@ -4,12 +4,17 @@ declare(strict_types=1);
 namespace Trois\Attachment\Crud\Action\Bulk;
 
 use Cake\Controller\Controller;
-use Cake\ORM\Query;
+use Cake\Database\Query;
 use Cake\I18n\Time;
 
 class EditAction extends BaseJsonRestAction
 {
-  protected function _bulk(?Query $query = null): bool
+  // Le parent (Crud\Action\Bulk\BaseAction) type ce parametre avec
+  // Cake\Database\Query et le declare obligatoire. Sous CakePHP 5 la
+  // classe Cake\ORM\Query n'en est plus la meme : PHP refusait de charger
+  // la classe, et toute suppression groupee finissait en erreur fatale.
+  // L'objet recu reste une SelectQuery, donc toArray() fonctionne.
+  protected function _bulk(Query $query): bool
   {
     // retrieve
     $associated = $this->getConfig('relatedModels')?? [];
