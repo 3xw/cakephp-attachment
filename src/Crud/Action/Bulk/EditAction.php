@@ -31,7 +31,7 @@ class EditAction extends BaseJsonRestAction
     // Crud n'indexe pas la requete : il ajoute seulement un WHERE IN. Les
     // donnees postees etant rangees par identifiant, il faut indexer ici,
     // sinon $this->subject->data[$pk] lirait des cles 0,1,2.
-    $indexedList = $query->all()->indexBy($this->_table()->getPrimaryKey())->toArray();
+    $indexedList = $query->all()->indexBy($this->_model()->getPrimaryKey())->toArray();
 
     // patch
     $patched = [];
@@ -41,13 +41,13 @@ class EditAction extends BaseJsonRestAction
       //   $date = new Time($this->subject->data[$pk]['date']);
       //   $this->subject->data[$pk]['date'] = $date->format('Y-m-d H:i:s');
       // }
-      $patched[] = $this->_table()->patchEntity(
+      $patched[] = $this->_model()->patchEntity(
         $entity,
         $this->subject->data[$pk],
         ['associated' => $associated ]
       );
     }
     // save
-    return (bool) $this->_table()->saveMany($patched, ['associated' => $associated ]);
+    return (bool) $this->_model()->saveMany($patched, ['associated' => $associated ]);
   }
 }

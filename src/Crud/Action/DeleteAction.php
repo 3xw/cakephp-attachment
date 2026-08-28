@@ -26,7 +26,7 @@ class DeleteAction extends \Crud\Action\DeleteAction
 
     try
     {
-      if ($this->_table()->delete($entity)) {
+      if ($this->_model()->delete($entity)) {
         $this->_success($subject);
       } else {
         $this->_error($subject);

@@ -38,7 +38,7 @@ class DeleteAction extends BaseAction
   {
     $list = $query->toArray();
 
-    foreach($list as $entity) if(!$bool = $this->_table()->delete($entity)) return false;
+    foreach($list as $entity) if(!$bool = $this->_model()->delete($entity)) return false;
 
     return true;
   }
