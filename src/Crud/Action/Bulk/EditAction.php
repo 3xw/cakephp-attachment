@@ -9,6 +9,14 @@ use Cake\I18n\Time;
 
 class EditAction extends BaseJsonRestAction
 {
+  public function __construct(Controller $Controller, array $config = [])
+  {
+    // Meme raison que DeleteAction : le defaut TYPE_UPDATE ne se lit pas.
+    $this->_defaultConfig['queryType'] = Query::TYPE_SELECT;
+
+    parent::__construct($Controller, $config);
+  }
+
   // Le parent (Crud\Action\Bulk\BaseAction) type ce parametre avec
   // Cake\Database\Query et le declare obligatoire. Sous CakePHP 5 la
   // classe Cake\ORM\Query n'en est plus la meme : PHP refusait de charger
@@ -19,7 +27,11 @@ class EditAction extends BaseJsonRestAction
     // retrieve
     $associated = $this->getConfig('relatedModels')?? [];
     $query->contain($associated);
-    $indexedList = $query->toArray();
+
+    // Crud n'indexe pas la requete : il ajoute seulement un WHERE IN. Les
+    // donnees postees etant rangees par identifiant, il faut indexer ici,
+    // sinon $this->subject->data[$pk] lirait des cles 0,1,2.
+    $indexedList = $query->all()->indexBy($this->_table()->getPrimaryKey())->toArray();
 
     // patch
     $patched = [];

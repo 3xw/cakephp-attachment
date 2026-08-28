@@ -11,6 +11,12 @@ class DeleteAction extends BaseAction
 {
   public function __construct(Controller $Controller, array $config = [])
   {
+    // Crud choisit le type de requete via cette cle et prend TYPE_UPDATE par
+    // defaut, ce qui produisait une UpdateQuery - sans toArray(). Cette action
+    // a besoin de lire les entites pour les supprimer une a une, afin que les
+    // fichiers associes soient retires du stockage au passage.
+    $this->_defaultConfig['queryType'] = Query::TYPE_SELECT;
+
     $this->_defaultConfig['messages'] = [
       'success' => [
         'text' => 'Delete completed successfully',
