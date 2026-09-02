@@ -135,8 +135,26 @@ class FlyBehavior extends Behavior
       if(!empty($orginalValues[$field]))
       {
         $oldProfile = ProfileRegistry::retrieve(empty($orginalValues['profile'])? $conf['profile']: $orginalValues['profile']);
-        $oldProfile->deleteThumbnails($orginalValues[$field]);
-        $oldProfile->delete($orginalValues[$field]);
+
+        // Meme filet que sur la suppression : un ancien fichier deja absent du
+        // stockage ne doit pas empecher d'en televerser un nouveau. Sans cela
+        // Flysystem levait ici, et le remplacement echouait entierement - le
+        // document restait donc introuvable a la mise a jour.
+        try {
+          $oldProfile->deleteThumbnails($orginalValues[$field]);
+        } catch (FileNotFoundException $e) {
+          // Les vignettes sont regenerables : leur absence ne dit rien d'anormal.
+        }
+
+        try {
+          $oldProfile->delete($orginalValues[$field]);
+        } catch (FileNotFoundException $e) {
+          Log::info(sprintf(
+            'Remplacement de %s : l\'ancien fichier avait deja disparu du stockage.',
+            (string)$orginalValues[$field]
+          ));
+        }
+
         $afterReplace = $oldProfile->afterReplace;
       }
 

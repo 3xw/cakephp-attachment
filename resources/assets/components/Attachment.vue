@@ -111,6 +111,7 @@
           <div title="Infos" alt="Infos" class="btn btn--grey color--white" @click="infos(attachment)"><i class="material-icons">info</i></div>
           <div v-if="attachment.type != 'application' || (attachment.type == 'application' && attachment.subtype == 'pdf')" title="Aperçu" alt="Aperçu" class="btn btn--green color--white" @click="preview(attachment)"><i class="material-icons"> remove_red_eye </i></div>
           <div title="Télécharger" alt="Télécharger" class="btn btn--blue color--white" @click="downloadFile(attachment)"><i class="material-icons"> cloud_download </i></div>
+          <div v-if="canReplace" title="Remplacer le fichier" alt="Remplacer le fichier" class="btn btn--orange color--white" @click="replace(attachment)"><i class="material-icons"> swap_horiz </i></div>
           <div title="Ajouter à la sélection" alt="Ajouter à la sélection" class="btn btn--blue-dark color--white" @click="toggleFile(attachment)">
             <i v-if="!isSelected(attachment.id)" class="material-icons"> add_circle </i>
             <i v-else class="material-icons"> remove_circle </i>
@@ -133,6 +134,7 @@
             <div title="Infos" alt="Infos" class="btn btn--grey color--white" @click="infos(attachment)"><i class="material-icons">info</i></div>
             <div v-if="attachment.type != 'application' || (attachment.type == 'application' && attachment.subtype == 'pdf')" title="Aperçu" alt="Aperçu" class="btn btn--green color--white" @click="preview(attachment)"><i class="material-icons"> remove_red_eye </i></div>
             <div title="Télécharger" alt="Télécharger" class="btn btn--blue color--white" @click="downloadFile(attachment)"><i class="material-icons"> cloud_download </i></div>
+            <div v-if="canReplace" title="Remplacer le fichier" alt="Remplacer le fichier" class="btn btn--orange color--white" @click="replace(attachment)"><i class="material-icons"> swap_horiz </i></div>
             <div title="Ajouter à la séléction" alt="Ajouter à la séléction" class="btn btn--blue-dark color--white" @click="toggleFile(attachment)">
               <i v-if="!isSelected(attachment.id)" class="material-icons"> add_circle </i>
               <i v-else class="material-icons"> remove_circle </i>
@@ -169,6 +171,13 @@ export default
   },
   computed:
   {
+    // Pas de remplacement quand la mediatheque sert de selecteur de fichier :
+    // on y choisit un media existant, on ne modifie pas la bibliotheque.
+    canReplace()
+    {
+      const s = this.$store.get(this.aid + '/settings') || {}
+      return (s.groupActions || []).indexOf('edit') !== -1
+    },
     settings()
     {
       return this.$store.get(this.aid+'/settings')
@@ -276,6 +285,11 @@ export default
     infos(attachment){
       this.$store.set(this.aid + '/infos', '')
       this.$store.set(this.aid + '/infos', attachment)
+      this.$forceUpdate()
+    },
+    replace(attachment){
+      this.$store.set(this.aid + '/replace', '')
+      this.$store.set(this.aid + '/replace', attachment)
       this.$forceUpdate()
     },
     checkForArchiveProcessing(){

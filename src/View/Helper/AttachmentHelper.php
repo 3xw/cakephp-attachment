@@ -92,7 +92,12 @@ class AttachmentHelper extends Helper
     ];
     
     // browse settings
-    $settings['browse'] = Configure::read('Trois/Attachment.browse');
+    // Fusion et non ecrasement : l'appelant peut ainsi imposer un type actif et
+    // un mode d'affichage (defaultType / defaultMode) sans perdre la config.
+    $settings['browse'] = array_merge(
+      (array)Configure::read('Trois/Attachment.browse'),
+      (array)($settings['browse'] ?? [])
+    );
 
     // urls
     $profiles = Configure::read('Trois/Attachment.profiles');

@@ -36,6 +36,7 @@ export default
       settings: {},
       preview: {},
       infos: {},
+      replace: {},
       aarchives: []
     }
   },

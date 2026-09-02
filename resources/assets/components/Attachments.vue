@@ -143,6 +143,7 @@
     </div>
     <attachment-preview :aid="aid" :open="false"></attachment-preview>
     <attachment-infos :aid="aid" :open="false"></attachment-infos>
+    <attachment-replace :aid="aid"></attachment-replace>
     <!--<attachment-archive :aid="aid" :settings="settings"></attachment-archive >-->
 
   </section>
@@ -157,6 +158,7 @@ import Attachment from './Attachment.vue'
 import Pagination from './Pagination.vue'
 import Preview from './Preview.vue'
 import Infos from './Infos.vue'
+import Replace from './Replace.vue'
 
 //import Archive from './Archives.vue'
 
@@ -171,15 +173,22 @@ export default
   name:'attachments',
   props: { aid: String, settings: Object },
   data(){
+    // Le type actif et le mode d'affichage peuvent etre imposes par les
+    // settings : c'est ce qui permet d'ouvrir la mediatheque directement sur
+    // les images ou sur les documents depuis deux entrees de menu distinctes.
+    const browse = this.settings.browse || {}
+    const wanted = (browse.types || {})[browse.defaultType]
+    const modes = ['thumb', 'thumbInfo', 'mosaic']
+
     return {
       sort: this.settings.browse.search.dateField.split('.').pop(),
       direction: 'desc',
-      mode: 'thumb',
+      mode: modes.indexOf(browse.defaultMode) !== -1 ? browse.defaultMode : 'thumb',
       types: {
         name: 'Types',
         slug: 'type',
         isActive: false,
-        current: '',
+        current: (wanted && wanted.mime) ? wanted.mime.join(',') : '',
       },
       downloading: false,
       hasProcessingArchive: false,
@@ -194,6 +203,7 @@ export default
     'attachment-search-bar': SearchBar,
     'attachment-preview': Preview,
     'attachment-infos': Infos,
+    'attachment-replace': Replace,
     //'attachment-archive': Archive,
 
     'icon-grid': iconGrid,
@@ -201,6 +211,10 @@ export default
     'icon-list': iconList
   },
   mounted() {
+    // Un type impose par les settings doit aussi etre applique a la requete :
+    // le fixer dans data() ne fait que le marquer actif a l'affichage, c'est
+    // filterType() qui le passe reellement au chargement des fichiers.
+    if (this.types.current) this.filterType()
   },
   computed:
   {
@@ -268,7 +282,10 @@ export default
     filterType()
     {
       if(!this.upload){
-        if(!this.types.current.match(/image/g)){
+        // Seule la mosaique est reservee aux images. Basculer sur un autre type
+        // ne doit pas ramener de force en grille : on perdait la vue liste des
+        // qu'on filtrait sur les documents.
+        if(this.mode == 'mosaic' && !this.types.current.match(/image/g)){
           this.mode = 'thumb'
         }
         this.$store.set(this.aid + '/tParams', Object.assign(this.$store.get(this.aid + '/tParams'), { refresh: new Date().getTime(), type: this.types.current }))
