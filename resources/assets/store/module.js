@@ -93,6 +93,9 @@ export default
     'infos': (state, payload) => {
       state.infos = payload
     },
+    'replace': (state, payload) => {
+      state.replace = payload
+    },
     //Archive
     'aarchives': (state, payload) => {
       state.aarchives = payload
