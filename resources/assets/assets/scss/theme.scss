@@ -299,6 +299,14 @@ $colors: (
       #{$this}__infos{
         display: inline-block;width: auto;height: auto;padding: $margin--default;
       }
+      // Formulaire de remplacement : la regle generique 'div{width:100%;height:100%}'
+      // ci-dessus etirait chaque bloc et les boutons sur toute la hauteur.
+      #{$this}__replace{
+        display: inline-block;width: auto;height: auto;max-width: 40rem;text-align: left;padding: $margin--default;
+        div{width: auto;height: auto;}
+        .btn-group{display: inline-flex;}
+        .progress{width: 100%;}
+      }
     }
   }
 

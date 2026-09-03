@@ -4,7 +4,7 @@
       <i class="material-icons"> clear </i>
     </div>
     <div class="block-attachment__content">
-      <div class="block block--white text-left">
+      <div class="block-attachment__replace block block--white text-left">
 
         <h4 class="mb-3">Remplacer le fichier</h4>
 
