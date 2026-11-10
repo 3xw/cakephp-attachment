@@ -298,10 +298,13 @@ class AtagsController extends AppController
       }
     }
     // If atags are already active, restrict to attachments having ALL of
-    // them. We compute the matching attachment_ids first (single query on
-    // the pivot, GROUP BY + HAVING for the AND-of-tags rule), then inject
-    // the list as a WHERE IN. Avoids the brittle subquery-via-Cake-Query
-    // pattern that cross-joined when feeding a Query as a WHERE value.
+    // them, with the AND-of-tags rule kept inside SQL (GROUP BY + HAVING on
+    // the pivot, fed as `Attachments.id IN (subquery)` exactly like the user
+    // scope above). Materialising the ids in PHP first gave the same results
+    // and the same MariaDB time (~0.9 s for « photo » on prod either way), but
+    // a broad tag yields ~25k UUIDs held in PHP and sent as ~1 MB of bound
+    // parameters on every request — dead weight while php-fpm sat at its
+    // memory limit during search bursts.
     $activeSlugs = array_values(array_filter(array_map('trim', explode(',', $atagsCsv)), fn($s) => $s !== ''));
     if (!empty($activeSlugs)) {
       $activeIds = $this->Atags->find()
@@ -315,24 +318,19 @@ class AtagsController extends AppController
         $base->where(['1 =' => 0]);
       } else {
         $junction = $this->Atags->getAssociation('Attachments')->junction();
-        $junctionQ = $junction->find();
-        // count(activeIds) is computed in PHP (int) so safe to inline; the
-        // alternative `having([... = :n], ...)` triggers QueryExpression
-        // edge cases on this CakePHP version.
-        $n = count($activeIds);
-        $matchingIds = $junctionQ
+        $matching = $junction->find()
           ->select(['attachment_id'])
-          ->where(['atag_id IN' => $activeIds])
-          ->groupBy(['attachment_id'])
-          ->having($junctionQ->newExpr("COUNT(DISTINCT atag_id) = {$n}"))
-          ->all()
-          ->extract('attachment_id')
-          ->toList();
-        if (empty($matchingIds)) {
-          $base->where(['1 =' => 0]);
-        } else {
-          $base->where(['Attachments.id IN' => $matchingIds]);
+          ->where(['atag_id IN' => $activeIds]);
+        if (count($activeIds) > 1) {
+          // count(activeIds) is a PHP int so safe to inline; the alternative
+          // `having([... = :n], ...)` triggers QueryExpression edge cases on
+          // this CakePHP version.
+          $n = count($activeIds);
+          $matching
+            ->groupBy(['attachment_id'])
+            ->having($matching->newExpr("COUNT(DISTINCT atag_id) = {$n}"));
         }
+        $base->where(['Attachments.id IN' => $matching]);
       }
     }
 
