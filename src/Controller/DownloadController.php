@@ -10,6 +10,7 @@ use Firebase\JWT\JWT;
 use Trois\Attachment\Utility\Token;
 use Trois\Attachment\Filesystem\Downloader;
 use Cake\Event\EventInterface;
+use Trois\Attachment\Utility\ZipEntryNames;
 class DownloadController extends AppController
 {
   /**
@@ -74,7 +75,7 @@ class DownloadController extends AppController
         $ttl = (int)env('ZIPPER_TOKEN_TTL', 3600);
         $filename = (string)($this->getRequest()->getData('filename') ?: 'download.zip');
         $token = JWT::encode([
-          'files' => $files,
+          'files' => ZipEntryNames::dedupe($files),
           'filename' => $filename,
           'exp' => time() + $ttl,
         ], $secret, 'HS256');

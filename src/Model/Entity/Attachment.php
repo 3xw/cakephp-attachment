@@ -30,7 +30,7 @@ class Attachment extends Entity
 
   protected function _getFilename()
   {
-    $base = basename((string)($this->_fields['path'] ?? ''));
+    $base = $this->_displayBasename();
     $nameFields = (array) Configure::read('Trois/Attachment.browse.download.filename');
     if (count($nameFields) === 0) return $base;
 
@@ -48,14 +48,27 @@ class Attachment extends Entity
       }
     }
 
-    // No usable metadata → keep the canonical storage name (WGRC-744 behavior).
+    // No usable metadata → the file name alone (WGRC-744 behavior).
     if (count($parts) === 0) return $base;
 
     $name = $this->_sanitizeFilename(implode('_', $parts));
     if ($name === '') return $base;
-    // Append the storage basename (keeps the extension, stays unique → no zip
-    // entry collisions when two files share the same title + date).
+    // The file name keeps the extension. It is NOT unique (13 different
+    // `pano0001.jpg` share one title + date): zips go through
+    // ZipEntryNames::dedupe().
     return $name . '_' . $base;
+  }
+
+  /**
+   * Storage basename without the upload timestamp FlyBehavior prepends
+   * (`1790085788_pano_0024.jpg` → `pano_0024.jpg`): noise for a human, and
+   * the meaningful date is already in the name. Kept when stripping would
+   * leave a bare extension (`1790085788_.jpg`).
+   */
+  protected function _displayBasename(): string
+  {
+    $base = basename((string)($this->_fields['path'] ?? ''));
+    return preg_replace('/^\d{10}_(?=[^.])/', '', $base) ?? $base;
   }
 
   /**
